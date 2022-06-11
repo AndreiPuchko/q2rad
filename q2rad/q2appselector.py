@@ -29,6 +29,7 @@ class Q2AppSelect(Q2Form):
     def __init__(self):
         super().__init__(_("Select application"))
         self.selected_application = {}
+        self.no_view_action = True
         self.autoload_enabled = True
 
     def on_init(self):

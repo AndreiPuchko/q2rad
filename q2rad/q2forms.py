@@ -12,6 +12,7 @@ from q2db.schema import Q2DbSchema
 
 from q2rad.q2raddb import q2cursor, SeqMover
 from q2gui.q2model import Q2CursorModel
+
 # from q2gui.q2utils import int_
 
 from q2gui.q2dialogs import q2Mess
@@ -21,6 +22,7 @@ from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
 
 from q2rad import Q2Form
+
 import gettext
 
 _ = gettext.gettext
@@ -29,14 +31,14 @@ _ = gettext.gettext
 class Q2Forms(Q2Form, SeqMover):
     def __init__(self):
         super().__init__("Forms")
-        self.db = q2app.q2_app.db_logic
+        self.no_view_action = True
 
     def on_init(self):
         self.create_form()
-
-        cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="forms", order="seq")
+        self.db = self.q2_app.db_logic
+        cursor: Q2Cursor = self.db.table(table_name="forms", order="seq")
         model = Q2CursorModel(cursor)
-        # model.set_order("form_name").refresh()
+        model.set_order("seq").refresh()
         self.set_model(model)
 
         self.add_action("/crud")
@@ -58,36 +60,6 @@ class Q2Forms(Q2Form, SeqMover):
 
         self.add_action("Migrate to DB", self.q2_app.migrate_db_data)
         self.add_action("Run", self.form_runner, hotkey="F4")
-
-    # def add_seq_acions(self):
-    #     self.add_action("🡅", self.move_seq_up)
-    #     self.add_action("🡇", self.move_seq_down)
-
-    # def move_seq_up(self):
-    #     if self.current_row > 0:
-    #         nr = self.model.get_record(self.current_row - 1)
-    #         cr = self.model.get_record(self.current_row)
-    #         if nr["seq"] == cr["seq"]:
-    #             nr["seq"] = "%s" % (int_(nr["seq"]) - 1)
-    #         else:
-    #             nr["seq"], cr["seq"] = cr["seq"], nr["seq"]
-    #         self.model.update(nr)
-    #         self.model.update(cr)
-    #         self.refresh()
-    #         self.set_grid_index(self.current_row - 1)
-
-    # def move_seq_down(self):
-    #     if self.current_row < self.model.row_count() - 1:
-    #         nr = self.model.get_record(self.current_row + 1)
-    #         cr = self.model.get_record(self.current_row)
-    #         if nr["seq"] == cr["seq"]:
-    #             nr["seq"] = "%s" % (int_(nr["seq"]) + 1)
-    #         else:
-    #             nr["seq"], cr["seq"] = cr["seq"], nr["seq"]
-    #         self.model.update(nr)
-    #         self.model.update(cr)
-    #         self.refresh()
-    #         self.set_grid_index(self.current_row + 1)
 
     def create_form(self):
         self.add_control("form_name", _("Name"), datatype="char", datalen=100, pk="*")
@@ -259,27 +231,5 @@ class Q2Forms(Q2Form, SeqMover):
         form_name = self.r.form_name
         self.q2_app.run_form(form_name)
 
-    def form_migrate(self):
-        if not self.r.form_table:
-            q2Mess("No table")
-            return
-
-        form_name = self.r.form_name
-        sql = f"select * from lines where form_name = '{form_name}' and migrate<>'' "
-        cu = q2cursor(sql, self.db)
-
-        schema = Q2DbSchema()
-        for x in cu.records():
-            column = {
-                "table": self.r.form_table,
-                "column": x["name"],
-                "datatype": x["datatype"],
-                "datalen": x["datalen"],
-                "datadec": x["datadec"],
-                "to_table": x["to_table"],
-                "to_column": x["to_column"],
-                "related": x["related"],
-                "pk": x["pk"],
-            }
-            schema.add(**column)
-        q2app.q2_app.db_data.set_schema(schema)
+    def before_form_show(self):
+        self.next_sequense()

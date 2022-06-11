@@ -70,6 +70,7 @@ class Q2Queries(Q2Form):
 class Q2QueryEdit(Q2Form):
     def __init__(self):
         super().__init__("Query Edit")
+        self.no_view_action = True
         self.lock_code_widget = False
 
     def on_init(self):

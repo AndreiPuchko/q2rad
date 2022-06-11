@@ -56,8 +56,8 @@ class Q2RadApp(Q2App):
         self.migrate_db_data()
         self.create_menu()
         # DEBUG
-        # self.run_forms()
-        self.run_queries()
+        self.run_forms()
+        # self.run_queries()
         # self.run_modules()
         # self.run_reports()
         pass
@@ -205,6 +205,7 @@ class Q2RadApp(Q2App):
         cu = q2cursor(sql, self.db_logic)
 
         form = Q2Form(form_dic["title"])
+        form.no_view_action = 1
         form.ok_button = form_dic["ok_button"]
         form.cancel_button = form_dic["cancel_button"]
 
@@ -228,12 +229,6 @@ class Q2RadApp(Q2App):
         # add controls
         for x in cu.records():
             if x.get("to_form"):
-                # def gf(fo):
-                #     def real_do():
-                #         print(12)
-                #         return self.get_form(fo)
-                #     return real_do
-                # x["to_form"] = gf(x["to_form"])
                 x["to_form"] = self.get_form(x["to_form"])
             form.add_control(**x)
 
@@ -253,7 +248,13 @@ class Q2RadApp(Q2App):
                     form.add_action("-")
                 else:
                     form.add_action(
-                        x["action_text"], self.code_runner(x["action_worker"])
+                        x["action_text"],
+                        self.code_runner(x["action_worker"])
+                        if x["action_worker"]
+                        else None,
+                        child_form=lambda: self.get_form(x["child_form"]),
+                        child_where=x["child_where"],
+                        hotkey=x["action_key"],
                     )
         return form
 

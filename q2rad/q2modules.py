@@ -21,6 +21,7 @@ _ = gettext.gettext
 class Q2Modules(Q2Form):
     def __init__(self):
         super().__init__("Modules")
+        self.no_view_action = True
 
     def on_init(self):
         self.editor_actions = Q2Actions()

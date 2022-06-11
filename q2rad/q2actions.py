@@ -21,6 +21,7 @@ class Q2Actions(Q2Form, SeqMover):
     def __init__(self):
         super().__init__("Actions")
         self.db = q2app.q2_app.db_logic
+        self.no_view_action = True
 
     def on_init(self):
         self.create_form()
@@ -51,26 +52,13 @@ class Q2Actions(Q2Form, SeqMover):
             if self.add_control("/f"):
                 self.add_control("seq", _("Sequence number"), datatype="int")
 
-                def action_mode_valid():
-                    for x in self.widgets():
-                        if x.startswith("_"):
-                            continue
-                        elif x.startswith("/"):
-                            continue
-                        elif not hasattr(self.widgets()[x], "set_disabled"):
-                            continue
-                        elif x in ("action_mode", "ordnum", "comment", "seq"):
-                            continue
-                        else:
-                            self.widgets()[x].set_disabled(self.s.action_mode != "2")
-
                 self.add_control(
                     "action_mode",
                     _("Action mode"),
                     pic="CRUD actions;Single Action;Separator",
                     datatype="int",
                     control="radio",
-                    valid=action_mode_valid,
+                    valid=self.action_mode_valid,
                 )
                 self.add_control(
                     "action_mess", _("Action message"), datatype="char", datalen=100
@@ -127,10 +115,22 @@ class Q2Actions(Q2Form, SeqMover):
             "comment", gridlabel=_("Comments"), datatype="bigtext", control="text"
         )
 
-        def before_form_show():
-            action_mode_valid()
-
-        self.before_form_show = before_form_show
-
     def form_runner(self):
         self.prev_form.run_action("Run")
+
+    def action_mode_valid(self):
+        for x in self.widgets():
+            if x.startswith("_"):
+                continue
+            elif x.startswith("/"):
+                continue
+            elif not hasattr(self.widgets()[x], "set_disabled"):
+                continue
+            elif x in ("action_mode", "ordnum", "comment", "seq"):
+                continue
+            else:
+                self.widgets()[x].set_disabled(self.s.action_mode != "2")
+
+    def before_form_show(self):
+        self.action_mode_valid()
+        self.next_sequense()

@@ -8,11 +8,12 @@ if __name__ == "__main__":
 
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
-from q2gui.q2utils import int_
+from q2gui.q2utils import int_, num
 from q2gui import q2app
 from q2gui.q2dialogs import q2Mess
 
 from q2rad import Q2Form
+from q2gui.q2form import NEW, EDIT, COPY
 
 
 class q2cursor(Q2Cursor):
@@ -74,3 +75,7 @@ class SeqMover:
             self.model.update(cr)
             self.refresh()
             self.set_grid_index(self.current_row + 1)
+
+    def next_sequense(self):
+        if self.crud_mode in (NEW, COPY):
+            self.s.seq = self.model.cursor.get_next_sequence("seq", num(self.r.seq))
