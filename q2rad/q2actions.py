@@ -20,13 +20,13 @@ _ = gettext.gettext
 class Q2Actions(Q2Form, SeqMover):
     def __init__(self):
         super().__init__("Actions")
-        self.db = q2app.q2_app.db_logic
         self.no_view_action = True
 
     def on_init(self):
+        self.db = q2app.q2_app.db_logic
         self.create_form()
 
-        cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="actions", order="seq")
+        cursor: Q2Cursor = self.db.table(table_name="actions", order="seq")
         model = Q2CursorModel(cursor)
         self.set_model(model)
 

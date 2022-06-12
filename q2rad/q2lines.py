@@ -54,13 +54,12 @@ HAS_PIC = "radio;" "combo;" "list;"
 class Q2Lines(Q2Form, SeqMover):
     def __init__(self):
         super().__init__("Lines")
-        self.db = q2app.q2_app.db_logic
         self.no_view_action = True
 
     def on_init(self):
         self.create_form()
-
-        cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="lines", order="seq")
+        self.db = q2app.q2_app.db_logic
+        cursor: Q2Cursor = self.db.table(table_name="lines", order="seq")
         model = Q2CursorModel(cursor)
         self.set_model(model)
 

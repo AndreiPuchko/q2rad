@@ -35,7 +35,7 @@ class Q2Forms(Q2Form, SeqMover):
 
     def on_init(self):
         self.create_form()
-        self.db = self.q2_app.db_logic
+        self.db = q2app.q2_app.db_logic
         cursor: Q2Cursor = self.db.table(table_name="forms", order="seq")
         model = Q2CursorModel(cursor)
         model.set_order("seq").refresh()

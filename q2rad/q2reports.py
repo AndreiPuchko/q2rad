@@ -13,6 +13,7 @@ from q2gui.q2app import Q2Actions
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import dotdict, set_dict_default, num, int_
+from q2report.q2report import Q2Report
 
 from q2rad.q2queries import Q2QueryEdit
 import json
@@ -189,7 +190,7 @@ class Q2ReportReport(Q2Form):
 
         self.report_data = dotdict()
 
-        self.set_default_report_data()
+        self.set_default_report_content()
 
         self.sizes_cell_style = """
                 background:lightsteelblue;
@@ -212,10 +213,10 @@ class Q2ReportReport(Q2Form):
 
         if 1:  # Actions
             actions = Q2Actions()
-            actions.add_action("HTML")
-            actions.add_action("DOCX")
-            actions.add_action("XLSX")
-            actions.add_action("PDF")
+            actions.add_action("HTML", self.run_report)
+            # actions.add_action("DOCX", self.run_report("docx"))
+            # actions.add_action("XLSX", self.run_report("xlsx"))
+            # actions.add_action("PDF", self.run_report)
             # actions.add_action("JSON", self.get_content)
             # actions.add_action("-")
             # actions.add_action("Edit JSON")
@@ -384,7 +385,12 @@ class Q2ReportReport(Q2Form):
 
         self.set_content()
 
-    def set_default_report_data(self):
+    def run_report(self, output_file="html"):
+        rep = Q2Report()
+        rep.load(self.report_edit_form.get_content())
+        rep.run("tmp/rep.html")
+
+    def set_default_report_content(self):
         set_dict_default(self.report_data, "pages", [{}])
         set_dict_default(self.report_data, "style", {})
 
@@ -551,7 +557,7 @@ class Q2ReportReport(Q2Form):
     def set_content(self, content_json={}):
         self.report_data.style.update(content_json.get("style", {}))
         self.report_data.pages = content_json.get("pages", [])[:]
-        self.set_default_report_data()
+        self.set_default_report_content()
         if self.report_data is not None:
             self.show_content()
 

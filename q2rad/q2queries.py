@@ -34,6 +34,7 @@ class Q2Queries(Q2Form):
         model.set_order("name").refresh()
         self.set_model(model)
         self.add_action("/crud")
+        self.add_action("JSON", self.edit_json)
 
     def create_form(self):
         self.query_editor_form = Q2QueryEdit()
@@ -65,6 +66,31 @@ class Q2Queries(Q2Form):
 
     def before_crud_save(self):
         self.s.content = self.query_editor_form.get_content()
+
+    def edit_json(self):
+        form = Q2Form("Edit report JSON")
+        json_editor_actions = Q2Actions()
+
+        def save_json():
+            json_file_name = form.q2_app.get_save_file_dialoq(filter="JSON(*.json)")[0]
+            if json_file_name:
+                json_file_name = form.validate_impexp_file_name(json_file_name, "json")
+                open(json_file_name, "w", encoding="utf8").write(form.s.json)
+
+        json_editor_actions.add_action("Save as", save_json, hotkey="")
+        form.add_control("/v")
+        form.add_control(
+            "json",
+            control="code_json",
+            data=self.r.content,
+            actions=json_editor_actions,
+        )
+        form.ok_button = 1
+        form.cancel_button = 1
+        form.run()
+        if form.ok_pressed:
+            self.model.update({"name": self.r.name, "content": form.s.json})
+            self.set_grid_index(self.current_row)
 
 
 class Q2QueryEdit(Q2Form):
@@ -196,25 +222,38 @@ class Q2ParamList(Q2Form):
         self.model.readonly = False
 
     def set_content(self, content):
+        content = [{"name": x, "value": content[x]} for x in content]
         self.model.reset()
+        names = []
         for x in content:
             set_dict_default(x, "name", "name")
+            if x["name"] in names:
+                continue
+            else:
+                names.append(x["name"])
             set_dict_default(x, "value", "")
             set_dict_default(x, "hidden", "")
             self.model.insert(x)
 
     def get_content(self):
-        params = [x for x in self.model.records if x["hidden"] == ""]
+        params = {}
+        for param in self.model.records:
+            param = dict(param)
+            if param["hidden"] != "":
+                continue
+            del param["hidden"]
+            params[param["name"]] = param["value"]
         return params
 
     def get_param(self, param):
         for x in self.model.records:
-            if x["name"] == param:
+            if x["name"] == param[1:]:
                 return x["value"]
         return ""
 
     def put_params(self, sql):
         params = set(re_find_param.findall(sql))
+        params = {x[1:] for x in params}
         names = {}
         for x in range(len(self.model.records)):
             names[self.model.records[x]["name"]] = x
@@ -226,5 +265,6 @@ class Q2ParamList(Q2Form):
         for x in names:
             if x not in params:
                 self.model.records[names[x]]["hidden"] = "*"
+
         self.model.set_order("name")
         self.model.set_where("hidden==''")

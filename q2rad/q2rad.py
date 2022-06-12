@@ -56,10 +56,10 @@ class Q2RadApp(Q2App):
         self.migrate_db_data()
         self.create_menu()
         # DEBUG
-        self.run_forms()
+        # self.run_forms()
         # self.run_queries()
         # self.run_modules()
-        # self.run_reports()
+        self.run_reports()
         pass
 
     def migrate_db_data(self):
