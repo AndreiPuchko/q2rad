@@ -128,7 +128,7 @@ class Q2QueryEdit(Q2Form):
             content_json = content
         self.query_list.set_content(
             content_json.get(
-                "queries", [{"name": "new_query", "sql": "select * from "}]
+                "queries", {"new_query":"select * from "}
             )
         )
         self.param_list.set_content(content_json.get("params", []))
@@ -175,9 +175,7 @@ class Q2QueryList(Q2Form):
     def set_content(self, content):
         self.model.reset()
         for x in content:
-            set_dict_default(x, "name", "name")
-            set_dict_default(x, "sql", "select * from ")
-            self.model.insert(x)
+            self.model.insert({"name": x, "sql": content[x]})
         self.refresh()
 
     def sql_runner(self):
@@ -204,7 +202,8 @@ class Q2QueryList(Q2Form):
             self.s.sql = "select *\nfrom "
 
     def get_content(self):
-        return self.model.records
+        content = {x["name"]: x["sql"] for x in self.model.records}
+        return content
 
 
 class Q2ParamList(Q2Form):

@@ -14,8 +14,9 @@ from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import dotdict, set_dict_default, num, int_
 from q2report.q2report import Q2Report
-
+from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
+from q2rad.q2raddb import q2cursor
 import json
 import gettext
 
@@ -24,12 +25,80 @@ from q2rad import Q2Form
 _ = gettext.gettext
 
 
+class Q2RadReport(Q2Report):
+    def __init__(self, content=""):
+        super().__init__()
+        self.load(content)
+
+    def prepare_output_file(self, output_file):
+        if "." not in output_file:
+            return f"tmp/repo.{output_file}"
+        else:
+            form = Q2Form("Report to")
+            form.heap.mode = ""
+
+            def repo_valid(mode):
+                form.heap.mode = mode
+                form.close()
+
+            form.add_control("/h")
+            form.add_control("/s")
+            form.add_control("/v")
+            form.add_control(
+                "html",
+                "HTML",
+                control="button",
+                datalen=10,
+                valid=lambda: repo_valid("html"),
+                eat_enter=1,
+            )
+            form.add_control(
+                "docx",
+                "DOCX",
+                control="button",
+                datalen=10,
+                valid=lambda: repo_valid("docx"),
+                eat_enter=1,
+            )
+            form.add_control(
+                "docx",
+                "XLSX",
+                control="button",
+                datalen=10,
+                valid=lambda: repo_valid("xlsx"),
+                eat_enter=1,
+            )
+            form.add_control("/")
+            form.add_control("/s")
+            form.add_control("/")
+            form.cancel_button = 1
+            form.do_not_save_geometry = 1
+            form.run()
+            if form.heap.mode:
+                return f"tmp/repo.{form.heap.mode}"
+            else:
+                return None
+
+    def run(self, output_file="tmp/repo.html"):
+        output_file = self.prepare_output_file(output_file)
+        if not output_file:
+            return
+        data = {}
+        for x in self.report_content["queries"]:
+            sql = self.report_content["queries"][x]
+            sql_params = re_find_param.findall(sql)
+            for p in sql_params:
+                value = self.params.get(p[1:], "")
+                sql = sql.replace(p, f"'{value}'")
+                # q2cursor(sql).browse()
+                data[x] = q2cursor(sql).records()
+        super().run(output_file, data=data)
+
+
 class Q2Reports(Q2Form):
     def __init__(self):
         super().__init__("Reports")
         self.no_view_action = True
-        # Q2ReportEdit().run()
-        # exit(0)
 
     def on_init(self):
         self.report_edit_form = None
@@ -54,7 +123,13 @@ class Q2Reports(Q2Form):
         model.set_order("name").refresh()
         self.set_model(model)
         self.add_action("/crud")
+        self.add_action("Run", self.run_report, hotkey="F4")
+        self.add_action("-")
         self.add_action("JSON", self.edit_json)
+
+    def run_report(self):
+        rep = Q2RadReport(self.r.content)
+        rep.run()
 
     def edit_json(self):
         form = Q2Form("Edit report JSON")
@@ -213,13 +288,9 @@ class Q2ReportReport(Q2Form):
 
         if 1:  # Actions
             actions = Q2Actions()
-            actions.add_action("HTML", self.run_report)
-            # actions.add_action("DOCX", self.run_report("docx"))
-            # actions.add_action("XLSX", self.run_report("xlsx"))
-            # actions.add_action("PDF", self.run_report)
-            # actions.add_action("JSON", self.get_content)
-            # actions.add_action("-")
-            # actions.add_action("Edit JSON")
+            actions.add_action("HTML", lambda: self.run_report("html"))
+            actions.add_action("DOCX", lambda: self.run_report("docx"))
+            actions.add_action("XLSX", lambda: self.run_report("xlsx"))
             actions.show_main_button = 0
 
         if self.add_control("/h"):
@@ -386,9 +457,8 @@ class Q2ReportReport(Q2Form):
         self.set_content()
 
     def run_report(self, output_file="html"):
-        rep = Q2Report()
-        rep.load(self.report_edit_form.get_content())
-        rep.run("tmp/rep.html")
+        rep = Q2RadReport(self.report_edit_form.get_content())
+        rep.run(output_file)
 
     def set_default_report_content(self):
         set_dict_default(self.report_data, "pages", [{}])

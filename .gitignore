@@ -1,0 +1,7 @@
+*.pyc
+*.spec
+__pycache__
+tmp/*
+build
+dist
+q2gui.ini

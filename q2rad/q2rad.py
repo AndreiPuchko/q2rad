@@ -13,7 +13,7 @@ from q2db.db import Q2Db
 from q2rad.q2actions import Q2Actions
 from q2db.cursor import Q2Cursor
 
-from q2rad.q2raddb import q2cursor
+from q2rad.q2raddb import q2cursor, AppManager
 
 # from random import randint
 
@@ -22,18 +22,30 @@ from q2rad.q2modules import Q2Modules
 from q2rad.q2forms import Q2Forms
 from q2rad.q2lines import Q2Lines
 from q2rad.q2queries import Q2Queries
-from q2rad.q2reports import Q2Reports
+from q2rad.q2reports import Q2Reports, Q2RadReport
 
 import traceback
 import gettext
 
+q2app = None
 
 _ = gettext.gettext
+
+
+def get_report(report_name):
+    content = q2app.db_logic.get("reports", f"name='{report_name}'", "content")
+    if content:
+        return Q2RadReport(content)
+    else:
+        q2Mess(f"Report not fount: {report_name}")
+        return None
 
 
 class Q2RadApp(Q2App):
     def __init__(self, title=""):
         super().__init__(title)
+        global q2app
+        q2app = self
         self.db = None
         self.db_data = None
         self.db_logic = None
@@ -56,10 +68,10 @@ class Q2RadApp(Q2App):
         self.migrate_db_data()
         self.create_menu()
         # DEBUG
-        # self.run_forms()
+        self.run_forms()
         # self.run_queries()
         # self.run_modules()
-        self.run_reports()
+        # self.run_reports()
         pass
 
     def migrate_db_data(self):
@@ -110,6 +122,7 @@ class Q2RadApp(Q2App):
     def create_menu(self):
         self.clear_menu()
         self.add_menu("File|About", lambda: q2Mess("q2RAD"))
+        self.add_menu("File|Management", self.open_app_manager)
         self.add_menu("File|-")
         self.add_menu("File|Open", self.open_application)
         self.add_menu("File|-")
@@ -123,6 +136,9 @@ class Q2RadApp(Q2App):
         self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
         self.build_menu()
 
+    def open_app_manager(self):
+        AppManager().run()
+    
     def create_form_menu(self):
         cu = q2cursor(
             """select
@@ -176,6 +192,8 @@ class Q2RadApp(Q2App):
         self.get_form(form_name).run()
 
     def get_form(self, form_name):
+        if not form_name:
+            return
         form_dic = self.db_logic.get("forms", f"form_name ='{form_name}'")
 
         sql = f"""
@@ -247,15 +265,25 @@ class Q2RadApp(Q2App):
                 elif x["action_mode"] == "3":
                     form.add_action("-")
                 else:
-                    form.add_action(
-                        x["action_text"],
-                        self.code_runner(x["action_worker"])
-                        if x["action_worker"]
-                        else None,
-                        child_form=lambda: self.get_form(x["child_form"]),
-                        child_where=x["child_where"],
-                        hotkey=x["action_key"],
-                    )
+                    if x["child_form"] and x["child_where"]:
+                        child_form_name = x["child_form"]
+                        form.add_action(
+                            x["action_text"],
+                            self.code_runner(x["action_worker"])
+                            if x["action_worker"]
+                            else None,
+                            child_form=lambda: self.get_form(child_form_name),
+                            child_where=x["child_where"],
+                            hotkey=x["action_key"],
+                        )
+                    else:
+                        form.add_action(
+                            x["action_text"],
+                            self.code_runner(x["action_worker"], form=form)
+                            if x["action_worker"]
+                            else None,
+                            hotkey=x["action_key"],
+                        )
         return form
 
     def code_error(self):
