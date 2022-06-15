@@ -80,6 +80,7 @@ class SeqMover:
         if self.crud_mode in (NEW, COPY):
             self.s.seq = self.model.cursor.get_next_sequence("seq", num(self.r.seq))
 
+
 class AppManager(Q2Form):
     def on_init(self):
         self.add_control("dd", "3333")

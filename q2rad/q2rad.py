@@ -12,7 +12,7 @@ from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
 from q2rad.q2actions import Q2Actions
 from q2db.cursor import Q2Cursor
-
+from q2gui import q2app
 from q2rad.q2raddb import q2cursor, AppManager
 
 # from random import randint
@@ -21,19 +21,20 @@ from q2rad.q2appselector import Q2AppSelect
 from q2rad.q2modules import Q2Modules
 from q2rad.q2forms import Q2Forms
 from q2rad.q2lines import Q2Lines
+from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
 
 import traceback
 import gettext
 
-q2app = None
+const = q2const()
 
 _ = gettext.gettext
 
 
 def get_report(report_name):
-    content = q2app.db_logic.get("reports", f"name='{report_name}'", "content")
+    content = q2app.q2_app.db_logic.get("reports", f"name='{report_name}'", "content")
     if content:
         return Q2RadReport(content)
     else:
@@ -41,15 +42,18 @@ def get_report(report_name):
         return None
 
 
+def run_module(module_name):
+    q2app.q2_app.run_module(module_name)
+
+
 class Q2RadApp(Q2App):
     def __init__(self, title=""):
         super().__init__(title)
-        global q2app
-        q2app = self
         self.db = None
         self.db_data = None
         self.db_logic = None
         self.dev_mode = False
+        self.const = const
 
     def on_start(self):
         self.open_application(autoload_enabled=True)
@@ -66,9 +70,10 @@ class Q2RadApp(Q2App):
         self.open_databases()
         self.migrate_db_logic()
         self.migrate_db_data()
-        self.create_menu()
+        # self.create_menu()
+        self.run_module("autorun")
         # DEBUG
-        self.run_forms()
+        # self.run_forms()
         # self.run_queries()
         # self.run_modules()
         # self.run_reports()
@@ -97,6 +102,10 @@ class Q2RadApp(Q2App):
         )
         for column in cu.records():
             data_schema.add(**column)
+        for form in (Q2Constants(),):
+            for x in form.get_table_schema():
+                data_schema.add(**x)
+
         self.db_data.set_schema(data_schema)
         self.create_menu()
 
@@ -122,7 +131,8 @@ class Q2RadApp(Q2App):
     def create_menu(self):
         self.clear_menu()
         self.add_menu("File|About", lambda: q2Mess("q2RAD"))
-        self.add_menu("File|Management", self.open_app_manager)
+        self.add_menu("File|Management", self.run_app_manager)
+        self.add_menu("File|Constants", self.run_constants)
         self.add_menu("File|-")
         self.add_menu("File|Open", self.open_application)
         self.add_menu("File|-")
@@ -136,9 +146,12 @@ class Q2RadApp(Q2App):
         self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
         self.build_menu()
 
-    def open_app_manager(self):
+    def run_constants(self):
+        Q2Constants().run()
+
+    def run_app_manager(self):
         AppManager().run()
-    
+
     def create_form_menu(self):
         cu = q2cursor(
             """select

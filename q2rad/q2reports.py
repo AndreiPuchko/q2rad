@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
     main()
 
-from q2gui.q2dialogs import q2Mess, q2AskYN
+from q2gui.q2dialogs import q2AskYN
 from q2gui.q2widget import Q2Widget
 
 from q2gui.q2app import Q2Actions
@@ -17,7 +17,9 @@ from q2report.q2report import Q2Report
 from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
 from q2rad.q2raddb import q2cursor
+from q2gui import q2app
 import json
+import os
 import gettext
 
 from q2rad import Q2Form
@@ -29,10 +31,12 @@ class Q2RadReport(Q2Report):
     def __init__(self, content=""):
         super().__init__()
         self.load(content)
+        self.data['const'] = q2app.q2_app.const
 
     def prepare_output_file(self, output_file):
+        rez_name = ""
         if "." not in output_file:
-            return f"tmp/repo.{output_file}"
+            rez_name = f"tmp/repo.{output_file}"
         else:
             form = Q2Form("Report to")
             form.heap.mode = ""
@@ -75,13 +79,28 @@ class Q2RadReport(Q2Report):
             form.do_not_save_geometry = 1
             form.run()
             if form.heap.mode:
-                return f"tmp/repo.{form.heap.mode}"
+                rez_name = f"tmp/repo.{form.heap.mode}"
             else:
-                return None
+                rez_name = ""
+        if rez_name:
+            if not os.path.isdir(os.path.dirname(rez_name)):
+                os.mkdir(os.path.dirname(rez_name))
+            co = 0
+            name, ext = os.path.splitext(rez_name)
+            while True:
+                lockfile = f"{os.path.dirname(rez_name)}/.~lock.{os.path.basename(rez_name)}#"
+                if os.path.isfile(lockfile):
+                    co += 1
+                    rez_name = f"{name}{co:03d}{ext}"
+                else:
+                    break
+        return rez_name
+
 
     def run(self, output_file="tmp/repo.html"):
         output_file = self.prepare_output_file(output_file)
         if not output_file:
+            print("!!")
             return
         data = {}
         for x in self.report_content["queries"]:
