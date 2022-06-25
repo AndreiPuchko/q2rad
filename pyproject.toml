@@ -1,17 +1,19 @@
 [tool.poetry]
 name = "q2rad"
-version = "0.1.1"
+version = "0.1.3"
 description = "RAD - database, GUI, reports"
 authors = ["Andrei Puchko <andrei.puchko@gmx.de>"]
 readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 q2gui = "latest"
 q2db = "latest"
 q2report = "latest"
 
+[tool.poetry.scripts]
+q2rad = "q2rad.q2rad:main"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

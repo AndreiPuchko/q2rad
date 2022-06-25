@@ -1,12 +1,19 @@
 # The RAD (rapid application development) system.  
-***(code less make more)***
-
-Based on:
+**(code less, make more)**  
+**Based on:**  
     q2db        (https://pypi.org/project/q2db)  
     q2gui       (https://pypi.org/project/q2gui)  
     q2report    (https://pypi.org/project/q2report)  
+## Install & run
+**Linux**
+```bash
+python3 -m venv q2rad && source q2rad/bin/activate && pip install --upgrade q2rad  && q2rad
+```
+**Windows**
+```bash
+python3 -m venv q2rad && q2rad/scripts/activate && pip install --upgrade q2rad  && q2rad
+```
 ## Concept:
-
 ```python
 Forms:        #  may have main menu (menubar) definitions
               #  may be linked to database table
