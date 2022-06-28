@@ -239,12 +239,16 @@ class Q2AppSelect(Q2Form):
         self._select_application(row)
         self.q2_app.migrate_db_logic()
 
-        # file = "demo_app/demo_app.json"
-        # data = json.load(open(file))
         demo_app_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/demo_app/demo_app.json"
         data = json.load(urllib.request.urlopen(demo_app_url))
-
         AppManager.import_json_app(data)
+
+        self.q2_app.migrate_db_data()
+
+        demo_data_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/demo_app/demo_data.json"
+        data = json.load(urllib.request.urlopen(demo_data_url))
+        AppManager.import_json_data(data)
+
         self.close()
 
     def _select_application(self, app_data={}):
