@@ -100,7 +100,6 @@ class Q2RadReport(Q2Report):
     def run(self, output_file="tmp/repo.html"):
         output_file = self.prepare_output_file(output_file)
         if not output_file:
-            print("!!")
             return
         data = {}
         for x in self.report_content["queries"]:
