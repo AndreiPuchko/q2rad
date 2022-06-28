@@ -5,5 +5,4 @@ tmp/*
 build
 dist
 q2gui.ini
-test_app/*.sqlite
-
+*.sqlite
