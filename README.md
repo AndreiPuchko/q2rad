@@ -11,7 +11,7 @@ python3 -m venv q2rad && source q2rad/bin/activate && pip install --upgrade q2ra
 ```
 **Windows**
 ```bash
-python3 -m venv q2rad && q2rad/scripts/activate && pip install --upgrade q2rad  && q2rad
+py -m venv q2rad && call q2rad/scripts/activate && pip install --upgrade q2rad  && q2rad
 ```
 ## Concept:
 ```python
