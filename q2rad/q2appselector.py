@@ -17,6 +17,7 @@ from q2db.cursor import Q2Cursor
 
 import gettext
 import json
+import urllib.request
 
 from q2rad import Q2App, Q2Form
 from q2raddb import q2cursor, AppManager
@@ -238,8 +239,11 @@ class Q2AppSelect(Q2Form):
         self._select_application(row)
         self.q2_app.migrate_db_logic()
 
-        file = "test_app/test_app.json"
-        data = json.load(open(file))
+        # file = "demo_app/demo_app.json"
+        # data = json.load(open(file))
+        demo_app_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/demo_app/demo_app.json"
+        data = json.load(urllib.request.urlopen(demo_app_url))
+
         AppManager.import_json_app(data)
         self.close()
 

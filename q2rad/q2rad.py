@@ -75,7 +75,7 @@ class Q2RadApp(Q2App):
         # self.run_queries()
         # self.run_modules()
         # self.run_reports()
-        # self.run_app_manager()
+        self.run_app_manager()
         pass
 
     def migrate_db_data(self):
