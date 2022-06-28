@@ -6,3 +6,5 @@ build
 dist
 q2gui.ini
 *.sqlite
+q2apps.sqlite
+*.sh
