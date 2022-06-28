@@ -71,16 +71,16 @@ class Q2Lines(Q2Form, SeqMover):
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
         self.add_control(
-            "form_name",
+            "name",
             _("Form"),
             disabled="*",
             to_table="forms",
-            to_column="form_name",
+            to_column="name",
             related="title",
             nogrid=1,
             noform=1,
         )
-        self.add_control("name", _("Column name"))
+        self.add_control("column", _("Column name"))
         self.add_control("/")
         if self.add_control("/t", _("Main")):
             self.add_control("/f")
@@ -214,12 +214,12 @@ class Q2Lines(Q2Form, SeqMover):
     def database_valid(self):
         self.w.pk.set_enabled(self.s.migrate)
         self.w.ai.set_enabled(self.s.migrate)
-        form_name = self.prev_form.r.form_name
+        name = self.prev_form.r.name
         id = self.r.id
         id_where = ""
         if self.crud_mode in ("EDIT", "VIEW"):
             id_where = f" and id <> {id}"
-        sql = f"select * from lines where pk='*' and form_name = '{form_name}' {id_where}"
+        sql = f"select * from lines where pk='*' and name = '{name}' {id_where}"
         if not self.s.migrate or self.db.cursor(sql).row_count() > 0:
             self.w.pk.set_disabled()
             self.w.ai.set_disabled()

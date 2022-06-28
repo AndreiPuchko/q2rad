@@ -53,30 +53,29 @@ class Q2RadApp(Q2App):
         self.db_data = None
         self.db_logic = None
         self.dev_mode = False
+        self.selected_application = {}
         self.const = const
 
     def on_start(self):
         self.open_application(autoload_enabled=True)
 
     def open_application(self, autoload_enabled=False):
-        app_selector = Q2AppSelect().run(autoload_enabled)
-        self.selected_application = app_selector.selected_application
+        Q2AppSelect().run(autoload_enabled)
         if self.selected_application != {}:
             self.open_selected_app()
         else:
             self.close()
 
     def open_selected_app(self):
-        self.open_databases()
         self.migrate_db_logic()
         self.migrate_db_data()
-        # self.create_menu()
         self.run_module("autorun")
         # DEBUG
         # self.run_forms()
         # self.run_queries()
         # self.run_modules()
         # self.run_reports()
+        # self.run_app_manager()
         pass
 
     def migrate_db_data(self):
@@ -85,7 +84,7 @@ class Q2RadApp(Q2App):
             """
                 select
                     forms.form_table as `table`
-                    , lines.name as column
+                    , lines.column
                     , lines.datatype
                     , lines.datalen
                     , lines.datadec
@@ -95,7 +94,7 @@ class Q2RadApp(Q2App):
                     , lines.ai
                     , lines.pk
                 from lines, forms
-                where forms.form_name = lines.form_name
+                where forms.name = lines.name
                     and form_table <>'' and migrate <>''
                 """,
             self.db_logic,
@@ -125,13 +124,12 @@ class Q2RadApp(Q2App):
 
     def open_databases(self):
         self.db_data = Q2Db(database_name=self.selected_application["database_data"])
-        # self.db_logic.cursor("drop table lines")
         self.db_logic = Q2Db(database_name=self.selected_application["database_logic"])
 
     def create_menu(self):
         self.clear_menu()
         self.add_menu("File|About", lambda: q2Mess("q2RAD"))
-        self.add_menu("File|Management", self.run_app_manager)
+        self.add_menu("File|Manage", self.run_app_manager)
         self.add_menu("File|Constants", self.run_constants)
         self.add_menu("File|-")
         self.add_menu("File|Open", self.open_application)
@@ -140,10 +138,11 @@ class Q2RadApp(Q2App):
 
         self.create_form_menu()
 
-        self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
-        self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode)
-        self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
-        self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
+        if self.dev_mode:
+            self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
+            self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode)
+            self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
+            self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
         self.build_menu()
 
     def run_constants(self):
@@ -162,7 +161,7 @@ class Q2RadApp(Q2App):
                 , menu_before
                 , menu_tiptext
                 , menu_separator
-                , form_name
+                , name
             from forms
             where menu_path <> ''
             order by seq
@@ -176,15 +175,15 @@ class Q2RadApp(Q2App):
                 + (x["menu_text"] if x["menu_text"] else x["title"])
             )
 
-            def menu_worker(form_name):
+            def menu_worker(name):
                 def real_worker():
-                    self.run_form(form_name)
+                    self.run_form(name)
 
                 return real_worker
 
             self.add_menu(
                 menu_path,
-                worker=menu_worker(x["form_name"]),
+                worker=menu_worker(x["name"]),
                 toolbar=x["toolbar"],
                 before=x["menu_before"],
             )
@@ -201,17 +200,17 @@ class Q2RadApp(Q2App):
     def run_reports(self):
         Q2Reports().run()
 
-    def run_form(self, form_name):
-        self.get_form(form_name).run()
+    def run_form(self, name):
+        self.get_form(name).run()
 
-    def get_form(self, form_name):
-        if not form_name:
+    def get_form(self, name):
+        if not name:
             return
-        form_dic = self.db_logic.get("forms", f"form_name ='{form_name}'")
+        form_dic = self.db_logic.get("forms", f"name ='{name}'")
 
         sql = f"""
             select
-                name
+                column
                 ,label
                 ,gridlabel
                 ,nogrid
@@ -230,7 +229,7 @@ class Q2RadApp(Q2App):
                 ,related
                 ,to_form
             from lines
-            where form_name = '{form_name}'
+            where name = '{name}'
             order by seq
             """
         cu = q2cursor(sql, self.db_logic)
@@ -270,7 +269,7 @@ class Q2RadApp(Q2App):
             )
             form_model = Q2CursorModel(form_cursor)
             form.set_model(form_model)
-            sql = f"select * from actions where form_name = '{form_name}' order by seq"
+            sql = f"select * from actions where name = '{name}' order by seq"
             cu = q2cursor(sql, self.db_logic)
             for x in cu.records():
                 if x["action_mode"] == "1":
@@ -359,9 +358,9 @@ class Q2RadApp(Q2App):
         return real_runner
 
     def run_module(self, name=""):
-        return self.code_runner(
-            self.db_logic.get("modules", f"name = '{name}'", "script")
-        )()
+        script = self.db_logic.get("modules", f"name = '{name}'", "script")
+        if script:
+            return self.code_runner(script)()
 
 
 def main():

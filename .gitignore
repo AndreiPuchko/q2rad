@@ -5,6 +5,5 @@ tmp/*
 build
 dist
 q2gui.ini
-test_app/*
-test_app/app1_db.sqlite
-test_app/data1_db.sqlite
+test_app/*.sqlite
+

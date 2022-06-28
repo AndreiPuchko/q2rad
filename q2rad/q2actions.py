@@ -37,11 +37,11 @@ class Q2Actions(Q2Form, SeqMover):
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
         self.add_control(
-            "form_name",
+            "name",
             _("Form"),
             disabled="*",
             to_table="forms",
-            to_column="form_name",
+            to_column="name",
             related="title",
             nogrid=1,
             noform=1,

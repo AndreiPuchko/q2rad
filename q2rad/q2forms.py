@@ -46,13 +46,13 @@ class Q2Forms(Q2Form, SeqMover):
         self.add_action(
             "Lines",
             child_form=Q2Lines,
-            child_where="form_name='{form_name}'",
+            child_where="name='{name}'",
             hotkey="F2",
         )
         self.add_action(
             "Actions",
             child_form=Q2Actions,
-            child_where="form_name='{form_name}'",
+            child_where="name='{name}'",
             hotkey="F3",
         )
 
@@ -62,7 +62,7 @@ class Q2Forms(Q2Form, SeqMover):
         self.add_action("Run", self.form_runner, hotkey="F4")
 
     def create_form(self):
-        self.add_control("form_name", _("Name"), datatype="char", datalen=100, pk="*")
+        self.add_control("name", _("Name"), datatype="char", datalen=100, pk="*")
         self.add_control("/")
 
         if self.add_control("/t", _("Main")):
@@ -228,8 +228,8 @@ class Q2Forms(Q2Form, SeqMover):
             )
 
     def form_runner(self):
-        form_name = self.r.form_name
-        self.q2_app.run_form(form_name)
+        name = self.r.name
+        self.q2_app.run_form(name)
 
     def before_form_show(self):
         self.next_sequense()

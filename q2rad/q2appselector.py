@@ -16,8 +16,10 @@ from q2db.db import Q2Db
 from q2db.cursor import Q2Cursor
 
 import gettext
+import json
 
 from q2rad import Q2App, Q2Form
+from q2raddb import q2cursor, AppManager
 
 
 SQL_ENGINES = ["MySQl", "Sqlite", "Postgresql"]
@@ -66,7 +68,7 @@ class Q2AppSelect(Q2Form):
         self.add_control("name", _("Name"), datatype="char", datalen=100)
 
         self.add_control("/")
-        if self.add_control("/f", _("Data database")):
+        if self.add_control("/f", _("Data storage")):
 
             def driverDataValid(self=self):
                 self.w.host_data.set_enabled(self.s.driver_data != "Sqlite")
@@ -87,7 +89,7 @@ class Q2AppSelect(Q2Form):
 
                 def openSqliteData():
                     fname = self.q2_app.get_save_file_dialoq(
-                        _("data database"), "", _("SQLite (*.sqlite)")
+                        _("data storage"), "", _("SQLite (*.sqlite)")
                     )[0]
                     if fname:
                         self.s.database_data = fname
@@ -95,7 +97,7 @@ class Q2AppSelect(Q2Form):
                 self.add_control(
                     "database_data",
                     "Database",
-                    gridlabel=_("Data database"),
+                    gridlabel=_("Data storage"),
                     datatype="char",
                     datalen=100,
                 )
@@ -127,7 +129,7 @@ class Q2AppSelect(Q2Form):
 
             self.add_control("/")
 
-        if self.add_control("/f", _("Logic database")):
+        if self.add_control("/f", _("Logic storage")):
 
             def driverLogicValid(form=self):
                 form.w.host_logic.set_enabled(form.s.driver_logic != "Sqlite")
@@ -148,7 +150,7 @@ class Q2AppSelect(Q2Form):
 
                 def openSqliteData():
                     fname = self.q2_app.get_save_file_dialoq(
-                        _("data database"), ".", _("SQLite (*.sqlite)")
+                        _("data storage"), ".", _("SQLite (*.sqlite)")
                     )[0]
                     if fname:
                         self.s.database_logic = fname
@@ -156,7 +158,7 @@ class Q2AppSelect(Q2Form):
                 self.add_control(
                     "database_logic",
                     "Database",
-                    gridlabel="Logic database",
+                    gridlabel="Logic storage",
                     datatype="char",
                     datalen=100,
                 )
@@ -186,30 +188,11 @@ class Q2AppSelect(Q2Form):
             eof_disabled=1,
         )
 
-        def before_form_show():
-            self.w.driver_data.valid()
-            self.w.driver_logic.valid()
-            if self.crud_mode in [NEW, COPY]:
-                self.s.ordnum = self.db.cursor(
-                    "select max(ordnum)+1 as mo from applications"
-                ).r.mo
-                self.w.name.set_focus()
+        self.add_action(_("Demo"), self.run_demo)
 
-        self.before_form_show = before_form_show
+        self.before_form_show = self.before_form_show
+        self.before_crud_save = self.before_crud_save
 
-        def before_crud_save():
-            if self.s.driver_logic == "2":
-                self.s.host_logic = ""
-                self.s.port_logic = ""
-            if self.s.driver_data == "2":
-                self.s.host_data = ""
-                self.s.port_data = ""
-            if self.s.autoselect:
-                self.db.cursor("update applications set autoselect='' ")
-
-            return True
-
-        self.before_crud_save = before_crud_save
         cursor: Q2Cursor = self.db.table(table_name="applications")
         model = Q2CursorModel(cursor)
         model.set_order("ordnum").refresh()
@@ -221,24 +204,56 @@ class Q2AppSelect(Q2Form):
         self.q2_app.sleep(0.2)
         if self.q2_app.keyboard_modifiers() != "":
             return
-        for x in range(self.model.row_count()):
-            self.set_grid_index(x)
-            if self.r.autoselect:
-                if self.autoload_enabled:
-                    self._select_application()
-                    return False
-                break
+        if self.autoload_enabled:
+            cu = q2cursor("select * from applications where autoselect<>''", self.db)
+            if cu.row_count() > 0:
+                self._select_application(cu.record(0))
+                return False
 
-    def _select_application(self):
+    def before_crud_save(self):
+        if self.s.driver_logic == "2":
+            self.s.host_logic = ""
+            self.s.port_logic = ""
+        if self.s.driver_data == "2":
+            self.s.host_data = ""
+            self.s.port_data = ""
+        if self.s.autoselect:
+            self.db.cursor("update applications set autoselect='' ")
+        return True
+
+    def before_form_show(self):
+        self.w.driver_data.valid()
+        self.w.driver_logic.valid()
+        if self.crud_mode in [NEW, COPY]:
+            self.s.ordnum = self.model.cursor.get_next_sequence("ordnum", self.r.ordnum)
+            self.w.name.set_focus()
+
+    def run_demo(self):
+        row = {
+            "driver_data": "Sqlite",
+            "database_data": ":memory:",
+            "driver_logic": "Sqlite",
+            "database_logic": ":memory:",
+        }
+        self._select_application(row)
+        self.q2_app.migrate_db_logic()
+
+        file = "test_app/test_app.json"
+        data = json.load(open(file))
+        AppManager.import_json_app(data)
+        self.close()
+
+    def _select_application(self, app_data={}):
         q2_app: Q2App = q2app.q2_app
         q2_app.show_menubar()
         q2_app.show_toolbar()
         q2_app.show_statusbar()
         q2_app.show_tabbar()
-        self.selected_application = self.model.get_record(self.current_row)
+        q2_app.selected_application = app_data
+        q2_app.open_databases()
 
     def select_application(self):
-        self._select_application()
+        self._select_application(self.model.get_record(self.current_row))
         self.close()
 
     def run(self, autoload_enabled=True):
