@@ -14,7 +14,7 @@ from q2gui import q2app
 from q2gui.q2dialogs import q2Mess, q2AskYN
 
 from q2rad import Q2Form
-from q2gui.q2form import NEW, EDIT, COPY
+from q2gui.q2form import NEW, COPY
 
 import json
 import os
@@ -90,53 +90,126 @@ class AppManager(Q2Form):
         super().__init__("Manage q2Application")
 
     def on_init(self):
+        app_data = q2app.q2_app.selected_application
         self.add_control("/")
-        if self.add_control("/h", "Application"):
-            if self.add_control("/h", "Export"):
+        if self.add_control("/v", "Application"):
+            if self.add_control("/f", ""):
                 self.add_control(
-                    "save_app",
-                    "As JSON file",
-                    control="button",
-                    datalen=10,
-                    valid=self.export_app,
+                    "drl",
+                    "Database type",
+                    data=app_data["driver_logic"],
+                    disabled=1,
+                    datalen=len(app_data["driver_logic"].strip()),
                 )
+                self.add_control(
+                    "dtl",
+                    "Database name ",
+                    data=app_data["database_logic"],
+                    disabled=1,
+                    datalen=len(app_data["database_logic"].strip()),
+                )
+                if app_data.get("host_logic"):
+                    self.add_control(
+                        "hl",
+                        "Host",
+                        data=app_data["host_logic"],
+                        disabled=1,
+                        datalen=len(app_data["host_logic"].strip()),
+                    )
+                if num(app_data.get("port_logic")):
+                    self.add_control(
+                        "pl",
+                        "Port",
+                        data=app_data["port_logic"],
+                        disabled=1,
+                        datalen=len(app_data["port_logic"])+5,
+                    )
                 self.add_control("/")
-            if self.add_control("/h", "Import"):
-                self.add_control(
-                    "load_app",
-                    "From JSON file",
-                    control="button",
-                    datalen=10,
-                    valid=self.import_app,
-                )
+
+            if self.add_control("/h", ""):
+                if self.add_control("/h", "Export"):
+                    self.add_control(
+                        "save_app",
+                        "As JSON file",
+                        control="button",
+                        datalen=10,
+                        valid=self.export_app,
+                    )
+                    self.add_control("/")
+                if self.add_control("/h", "Import"):
+                    self.add_control(
+                        "load_app",
+                        "From JSON file",
+                        control="button",
+                        datalen=10,
+                        valid=self.import_app,
+                    )
+                    self.add_control("/")
                 self.add_control("/")
             self.add_control("/")
-        if self.add_control("/h", "Data"):
-            if self.add_control("/h", "Export"):
+
+        if self.add_control("/v", "Data"):
+            if self.add_control("/f", ""):
                 self.add_control(
-                    "save_data",
-                    "As JSON file",
-                    control="button",
-                    datalen=10,
-                    valid=self.export_data,
+                    "drd",
+                    "Database type",
+                    data=app_data["driver_data"],
+                    disabled=1,
+                    datalen=len(app_data["driver_data"].strip()),
                 )
+                self.add_control(
+                    "dtd",
+                    "Database name ",
+                    data=app_data["database_data"],
+                    disabled=1,
+                    datalen=len(app_data["database_data"].strip()),
+                )
+                if app_data.get("host_data"):
+                    self.add_control(
+                        "hd",
+                        "Host",
+                        data=app_data["host_data"],
+                        disabled=1,
+                        datalen=len(app_data["host_data"].strip()),
+                    )
+                if num(app_data.get("port_data")):
+                    self.add_control(
+                        "pd",
+                        "Port",
+                        data=app_data["port_data"],
+                        disabled=1,
+                        datalen=len(app_data["port_data"])+5,
+                    )
                 self.add_control("/")
-            if self.add_control("/h", "Import"):
-                self.add_control(
-                    "load_app",
-                    "From JSON file",
-                    control="button",
-                    datalen=10,
-                    valid=self.import_data,
-                )
+
+            if self.add_control("/h", ""):
+                if self.add_control("/h", "Export"):
+                    self.add_control(
+                        "save_data",
+                        "As JSON file",
+                        control="button",
+                        datalen=10,
+                        valid=self.export_data,
+                    )
+                    self.add_control("/")
+                if self.add_control("/h", "Import"):
+                    self.add_control(
+                        "load_app",
+                        "From JSON file",
+                        control="button",
+                        datalen=10,
+                        valid=self.import_data,
+                    )
+                    self.add_control("/")
                 self.add_control("/")
             self.add_control("/")
+
         if self.q2_app.dev_mode:
             if self.add_control("/h", "Demo Application"):
                 self.add_control(
                     "save_demo_app",
                     "Export Application",
-                    mess= "Write to demo_app/demo_app.json",
+                    mess="Write to demo_app/demo_app.json",
                     control="button",
                     datalen=10,
                     valid=self.export_demo_app,
@@ -144,7 +217,7 @@ class AppManager(Q2Form):
                 self.add_control(
                     "save_demo_data",
                     "Export Data",
-                    mess= "Write to demo_app/demo_data.json",
+                    mess="Write to demo_app/demo_data.json",
                     control="button",
                     datalen=10,
                     valid=self.export_demo_data,
@@ -162,7 +235,9 @@ class AppManager(Q2Form):
     def export_app(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_save_file_dialoq("Export Application", filter=filetype)
+            file, filetype = q2app.q2_app.get_save_file_dialoq(
+                "Export Application", filter=filetype
+            )
 
         if not file:
             return
@@ -191,7 +266,9 @@ class AppManager(Q2Form):
     def export_data(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_save_file_dialoq("Export Database", filter=filetype)
+            file, filetype = q2app.q2_app.get_save_file_dialoq(
+                "Export Database", filter=filetype
+            )
 
         if not file:
             return
@@ -213,7 +290,9 @@ class AppManager(Q2Form):
     def import_app(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_open_file_dialoq("Import Application", filter=filetype)
+            file, filetype = q2app.q2_app.get_open_file_dialoq(
+                "Import Application", filter=filetype
+            )
 
         if not file or not os.path.isfile(file):
             return
@@ -234,7 +313,9 @@ class AppManager(Q2Form):
     def import_data(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_open_file_dialoq("Import Data", filter=filetype)
+            file, filetype = q2app.q2_app.get_open_file_dialoq(
+                "Import Data", filter=filetype
+            )
 
         if not file or not os.path.isfile(file):
             return
