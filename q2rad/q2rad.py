@@ -1,19 +1,25 @@
+import sys
+
 if __name__ == "__main__":
-    import sys
 
     sys.path.insert(0, ".")
 
 
-from q2rad import Q2App, Q2Form
+import q2gui
+import q2db
+import q2report
+import q2rad
 
-from q2gui.q2dialogs import q2Mess
+from q2rad import Q2App, Q2Form
+from q2gui.q2dialogs import q2Mess, q2AskYN
 from q2gui.q2model import Q2CursorModel
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
 from q2rad.q2actions import Q2Actions
 from q2db.cursor import Q2Cursor
 from q2gui import q2app
-from q2rad.q2raddb import q2cursor, AppManager
+from q2rad.q2raddb import q2cursor
+from q2rad.q2appmanager import AppManager
 
 # from random import randint
 
@@ -27,9 +33,16 @@ from q2rad.q2reports import Q2Reports, Q2RadReport
 
 import traceback
 import gettext
+import urllib.request
+import os
+import pkg_resources
+import json
+import pip
+import importlib
 
+
+q2_modules = ("q2rad", "q2gui", "q2db", "q2report")
 const = q2const()
-
 _ = gettext.gettext
 
 
@@ -50,6 +63,7 @@ class Q2RadApp(Q2App):
     def __init__(self, title=""):
         super().__init__(title)
         self.db = None
+
         self.db_data = None
         self.db_logic = None
         self.dev_mode = False
@@ -57,6 +71,8 @@ class Q2RadApp(Q2App):
         self.const = const
 
     def on_start(self):
+        if not os.path.isfile("poetry.lock"):
+            self.check_upgrade()
         self.open_application(autoload_enabled=True)
 
     def open_application(self, autoload_enabled=False):
@@ -128,7 +144,7 @@ class Q2RadApp(Q2App):
 
     def create_menu(self):
         self.clear_menu()
-        self.add_menu("File|About", lambda: q2Mess("q2RAD"))
+        self.add_menu("File|About", self.about)
         self.add_menu("File|Manage", self.run_app_manager)
         self.add_menu("File|Constants", self.run_constants)
         self.add_menu("File|-")
@@ -144,6 +160,54 @@ class Q2RadApp(Q2App):
             self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
             self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
         self.build_menu()
+
+    def about(self):
+        about = [
+            "<b>q2RAD</b>",
+            "<br>Versions:",
+            f"<b>Python</b>: {sys.version}",
+            "",
+        ]
+        for package in q2_modules:
+            latest_version, current_version = self.get_package_versions(package)
+            about.append(
+                f"<b>{package}</b>: {current_version}"
+                f"{'(' + latest_version + ' avaiable)' if current_version!=latest_version else ''}"
+            )
+        q2Mess("<br>".join(about))
+
+    def get_package_versions(self, package):
+        latest_version = json.load(
+            urllib.request.urlopen(f"https://pypi.python.org/pypi/{package}/json")
+        )["info"]["version"]
+        current_version = pkg_resources.get_distribution(package).version
+        return latest_version, current_version
+
+    def upgrade_packages(self):
+        for package in q2_modules:
+            latest_version, current_version = self.get_package_versions(package)
+            if latest_version != current_version:
+                pip.main(['install', '--upgrade', package])
+                if package == "q2gui":
+                    importlib.reload(q2gui)
+                elif package == "q2b":
+                    importlib.reload(q2db)
+                if package == "q2report":
+                    importlib.reload(q2report)
+                if package == "q2rad":
+                    importlib.reload(q2rad)
+        self.about()
+
+    def check_upgrade(self):
+        can_upgrade = False
+        for package in q2_modules:
+            latest_version, current_version = self.get_package_versions(package)
+            can_upgrade = latest_version != current_version
+            if can_upgrade:
+                break
+        if can_upgrade:
+            if q2AskYN("Upgade is avaiable! Do you want to proceed with upgrade?") == 2:
+                self.upgrade_packages()
 
     def run_constants(self):
         Q2Constants().run()
@@ -364,6 +428,12 @@ class Q2RadApp(Q2App):
 
 
 def main():
+    qss_file = "q2gui.qss"
+    if not os.path.isfile(qss_file):
+        qss_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/q2gui.qss"
+        open(qss_file, "w").write(
+            urllib.request.urlopen(qss_url).read().decode("utf-8")
+        )
     app = Q2RadApp("q2RAD")
     app.dev_mode = 1
     app.run()

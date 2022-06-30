@@ -30,7 +30,11 @@ QComboBox QAbstractItemView,
 /* QPushButton:focus, */
 QListWidget:focus  {background-color:rgb(255, 255, 154); }
 
-/* *:disabled {color: black; background-color: lightgrey;} */
+
+QPushButton#ok {background-color: red;}
+
+
+*:disabled {color: black; background-color: lightgrey;}
 /* *:disabled {color: gray;} */
 
 QToolButton:focus, QPushButton:focus {background-color: yellow;}

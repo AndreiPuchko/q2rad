@@ -20,7 +20,8 @@ import json
 import urllib.request
 
 from q2rad import Q2App, Q2Form
-from q2raddb import q2cursor, AppManager
+from q2rad.q2raddb import q2cursor
+from q2rad.q2appmanager import AppManager
 
 
 SQL_ENGINES = ["MySQl", "Sqlite", "Postgresql"]
