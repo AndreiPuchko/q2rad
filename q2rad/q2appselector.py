@@ -22,6 +22,7 @@ import urllib.request
 from q2rad import Q2App, Q2Form
 from q2rad.q2raddb import q2cursor
 from q2rad.q2appmanager import AppManager
+from q2raddb import read_url, open_url
 
 
 SQL_ENGINES = ["MySQl", "Sqlite", "Postgresql"]
@@ -241,13 +242,13 @@ class Q2AppSelect(Q2Form):
         self.q2_app.migrate_db_logic()
 
         demo_app_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/demo_app/demo_app.json"
-        data = json.load(urllib.request.urlopen(demo_app_url))
+        data = json.load(open_url(demo_app_url))
         AppManager.import_json_app(data)
 
         self.q2_app.migrate_db_data()
 
         demo_data_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/demo_app/demo_data.json"
-        data = json.load(urllib.request.urlopen(demo_data_url))
+        data = json.load(open_url(demo_data_url))
         AppManager.import_json_data(data)
 
         self.close()

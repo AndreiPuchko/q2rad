@@ -15,6 +15,16 @@ from q2gui.q2dialogs import q2Mess
 from q2rad import Q2Form
 from q2gui.q2form import NEW, COPY
 
+import urllib.request
+
+
+def open_url(url):
+    return urllib.request.urlopen(url)
+
+
+def read_url(url):
+    return open_url(url).read()
+
 
 class q2cursor(Q2Cursor):
     def __init__(self, sql="", q2_db=None):

@@ -1,4 +1,4 @@
-__version__ = "0.1.0"
+from q2rad.version import __version__
 from q2gui.q2app import Q2App
 from q2gui.q2form import Q2Form
 
