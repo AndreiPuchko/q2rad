@@ -73,25 +73,31 @@ class Q2RadApp(Q2App):
             )
             open(qss_file, "w").write(read_url(qss_url).decode("utf-8"))
 
-        self.load_assets()
+        if os.path.isfile(qss_file):
+            self.style_file = qss_file
+            self.set_style_sheet()
+
         self.set_icon("assets/q2rad.ico")
 
         self.const = const
 
     def make_desktop_shortcut(self):
-        basepath = os.path.abspath(".")
-        desktop_entry = [
-            "[Desktop Entry]\n"
-            "Name=q2RAD\n"
-            f"Exec={basepath}/q2rad/bin/q2rad\n"
-            f"Path={basepath}\n"
-            f"Icon={basepath}/assets/q2rad.ico\n"
-            "Terminal=false\n"
-            "Type=Application\n"
-        ]
+        if "win" in sys.platform:
+            subprocess.check_call(["cscript", "make_shortcut.vbs"], shell=True)
+        else:
+            basepath = os.path.abspath(".")
+            desktop_entry = [
+                "[Desktop Entry]\n"
+                "Name=q2RAD\n"
+                f"Exec={basepath}/q2rad/bin/q2rad\n"
+                f"Path={basepath}\n"
+                f"Icon={basepath}/assets/q2rad.ico\n"
+                "Terminal=false\n"
+                "Type=Application\n"
+            ]
 
-        desktop = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
-        open(f"{desktop}/q2rad.desktop", "w").writelines("\n".join(desktop_entry))
+            desktop = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
+            open(f"{desktop}/q2rad.desktop", "w").writelines("\n".join(desktop_entry))
 
     def asset_file_loader(self, name):
         try:
@@ -117,8 +123,6 @@ class Q2RadApp(Q2App):
         if not os.path.isdir("assets"):
             os.mkdir("assets")
         # first run
-        if "linux" in sys.platform and q2AskYN("Can I make desktop shortcut?") == 2:
-            self.make_desktop_shortcut()
         # load icons
         for x in ("q2rad.ico",):
             self.asset_file_loader(x)
@@ -154,8 +158,24 @@ class Q2RadApp(Q2App):
                 '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
             )
 
+            open("make_shortcut.vbs", "w").write(
+                'Set oWS = WScript.CreateObject("WScript.Shell")\n'
+                'Set oLink = oWS.CreateShortcut(oWS.SpecialFolders("Desktop") & "\\q2RAD.lnk")\n'
+                'cu = WScript.CreateObject("Scripting.FileSystemObject").'
+                "GetParentFolderName(WScript.ScriptFullName)\n"
+                'oLink.TargetPath = cu & "\\run_q2rad.vbs"\n'
+                'oLink.WorkingDirectory = cu & ""\n'
+                'oLink.Description = "q2RAD"\n'
+                'oLink.IconLocation = cu & "\\assets\\q2rad.ico"\n'
+                "oLink.Save\n"
+            )
+
+        if q2AskYN("Can I make desktop shortcut?") == 2:
+            self.make_desktop_shortcut()
+
     def on_start(self):
         if not os.path.isfile("poetry.lock"):
+            self.load_assets()
             self.check_upgrade()
         self.open_application(autoload_enabled=True)
 
@@ -269,7 +289,7 @@ class Q2RadApp(Q2App):
         current_version = sys.modules[package].__version__
         return latest_version, current_version
 
-    def upgrade_packages(self):
+    def update_packages(self):
         upgraded = []
         for package in q2_modules:
             latest_version, current_version = self.get_package_versions(package)
@@ -293,17 +313,17 @@ class Q2RadApp(Q2App):
                     except Exception:
                         pass
 
-                module_2_reload = []
-                for x in sys.modules:
-                    if x.startswith(package):
-                        module_2_reload.append(x)
-                for x in module_2_reload:
-                    importlib.reload(sys.modules[x])
+                # module_2_reload = []
+                # for x in sys.modules:
+                #     if x.startswith(package):
+                #         module_2_reload.append(x)
+                # for x in module_2_reload:
+                #     importlib.reload(sys.modules[x])
                 latest_version, new_current_version = self.get_package_versions(package)
                 upgraded.append(
                     f"{package} - "
-                    f"<b>{current_version}</b> => "
-                    f"<b>{new_current_version}</b>"
+                    f"<b>{latest_version}</b> => "
+                    f"<b>{latest_version}</b>"
                 )
         if upgraded:
             mess = (
@@ -313,9 +333,13 @@ class Q2RadApp(Q2App):
             )
         else:
             mess = "Updates not found!<br>"
-        self.about(mess)
+        q2Mess(mess)
         if upgraded:
-            os.execv(sys.argv[0], sys.argv)
+            if "win" in sys.platform:
+                subprocess.check_call(["run_q2rad.bat"], shell=True)
+            else:
+                os.execv(sys.argv[0], sys.argv)
+            self.close()
 
     def check_upgrade(self):
         can_upgrade = False
@@ -333,7 +357,7 @@ class Q2RadApp(Q2App):
                 )
                 == 2
             ):
-                self.upgrade_packages()
+                self.update_packages()
 
     def run_constants(self):
         Q2Constants().run()

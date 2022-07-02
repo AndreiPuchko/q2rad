@@ -25,6 +25,25 @@ class AppManager(Q2Form):
     def on_init(self):
         app_data = q2app.q2_app.selected_application
         self.add_control("/")
+        if self.add_control("/h", "Platform"):
+            self.add_control(
+                "upgrade",
+                "Update from PyPI",
+                control="button",
+                datalen=10,
+                valid=q2app.q2_app.update_packages,
+            )
+
+            self.add_control(
+                "reload_assets",
+                "Reload assets",
+                control="button",
+                datalen=10,
+                valid=self.reload_assets,
+            )
+
+            self.add_control("/")
+
         if self.add_control("/v", "Application"):
             if self.add_control("/f", ""):
                 self.add_control(
@@ -78,25 +97,6 @@ class AppManager(Q2Form):
                         valid=self.import_app,
                     )
                     self.add_control("/")
-                self.add_control("/")
-
-            if self.add_control("/h", "-"):
-                self.add_control(
-                    "upgrade",
-                    "Upgrade from PyPI",
-                    control="button",
-                    datalen=10,
-                    valid=q2app.q2_app.upgrade_packages,
-                )
-
-                self.add_control(
-                    "reload_assets",
-                    "Reload assets",
-                    control="button",
-                    datalen=10,
-                    valid=self.reload_assets,
-                )
-
                 self.add_control("/")
 
             self.add_control("/")
@@ -157,7 +157,8 @@ class AppManager(Q2Form):
                 self.add_control("/")
             self.add_control("/")
 
-        if self.q2_app.dev_mode:
+        # if self.q2_app.dev_mode:
+        if os.path.isfile("poetry.lock"):
             if self.add_control("/h", "Demo Application"):
                 self.add_control(
                     "save_demo_app",
