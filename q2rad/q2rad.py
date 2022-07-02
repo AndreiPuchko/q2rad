@@ -12,7 +12,7 @@ from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
 from q2rad.q2actions import Q2Actions
 from q2db.cursor import Q2Cursor
-from q2raddb import read_url, open_url
+from q2rad.q2raddb import read_url, open_url
 
 from q2gui import q2app
 from q2rad.q2raddb import q2cursor
@@ -30,11 +30,13 @@ from q2rad.q2reports import Q2Reports, Q2RadReport
 
 import traceback
 import gettext
+
 # import urllib.request
 import os
 import json
 import importlib
 import subprocess
+
 
 q2_modules = ("q2rad", "q2gui", "q2db", "q2report")
 const = q2const()
@@ -66,20 +68,91 @@ class Q2RadApp(Q2App):
 
         qss_file = "q2gui.qss"
         if not os.path.isfile(qss_file):
-            qss_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/q2gui.qss"
-            open(qss_file, "w").write(
-                read_url(qss_url).decode("utf-8")
+            qss_url = (
+                "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/q2gui.qss"
             )
+            open(qss_file, "w").write(read_url(qss_url).decode("utf-8"))
 
         self.load_assets()
         self.set_icon("assets/q2rad.ico")
 
         self.const = const
 
-    def load_assets(self):
+    def make_desktop_shortcut(self):
+        basepath = os.path.abspath(".")
+        desktop_entry = [
+            "[Desktop Entry]\n"
+            "Name=q2RAD\n"
+            f"Exec={basepath}/q2rad/bin/q2rad\n"
+            f"Path={basepath}\n"
+            f"Icon={basepath}/assets/q2rad.ico\n"
+            "Terminal=false\n"
+            "Type=Application\n"
+        ]
+
+        desktop = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
+        open(f"{desktop}/q2rad.desktop", "w").writelines("\n".join(desktop_entry))
+
+    def asset_file_loader(self, name):
+        try:
+            open(f"assets/{name}", "wb").write(
+                read_url(f"https://andreipuchko.github.io/q2rad/assets/{name}")
+            )
+        except Exception:
+            print(f"Error reading asset/{name}")
+
+    def write_restore_file(self, name, content):
+        if "win" in sys.platform:
+            u_file = open(f"{name}.bat", "w")
+        else:
+            u_file = open(os.open("{name}.sh", os.O_CREAT | os.O_WRONLY, 0o777), "w")
+        u_file.write(content)
+        u_file.close()
+
+    def load_assets(self, force_reload=False):
+        if os.path.isfile("poetry.lock"):
+            return
+        if os.path.isdir("assets") and force_reload is False:
+            return
         if not os.path.isdir("assets"):
             os.mkdir("assets")
-        # read_url()
+        # first run
+        if "linux" in sys.platform and q2AskYN("Can I make desktop shortcut?") == 2:
+            self.make_desktop_shortcut()
+        # load icons
+        for x in ("q2rad.ico",):
+            self.asset_file_loader(x)
+
+        # create update_q2rad.sh
+        self.write_restore_file(
+            "update_q2rad",
+            ("" if "win" in sys.platform else "#!/bin/bash\n")
+            + (
+                "q2rad\\scripts\\activate "
+                if "win" in sys.platform
+                else "source q2rad/bin/activate\n"
+            )
+            + "&& pip install --upgrade q2gui"
+            + "&& pip install --upgrade q2db"
+            + "&& pip install --upgrade q2report"
+            + "&& pip install --upgrade q2rad",
+        )
+
+        # create run_q2rad
+        self.write_restore_file(
+            "run_q2rad",
+            ("" if "win" in sys.platform else "#!/bin/bash\n")
+            + (
+                "start q2rad\\scripts\\pythonw.exe -m q2rad"
+                if "win" in sys.platform
+                else "q2rad/bin/q2rad\n"
+            ),
+        )
+        if "win" in sys.platform:
+            open("run_q2rad.vbs", "w").write(
+                'WScript.CreateObject("WScript.Shell").Run '
+                '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
+            )
 
     def on_start(self):
         if not os.path.isfile("poetry.lock"):

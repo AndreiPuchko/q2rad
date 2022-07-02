@@ -17,12 +17,11 @@ from q2db.cursor import Q2Cursor
 
 import gettext
 import json
-import urllib.request
 
 from q2rad import Q2App, Q2Form
 from q2rad.q2raddb import q2cursor
 from q2rad.q2appmanager import AppManager
-from q2raddb import read_url, open_url
+from q2rad.q2raddb import open_url
 
 
 SQL_ENGINES = ["MySQl", "Sqlite", "Postgresql"]

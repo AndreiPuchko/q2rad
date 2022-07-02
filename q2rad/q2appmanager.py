@@ -89,6 +89,14 @@ class AppManager(Q2Form):
                     valid=q2app.q2_app.upgrade_packages,
                 )
 
+                self.add_control(
+                    "reload_assets",
+                    "Reload assets",
+                    control="button",
+                    datalen=10,
+                    valid=self.reload_assets,
+                )
+
                 self.add_control("/")
 
             self.add_control("/")
@@ -169,6 +177,9 @@ class AppManager(Q2Form):
                 )
                 self.add_control("/")
         self.cancel_button = 1
+
+    def reload_assets(self):
+        q2app.q2_app.load_assets(True)
 
     def export_demo_app(self):
         if q2AskYN("Are you sure") != 2:
