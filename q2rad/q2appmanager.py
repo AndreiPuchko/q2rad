@@ -28,7 +28,7 @@ class AppManager(Q2Form):
         if self.add_control("/h", "Platform"):
             self.add_control(
                 "upgrade",
-                "Update from PyPI",
+                "Update",
                 control="button",
                 datalen=10,
                 valid=q2app.q2_app.update_packages,

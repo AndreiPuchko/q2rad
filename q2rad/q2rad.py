@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 
 from q2rad import Q2App, Q2Form
-from q2gui.q2dialogs import q2Mess, q2AskYN
+from q2gui.q2dialogs import q2Mess, q2AskYN, q2WaitShow
 from q2gui.q2model import Q2CursorModel
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
@@ -291,7 +291,10 @@ class Q2RadApp(Q2App):
 
     def update_packages(self):
         upgraded = []
+        w = q2WaitShow(len(q2_modules))
         for package in q2_modules:
+            if w.step(package):
+                break
             latest_version, current_version = self.get_package_versions(package)
             if latest_version != current_version:
                 runpip = lambda: subprocess.check_call(  # noqa:E731
@@ -325,6 +328,7 @@ class Q2RadApp(Q2App):
                     f"<b>{latest_version}</b> => "
                     f"<b>{latest_version}</b>"
                 )
+        w.close()
         if upgraded:
             mess = (
                 "Upgrading complete:<br>"

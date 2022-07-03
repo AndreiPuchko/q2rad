@@ -18,6 +18,7 @@ from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
 from q2rad.q2raddb import q2cursor
 from q2gui import q2app
+from q2gui.q2dialogs import q2WaitShow, q2Wait, q2WaitMax, q2WaitStep
 import json
 import os
 import gettext
@@ -31,7 +32,9 @@ class Q2RadReport(Q2Report):
     def __init__(self, content=""):
         super().__init__()
         self.load(content)
-        self.data['const'] = q2app.q2_app.const
+        self.data["const"] = q2app.q2_app.const
+        self.waitbar = None
+        self.data_sources_lenght = {}
 
     def prepare_output_file(self, output_file):
         rez_name = ""
@@ -88,7 +91,9 @@ class Q2RadReport(Q2Report):
             co = 0
             name, ext = os.path.splitext(rez_name)
             while True:
-                lockfile = f"{os.path.dirname(rez_name)}/.~lock.{os.path.basename(rez_name)}#"
+                lockfile = (
+                    f"{os.path.dirname(rez_name)}/.~lock.{os.path.basename(rez_name)}#"
+                )
                 if os.path.isfile(lockfile):
                     co += 1
                     rez_name = f"{name}{co:03d}{ext}"
@@ -96,20 +101,53 @@ class Q2RadReport(Q2Report):
                     break
         return rez_name
 
+    def data_start(self):
+        super().data_start()
+        self.waitbar = q2WaitShow(self.data_cursors[self.current_data_set_name].row_count())
+
+    def data_step(self):
+        super().data_step()
+        self.waitbar.step()
+
+    def data_stop(self):
+        super().data_stop()
+        self.waitbar.close()
 
     def run(self, output_file="tmp/repo.html"):
         output_file = self.prepare_output_file(output_file)
         if not output_file:
             return
+        self.data_cursors = {}
+
         data = {}
-        for x in self.report_content["queries"]:
-            sql = self.report_content["queries"][x]
-            sql_params = re_find_param.findall(sql)
-            for p in sql_params:
-                value = self.params.get(p[1:], "")
-                sql = sql.replace(p, f"'{value}'")
-                # q2cursor(sql).browse()
-                data[x] = q2cursor(sql).records()
+        # w = q2WaitShow("Open queries:", len(self.report_content["queries"]))
+        # for x in self.report_content["queries"]:
+        #     w.step(x)
+        #     sql = self.report_content["queries"][x]
+        #     sql_params = re_find_param.findall(sql)
+        #     for p in sql_params:
+        #         value = self.params.get(p[1:], "")
+        #         sql = sql.replace(p, f"'{value}'")
+        #         data[x] = q2cursor(sql).records()
+        # w.close()
+
+        def worker():
+            def real_worker():
+                q2WaitMax(len(self.report_content["queries"]))
+                for x in self.report_content["queries"]:
+                    q2WaitStep()
+                    sql = self.report_content["queries"][x]
+                    sql_params = re_find_param.findall(sql)
+                    for p in sql_params:
+                        value = self.params.get(p[1:], "")
+                        sql = sql.replace(p, f"'{value}'")
+                        self.data_cursors[x] = q2cursor(sql)
+                        data[x] = self.data_cursors[x].records()
+                        # print(q2app.q2_app.db_data.last_sql_error)
+            return real_worker
+
+        q2Wait(worker(), "W o r k i n g")
+
         super().run(output_file, data=data)
 
 
