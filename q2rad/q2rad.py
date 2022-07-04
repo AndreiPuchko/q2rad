@@ -34,7 +34,6 @@ import gettext
 # import urllib.request
 import os
 import json
-import importlib
 import subprocess
 
 
@@ -269,17 +268,19 @@ class Q2RadApp(Q2App):
         about = []
         if text:
             about.append(text)
-        about.append("<b>q2RAD</b>")
+        about.append("<b>q2RAD</b><br>")
         about.append("Versions:")
-        about.append(f"<b>Python</b>: {sys.version}")
+        about.append(f"<b>Python</b>: {sys.version}<br>")
         # about.append("")
-
+        w = q2WaitShow(len(q2_modules))
         for package in q2_modules:
+            w.step()
             latest_version, current_version = self.get_package_versions(package)
             about.append(
                 f"<b>{package}</b>: {current_version}"
                 f"{'(' + latest_version + ' avaiable)' if current_version!=latest_version else ''}"
             )
+        w.close()
         q2Mess("<br>".join(about))
 
     def get_package_versions(self, package):
@@ -299,14 +300,15 @@ class Q2RadApp(Q2App):
             if latest_version != current_version:
                 runpip = lambda: subprocess.check_call(  # noqa:E731
                     [
-                        sys.executable,
+                        sys.executable.replace("w", ""),
                         "-m",
                         "pip",
                         "install",
                         "--upgrade",
                         "--no-cache-dir",
                         f"{package}=={latest_version}",
-                    ]
+                    ],
+                    shell=True,
                 )
                 try:
                     runpip()
@@ -316,34 +318,27 @@ class Q2RadApp(Q2App):
                     except Exception:
                         pass
 
-                # module_2_reload = []
-                # for x in sys.modules:
-                #     if x.startswith(package):
-                #         module_2_reload.append(x)
-                # for x in module_2_reload:
-                #     importlib.reload(sys.modules[x])
                 latest_version, new_current_version = self.get_package_versions(package)
                 upgraded.append(
                     f"{package} - "
-                    f"<b>{latest_version}</b> => "
+                    f"<b>{current_version}</b> => "
                     f"<b>{latest_version}</b>"
                 )
         w.close()
         if upgraded:
             mess = (
-                "Upgrading complete:<br>"
-                "The program will be restarted!"
-                "<br>".join(upgraded)
-            )
+                "Upgrading complete!<br>" "The program will be restarted!" "<br><br>"
+            ) + "<br>".join(upgraded)
         else:
             mess = "Updates not found!<br>"
         q2Mess(mess)
         if upgraded:
-            if "win" in sys.platform:
-                subprocess.check_call(["run_q2rad.bat"], shell=True)
-            else:
-                os.execv(sys.argv[0], sys.argv)
-            self.close()
+            os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
+            # if "win" in sys.platform:
+            #     os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
+            # else:
+            #     os.execv(sys.argv[0], sys.argv)
+            # self.close()
 
     def check_upgrade(self):
         can_upgrade = False
@@ -355,8 +350,8 @@ class Q2RadApp(Q2App):
         if can_upgrade:
             if (
                 q2AskYN(
-                    "Updates is avaiable!<br>"
-                    "Do you want to proceed with update?<br>"
+                    "Updates is avaiable!<br><br>"
+                    "Do you want to proceed with update?<br><br>"
                     "The program will be restarted after the update!"
                 )
                 == 2
