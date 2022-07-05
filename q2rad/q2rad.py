@@ -110,7 +110,7 @@ class Q2RadApp(Q2App):
         if "win" in sys.platform:
             u_file = open(f"{name}.bat", "w")
         else:
-            u_file = open(os.open("{name}.sh", os.O_CREAT | os.O_WRONLY, 0o777), "w")
+            u_file = open(os.open(f"{name}.sh", os.O_CREAT | os.O_WRONLY, 0o777), "w")
         u_file.write(content)
         u_file.close()
 
@@ -300,7 +300,7 @@ class Q2RadApp(Q2App):
             if latest_version != current_version:
                 runpip = lambda: subprocess.check_call(  # noqa:E731
                     [
-                        sys.executable.replace("w", ""),
+                        sys.executable.replace("w.exe", ".exe"),
                         "-m",
                         "pip",
                         "install",
@@ -308,7 +308,7 @@ class Q2RadApp(Q2App):
                         "--no-cache-dir",
                         f"{package}=={latest_version}",
                     ],
-                    shell=True,
+                    shell=True if "win" in sys.platform else False
                 )
                 try:
                     runpip()
