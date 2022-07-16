@@ -7,7 +7,8 @@ if __name__ == "__main__":
     main()
 
 from q2gui.q2model import Q2CursorModel
-from q2rad.q2raddb import Q2Cursor, SeqMover
+from q2rad.q2raddb import Q2Cursor, SeqMover, insert
+from q2gui.q2dialogs import q2AskYN
 
 from q2rad import Q2Form
 
@@ -67,6 +68,7 @@ class Q2Lines(Q2Form, SeqMover):
         self.add_seq_actions()
 
         self.add_action("Run", self.form_runner, hotkey="F4")
+        self.add_action("Fill", self.filler)
 
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
@@ -189,6 +191,28 @@ class Q2Lines(Q2Form, SeqMover):
             nogrid="*",
             datatype="bigtext",
         )
+
+    def filler(self):
+        if self.model.row_count() > 0:
+            if q2AskYN("Lines list is not empty! Are you sure") != 2:
+                return
+
+        cols = self.q2_app.db_data.db_schema.get_schema_columns(
+            self.prev_form.r.form_table
+        )
+        for x in cols:
+            insert(
+                "lines",
+                {
+                    "name": self.prev_form.r.name,
+                    "column": x,
+                    "label": x,
+                    "datatype": cols[x]["datatype"],
+                    "datalen": cols[x]["datalen"],
+                },
+                self.db,
+            )
+        self.refresh()
 
     def before_crud_save(self):
         if not self.s.migrate:

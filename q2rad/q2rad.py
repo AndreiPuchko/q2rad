@@ -98,6 +98,118 @@ class Q2RadApp(Q2App):
             desktop = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
             open(f"{desktop}/q2rad.desktop", "w").writelines("\n".join(desktop_entry))
 
+    def on_start(self):
+        if not os.path.isfile("poetry.lock"):
+            self.load_assets()
+            self.check_upgrade()
+        self.open_application(autoload_enabled=True)
+
+    def open_application(self, autoload_enabled=False):
+        Q2AppSelect().run(autoload_enabled)
+        if self.selected_application != {}:
+            self.open_selected_app()
+        else:
+            self.close()
+
+    def open_selected_app(self):
+        self.migrate_db_logic()
+        self.migrate_db_data()
+        self.run_module("autorun")
+        # DEBUG
+        self.run_forms()
+        # self.run_queries()
+        # self.run_modules()
+        # self.run_reports()
+        # self.run_app_manager()
+        pass
+
+    def migrate_db_data(self):
+        data_schema = Q2DbSchema()
+        cu = q2cursor(
+            """
+                select
+                    forms.form_table as `table`
+                    , lines.column
+                    , lines.datatype
+                    , lines.datalen
+                    , lines.datadec
+                    , lines.to_table
+                    , lines.to_column
+                    , lines.related
+                    , lines.ai
+                    , lines.pk
+                from lines, forms
+                where forms.name = lines.name
+                    and form_table <>'' and migrate <>''
+                """,
+            self.db_logic,
+        )
+        for column in cu.records():
+            data_schema.add(**column)
+        for form in (Q2Constants(),):
+            for x in form.get_table_schema():
+                data_schema.add(**x)
+
+        self.db_data.set_schema(data_schema)
+        self.create_menu()
+
+    def migrate_db_logic(self):
+        data_schema = Q2DbSchema()
+        for form in (
+            Q2Modules(),
+            Q2Forms(),
+            Q2Lines(),
+            Q2Queries(),
+            Q2Actions(),
+            Q2Reports(),
+        ):
+            for x in form.get_table_schema():
+                data_schema.add(**x)
+        self.db_logic.set_schema(data_schema)
+
+    def open_databases(self):
+        self.db_data = Q2Db(database_name=self.selected_application["database_data"])
+        self.db_logic = Q2Db(database_name=self.selected_application["database_logic"])
+
+    def create_menu(self):
+        self.clear_menu()
+        self.add_menu("File|About", self.about)
+        self.add_menu("File|Manage", self.run_app_manager)
+        self.add_menu("File|Constants", self.run_constants)
+        self.add_menu("File|-")
+        self.add_menu("File|Open", self.open_application)
+        self.add_menu("File|-")
+        self.add_menu("File|Close", self.close, toolbar=1)
+
+        self.create_form_menu()
+
+        if self.dev_mode:
+            self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
+            self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode)
+            self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
+            self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
+        self.build_menu()
+        self.show_toolbar(False)
+
+    def about(self, text=""):
+        about = []
+        if text:
+            about.append(text)
+        about.append("<b>q2RAD</b><br>")
+        about.append("Versions:")
+        about.append(f"<b>Python</b>: {sys.version}<br>")
+        # about.append("")
+        w = q2WaitShow(len(q2_modules))
+        for package in q2_modules:
+            w.step()
+            latest_version, current_version = self.get_package_versions(package)
+            about.append(
+                f"<b>{package}</b>: {current_version}"
+                f"{'(' + latest_version + ' avaiable)' if current_version!=latest_version else ''}"
+            )
+        w.close()
+        q2Mess("<br>".join(about))
+
     def asset_file_loader(self, name):
         try:
             open(f"assets/{name}", "wb").write(
@@ -172,117 +284,6 @@ class Q2RadApp(Q2App):
         if q2AskYN("Can I make desktop shortcut?") == 2:
             self.make_desktop_shortcut()
 
-    def on_start(self):
-        if not os.path.isfile("poetry.lock"):
-            self.load_assets()
-            self.check_upgrade()
-        self.open_application(autoload_enabled=True)
-
-    def open_application(self, autoload_enabled=False):
-        Q2AppSelect().run(autoload_enabled)
-        if self.selected_application != {}:
-            self.open_selected_app()
-        else:
-            self.close()
-
-    def open_selected_app(self):
-        self.migrate_db_logic()
-        self.migrate_db_data()
-        self.run_module("autorun")
-        # DEBUG
-        # self.run_forms()
-        # self.run_queries()
-        # self.run_modules()
-        # self.run_reports()
-        # self.run_app_manager()
-        pass
-
-    def migrate_db_data(self):
-        data_schema = Q2DbSchema()
-        cu = q2cursor(
-            """
-                select
-                    forms.form_table as `table`
-                    , lines.column
-                    , lines.datatype
-                    , lines.datalen
-                    , lines.datadec
-                    , lines.to_table
-                    , lines.to_column
-                    , lines.related
-                    , lines.ai
-                    , lines.pk
-                from lines, forms
-                where forms.name = lines.name
-                    and form_table <>'' and migrate <>''
-                """,
-            self.db_logic,
-        )
-        for column in cu.records():
-            data_schema.add(**column)
-        for form in (Q2Constants(),):
-            for x in form.get_table_schema():
-                data_schema.add(**x)
-
-        self.db_data.set_schema(data_schema)
-        self.create_menu()
-
-    def migrate_db_logic(self):
-        data_schema = Q2DbSchema()
-        for form in (
-            Q2Modules(),
-            Q2Forms(),
-            Q2Lines(),
-            Q2Queries(),
-            Q2Actions(),
-            Q2Reports(),
-        ):
-            for x in form.get_table_schema():
-                data_schema.add(**x)
-        self.db_logic.set_schema(data_schema)
-
-    def open_databases(self):
-        self.db_data = Q2Db(database_name=self.selected_application["database_data"])
-        self.db_logic = Q2Db(database_name=self.selected_application["database_logic"])
-
-    def create_menu(self):
-        self.clear_menu()
-        self.add_menu("File|About", self.about)
-        self.add_menu("File|Manage", self.run_app_manager)
-        self.add_menu("File|Constants", self.run_constants)
-        self.add_menu("File|-")
-        self.add_menu("File|Open", self.open_application)
-        self.add_menu("File|-")
-        self.add_menu("File|Close", self.close, toolbar=1)
-
-        self.create_form_menu()
-
-        if self.dev_mode:
-            self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
-            self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode)
-            self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
-            self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
-        self.build_menu()
-
-    def about(self, text=""):
-        about = []
-        if text:
-            about.append(text)
-        about.append("<b>q2RAD</b><br>")
-        about.append("Versions:")
-        about.append(f"<b>Python</b>: {sys.version}<br>")
-        # about.append("")
-        w = q2WaitShow(len(q2_modules))
-        for package in q2_modules:
-            w.step()
-            latest_version, current_version = self.get_package_versions(package)
-            about.append(
-                f"<b>{package}</b>: {current_version}"
-                f"{'(' + latest_version + ' avaiable)' if current_version!=latest_version else ''}"
-            )
-        w.close()
-        q2Mess("<br>".join(about))
-
     def get_package_versions(self, package):
         latest_version = json.load(
             open_url(f"https://pypi.python.org/pypi/{package}/json")
@@ -308,7 +309,7 @@ class Q2RadApp(Q2App):
                         "--no-cache-dir",
                         f"{package}=={latest_version}",
                     ],
-                    shell=True if "win" in sys.platform else False
+                    shell=True if "win" in sys.platform else False,
                 )
                 try:
                     runpip()
@@ -339,6 +340,7 @@ class Q2RadApp(Q2App):
             # else:
             #     os.execv(sys.argv[0], sys.argv)
             # self.close()
+        pass
 
     def check_upgrade(self):
         can_upgrade = False
@@ -441,6 +443,9 @@ class Q2RadApp(Q2App):
                 ,to_column
                 ,related
                 ,to_form
+                ,code_valid as valid
+                /*,code_when as when
+                ,code_show as show*/
             from lines
             where name = '{name}'
             order by seq
@@ -473,6 +478,9 @@ class Q2RadApp(Q2App):
         for x in cu.records():
             if x.get("to_form"):
                 x["to_form"] = self.get_form(x["to_form"])
+            x["valid"] = self.code_runner(x["valid"], form)
+            # x["show"] = self.code_runner(x["show"], form)
+            # x["when"] = self.code_runner(x["when"], form)
             form.add_control(**x)
 
         # add actions
@@ -577,12 +585,6 @@ class Q2RadApp(Q2App):
 
 
 def main():
-    # qss_file = "q2gui.qss"
-    # if not os.path.isfile(qss_file):
-    #     qss_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/q2gui.qss"
-    #     open(qss_file, "w").write(
-    #         urllib.request.urlopen(qss_url).read().decode("utf-8")
-    #     )
     app = Q2RadApp("q2RAD")
     app.dev_mode = 1
     app.run()

@@ -12,6 +12,7 @@ from q2db.schema import Q2DbSchema
 
 from q2rad.q2raddb import q2cursor, SeqMover
 from q2gui.q2model import Q2CursorModel
+from q2gui.q2model import Q2Model
 
 # from q2gui.q2utils import int_
 
@@ -118,17 +119,27 @@ class Q2Forms(Q2Form, SeqMover):
 
             self.add_control("/f", _("Data"))
             if self.add_control("/h", _("Data table")):
-                #     def selectTable():
-                #         q2Mess(12)
-                #     self.add_control("select_table", _("?"),
-                #                     mess=_("select table name from list"),
-                #                     control="button",
-                #                     valid=selectTable)
+                self.add_control(
+                    "select_data_storage_file",
+                    _("?"),
+                    mess=_("Open list of existing tables"),
+                    control="button",
+                    datalen=3,
+                    valid=self.select_data_storage_table,
+                )
                 self.add_control("form_table", gridlabel=_("Table"))
                 self.add_control("/")
-            self.add_control(
-                "form_table_sort", _("Sort by"), datatype="char", datalen=100
-            )
+            if self.add_control("/h", _("Sort by")):
+                self.add_control(
+                    "select_data_sort_column",
+                    _("?"),
+                    mess=_("Open column list"),
+                    control="button",
+                    datalen=3,
+                    valid=self.select_table_sort_column,
+                )
+                self.add_control("form_table_sort", "", datatype="char", datalen=100)
+                self.add_control("/")
             self.add_control("/")
             self.add_control("/s")
 
@@ -227,9 +238,71 @@ class Q2Forms(Q2Form, SeqMover):
                 control="code",
             )
 
+    def select_data_storage_table(self):
+        setta = Q2Form("Select table")
+        setta.add_control("table", "Table")
+        setta.no_view_action = 1
+        model = Q2Model()
+        model.set_records(
+            [{"table": x} for x in self.q2_app.db_data.db_schema.get_schema_tables()]
+        )
+        setta.set_model(model)
+        setta.heap.selected_table = None
+
+        def select_table():
+            setta.heap.selected_table = setta.r.table
+            setta.close()
+
+        setta.add_action(
+            _("Select"),
+            select_table,
+            hotkey="Enter",
+            tag="select",
+            eof_disabled=1,
+        )
+        setta.run()
+        self.s.form_table = setta.heap.selected_table
+
+    def select_table_sort_column(self):
+        setta = Q2Form("Select column")
+        setta.add_control("col", "Table")
+        setta.no_view_action = 1
+        model = Q2Model()
+        model.set_records(
+            [
+                {"col": x}
+                for x in self.q2_app.db_data.db_schema.get_schema_columns(
+                    self.s.form_table
+                )
+            ]
+        )
+        setta.set_model(model)
+        setta.heap.selected_col = None
+
+        def select_column():
+            setta.heap.selected_col = setta.r.col
+            setta.close()
+
+        setta.add_action(
+            _("Select"),
+            select_column,
+            hotkey="Enter",
+            tag="select",
+            eof_disabled=1,
+        )
+        setta.run()
+        self.s.form_table_sort += ", " if self.s.form_table_sort else ""
+        self.s.form_table_sort += setta.heap.selected_col
+
     def form_runner(self):
         name = self.r.name
         self.q2_app.run_form(name)
 
     def before_form_show(self):
         self.next_sequense()
+
+    def before_crud_save(self):
+        if self.s.name == "":
+            q2Mess(_("Give me some NAME!!!"))
+            self.w.name.set_focus()
+            return False

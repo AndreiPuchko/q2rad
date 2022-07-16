@@ -75,7 +75,7 @@ class Q2AppSelect(Q2Form):
             def driverDataValid(self=self):
                 self.w.host_data.set_enabled(self.s.driver_data != "Sqlite")
                 self.w.port_data.set_enabled(self.s.driver_data != "Sqlite")
-                self.w.select_database_file.set_enabled(self.s.driver_data == "Sqlite")
+                self.w.select_data_storage_file.set_enabled(self.s.driver_data == "Sqlite")
 
             self.add_control(
                 "driver_data",
@@ -88,14 +88,6 @@ class Q2AppSelect(Q2Form):
                 valid=driverDataValid,
             )
             if self.add_control("/h"):
-
-                def openSqliteData():
-                    fname = self.q2_app.get_save_file_dialoq(
-                        _("data storage"), "", _("SQLite (*.sqlite)")
-                    )[0]
-                    if fname:
-                        self.s.database_data = fname
-
                 self.add_control(
                     "database_data",
                     "Database",
@@ -104,12 +96,12 @@ class Q2AppSelect(Q2Form):
                     datalen=100,
                 )
                 self.add_control(
-                    "select_database_file",
+                    "select_data_storage_file",
                     _("?"),
-                    mess=_("open sqlite database file"),
+                    mess=_("Open Data Storage sqlite database file"),
                     control="button",
                     datalen=3,
-                    valid=openSqliteData,
+                    valid=self.openSqliteDataFile,
                 )
                 self.add_control("/")
             if self.add_control("/h"):
@@ -136,7 +128,7 @@ class Q2AppSelect(Q2Form):
             def driverLogicValid(form=self):
                 form.w.host_logic.set_enabled(form.s.driver_logic != "Sqlite")
                 form.w.port_logic.set_enabled(form.s.driver_logic != "Sqlite")
-                form.w.select_logic_file.set_enabled(form.s.driver_logic == "Sqlite")
+                form.w.select_app_storage_file.set_enabled(form.s.driver_logic == "Sqlite")
 
             self.add_control(
                 "driver_logic",
@@ -150,13 +142,6 @@ class Q2AppSelect(Q2Form):
             )
             if self.add_control("/h"):
 
-                def openSqliteData():
-                    fname = self.q2_app.get_save_file_dialoq(
-                        _("data storage"), ".", _("SQLite (*.sqlite)")
-                    )[0]
-                    if fname:
-                        self.s.database_logic = fname
-
                 self.add_control(
                     "database_logic",
                     "Database",
@@ -165,12 +150,12 @@ class Q2AppSelect(Q2Form):
                     datalen=100,
                 )
                 self.add_control(
-                    "select_logic_file",
+                    "select_app_storage_file",
                     _("?"),
-                    mess=_("opend sqlite database file"),
+                    mess=_("Open App Storage sqlite database file"),
                     control="button",
                     datalen=3,
-                    valid=openSqliteData,
+                    valid=self.openSqliteDataFile,
                 )
                 self.add_control("/")
             if self.add_control("/h"):
@@ -201,6 +186,19 @@ class Q2AppSelect(Q2Form):
         self.set_model(model)
 
         self.actions.add_action("/crud")
+
+    def openSqliteDataFile(self):
+        fname = self.q2_app.get_save_file_dialoq(
+            self.focus_widget().meta.get("mess"),
+            "",
+            _("SQLite (*.sqlite);;All files(*.*)"),
+            confirm_overwrite=False,
+        )[0]
+        if fname:
+            if "_app_" in self.focus_widget().meta.get("name"):
+                self.s.database_logic = fname
+            else:
+                self.s.database_data = fname
 
     def before_grid_show(self):
         self.q2_app.sleep(0.2)

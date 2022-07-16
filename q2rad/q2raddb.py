@@ -51,6 +51,12 @@ class q2cursor(Q2Cursor):
             return self
 
 
+def insert(table, row, q2_db=None):
+    if q2_db is None:
+        q2_db = q2app.q2_app.db_data
+    return q2_db.insert(table, row)
+
+
 class SeqMover:
     """create actions for swapping rows in forms, lines, actions"""
 
