@@ -170,6 +170,18 @@ class Q2RadApp(Q2App):
     def open_databases(self):
         self.db_data = Q2Db(database_name=self.selected_application["database_data"])
         self.db_logic = Q2Db(database_name=self.selected_application["database_logic"])
+        print(
+            max(
+                [
+                    self.db_logic.table("forms").row_count(),
+                    self.db_logic.table("lines").row_count(),
+                    self.db_logic.table("actions").row_count(),
+                    self.db_logic.table("reports").row_count(),
+                    self.db_logic.table("modules").row_count(),
+                    self.db_logic.table("queries").row_count(),
+                ]
+            )
+        )
 
     def create_menu(self):
         self.clear_menu()
