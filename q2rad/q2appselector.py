@@ -195,7 +195,7 @@ class Q2AppSelect(Q2Form):
             confirm_overwrite=False,
         )[0]
         if fname:
-            if "_app_" in self.focus_widget().meta.get("name"):
+            if "_app_" in self.focus_widget().meta.get("column"):
                 self.s.database_logic = fname
             else:
                 self.s.database_data = fname
