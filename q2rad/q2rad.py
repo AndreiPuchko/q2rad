@@ -64,6 +64,7 @@ class Q2RadApp(Q2App):
         self.db_logic = None
         self.dev_mode = False
         self.selected_application = {}
+        self.app_url = None
 
         qss_file = "q2gui.qss"
         if not os.path.isfile(qss_file):
@@ -116,7 +117,7 @@ class Q2RadApp(Q2App):
         self.migrate_db_data()
         self.run_module("autorun")
         # DEBUG
-        self.run_forms()
+        # self.run_forms()
         # self.run_queries()
         # self.run_modules()
         # self.run_reports()
@@ -170,7 +171,7 @@ class Q2RadApp(Q2App):
     def open_databases(self):
         self.db_data = Q2Db(database_name=self.selected_application["database_data"])
         self.db_logic = Q2Db(database_name=self.selected_application["database_logic"])
-        print(
+        if (
             max(
                 [
                     self.db_logic.table("forms").row_count(),
@@ -181,7 +182,9 @@ class Q2RadApp(Q2App):
                     self.db_logic.table("queries").row_count(),
                 ]
             )
-        )
+            <= 0
+        ):
+            print(12)
 
     def create_menu(self):
         self.clear_menu()
@@ -191,9 +194,11 @@ class Q2RadApp(Q2App):
         self.add_menu("File|-")
         self.add_menu("File|Open", self.open_application)
         self.add_menu("File|-")
-        self.add_menu("File|Close", self.close, toolbar=1)
+        self.add_menu("File|Close", self.close, toolbar=1, icon="assets/exit.png")
 
         self.create_form_menu()
+
+        self.dev_mode = self.selected_application.get("dev_mode")
 
         if self.dev_mode:
             self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
@@ -210,7 +215,6 @@ class Q2RadApp(Q2App):
         about.append("<b>q2RAD</b><br>")
         about.append("Versions:")
         about.append(f"<b>Python</b>: {sys.version}<br>")
-        # about.append("")
         w = q2WaitShow(len(q2_modules))
         for package in q2_modules:
             w.step()
@@ -225,7 +229,7 @@ class Q2RadApp(Q2App):
     def asset_file_loader(self, name):
         try:
             open(f"assets/{name}", "wb").write(
-                read_url(f"https://andreipuchko.github.io/q2rad/assets/{name}")
+                read_url(f"https://andreipuchko.github.io/q2gui/assets/{name}")
             )
         except Exception:
             print(f"Error reading asset/{name}")

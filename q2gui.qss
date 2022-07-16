@@ -11,6 +11,8 @@ QGroupBox#radio1,
 QLineEdit 
 {background-color: rgb(197, 236, 241);}
 
+QGroupBox {font-weight: bold;}
+
 QTabBar:tab:selected {background-color:lightblue}
 
 QTableView {selection-background-color:rgb(173, 227, 245)}

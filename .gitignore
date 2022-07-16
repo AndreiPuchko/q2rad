@@ -8,6 +8,4 @@ q2gui.ini
 *.sqlite
 q2apps.sqlite
 *.sh
-demo_app/appselector.csv
-demo_app/nn/app
-demo_app/nn/data
+

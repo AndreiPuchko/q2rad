@@ -19,7 +19,7 @@ import gettext
 import json
 
 from q2rad import Q2App, Q2Form
-from q2rad.q2raddb import q2cursor
+from q2rad.q2raddb import q2cursor, insert
 from q2rad.q2appmanager import AppManager
 from q2rad.q2raddb import open_url
 
@@ -75,7 +75,9 @@ class Q2AppSelect(Q2Form):
             def driverDataValid(self=self):
                 self.w.host_data.set_enabled(self.s.driver_data != "Sqlite")
                 self.w.port_data.set_enabled(self.s.driver_data != "Sqlite")
-                self.w.select_data_storage_file.set_enabled(self.s.driver_data == "Sqlite")
+                self.w.select_data_storage_file.set_enabled(
+                    self.s.driver_data == "Sqlite"
+                )
 
             self.add_control(
                 "driver_data",
@@ -128,7 +130,9 @@ class Q2AppSelect(Q2Form):
             def driverLogicValid(form=self):
                 form.w.host_logic.set_enabled(form.s.driver_logic != "Sqlite")
                 form.w.port_logic.set_enabled(form.s.driver_logic != "Sqlite")
-                form.w.select_app_storage_file.set_enabled(form.s.driver_logic == "Sqlite")
+                form.w.select_app_storage_file.set_enabled(
+                    form.s.driver_logic == "Sqlite"
+                )
 
             self.add_control(
                 "driver_logic",
@@ -164,6 +168,14 @@ class Q2AppSelect(Q2Form):
                 )
                 self.add_control(
                     "port_logic", _("Port"), gridlabel=_("Logic port"), datatype="int"
+                )
+                self.add_control(
+                    "dev_mode",
+                    _("Dev mode"),
+                    control="check",
+                    datatype="char",
+                    datalen=1,
+                    mess=_("Allow to change App"),
                 )
                 self.add_control("/")
 
@@ -209,12 +221,27 @@ class Q2AppSelect(Q2Form):
             if cu.row_count() > 0:
                 self._select_application(cu.record(0))
                 return False
+        if self.db.table("applications").row_count() <= 0:
+            insert(
+                "applications",
+                {
+                    "ordnum": 1,
+                    "name": "My first app",
+                    "driver_data": "Sqlite",
+                    "database_data": "my_first_app_data_storage.sqlite",
+                    "driver_logic": "Sqlite",
+                    "database_logic": "my_first_app_logic_storage.sqlite",
+                    "dev_mode": "*"
+                },
+                self.db,
+            )
+            self.refresh()
 
     def before_crud_save(self):
-        if self.s.driver_logic == "2":
+        if self.s.driver_logic == "Sqlite":
             self.s.host_logic = ""
             self.s.port_logic = ""
-        if self.s.driver_data == "2":
+        if self.s.driver_data == "Sqlite":
             self.s.host_data = ""
             self.s.port_data = ""
         if self.s.autoselect:
@@ -222,6 +249,10 @@ class Q2AppSelect(Q2Form):
         return True
 
     def before_form_show(self):
+        if self.crud_mode == "NEW":
+            self.s.driver_logic = "Sqlite"
+            self.s.driver_data = "Sqlite"
+            self.s.dev_mode = "*"
         self.w.driver_data.valid()
         self.w.driver_logic.valid()
         if self.crud_mode in [NEW, COPY]:
@@ -234,6 +265,7 @@ class Q2AppSelect(Q2Form):
             "database_data": ":memory:",
             "driver_logic": "Sqlite",
             "database_logic": ":memory:",
+            "dev_mode": "*",
         }
         self._select_application(row)
         self.q2_app.migrate_db_logic()
