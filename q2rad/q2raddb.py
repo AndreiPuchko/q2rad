@@ -62,8 +62,12 @@ class SeqMover:
 
     def add_seq_actions(self):
         self.add_action("-")
-        self.add_action("🡅", self.move_seq_up)
-        self.add_action("🡇", self.move_seq_down)
+        self.add_action(
+            "Move up", self.move_seq_up, icon="arrow-up.png", eof_disabled=1
+        )
+        self.add_action(
+            "Move down", self.move_seq_down, icon="arrow-down.png", eof_disabled=1
+        )
         self.add_action("-")
 
     def move_seq_up(self):

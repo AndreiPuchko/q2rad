@@ -49,18 +49,20 @@ class Q2Forms(Q2Form, SeqMover):
             child_form=Q2Lines,
             child_where="name='{name}'",
             hotkey="F2",
+            eof_disabled=1,
         )
         self.add_action(
             "Actions",
             child_form=Q2Actions,
             child_where="name='{name}'",
             hotkey="F3",
+            eof_disabled=1,
         )
 
         self.add_seq_actions()
 
-        self.add_action("Migrate to DB", self.q2_app.migrate_db_data)
-        self.add_action("Run", self.form_runner, hotkey="F4")
+        self.add_action("Migrate to DB", self.q2_app.migrate_db_data, eof_disabled=1)
+        self.add_action("Run", self.form_runner, hotkey="F4", eof_disabled=1)
 
     def create_form(self):
         self.add_control("name", _("Name"), datatype="char", datalen=100, pk="*")
@@ -291,8 +293,9 @@ class Q2Forms(Q2Form, SeqMover):
             eof_disabled=1,
         )
         setta.run()
-        self.s.form_table_sort += ", " if self.s.form_table_sort else ""
-        self.s.form_table_sort += setta.heap.selected_col
+        if setta.heap.selected_col:
+            self.s.form_table_sort += ", " if self.s.form_table_sort else ""
+            self.s.form_table_sort += setta.heap.selected_col
 
     def form_runner(self):
         name = self.r.name

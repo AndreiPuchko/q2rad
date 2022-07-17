@@ -24,6 +24,7 @@ from q2rad.q2appselector import Q2AppSelect
 from q2rad.q2modules import Q2Modules
 from q2rad.q2forms import Q2Forms
 from q2rad.q2lines import Q2Lines
+from q2rad.q2market import Q2Market
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
@@ -35,6 +36,7 @@ import gettext
 import os
 import json
 import subprocess
+import shutil
 
 
 q2_modules = ("q2rad", "q2gui", "q2db", "q2report")
@@ -64,7 +66,22 @@ class Q2RadApp(Q2App):
         self.db_logic = None
         self.dev_mode = False
         self.selected_application = {}
+
         self.app_url = None
+        self.app_title = ""
+        self.app_version = ""
+        self.app_description = ""
+
+        self.q2market_path = "q2market"
+
+        self.q2market_url = (
+            f"https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
+        )
+
+
+        self.assets_url = (
+            f"https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
+        )
 
         qss_file = "q2gui.qss"
         if not os.path.isfile(qss_file):
@@ -116,6 +133,7 @@ class Q2RadApp(Q2App):
         self.migrate_db_logic()
         self.migrate_db_data()
         self.run_module("autorun")
+        self.set_title(f"{self.app_title}({self.selected_application.get('name', '')})")
         # DEBUG
         # self.run_forms()
         # self.run_queries()
@@ -184,15 +202,15 @@ class Q2RadApp(Q2App):
             )
             <= 0
         ):
-            print(12)
+            Q2Market().run()
 
     def create_menu(self):
         self.clear_menu()
-        self.add_menu("File|About", self.about)
-        self.add_menu("File|Manage", self.run_app_manager)
+        self.add_menu("File|About", self.about, icon="assets/info.png")
+        self.add_menu("File|Manage", self.run_app_manager, icon="assets/tools.png")
         self.add_menu("File|Constants", self.run_constants)
         self.add_menu("File|-")
-        self.add_menu("File|Open", self.open_application)
+        self.add_menu("File|Open", self.open_application, icon="assets/open.png")
         self.add_menu("File|-")
         self.add_menu("File|Close", self.close, toolbar=1, icon="assets/exit.png")
 
@@ -210,9 +228,14 @@ class Q2RadApp(Q2App):
 
     def about(self, text=""):
         about = []
+        about.append(f"<b><font size=+1>{self.app_title}</font></b>")
+        about.append(f"<i>{self.app_description}</i>")
+        about.append(f"Uploaded: {self.app_version}")
+        about.append(f"URL: <u>{self.app_url}</u>")
+        about.append("")
         if text:
             about.append(text)
-        about.append("<b>q2RAD</b><br>")
+        about.append("<b>q2RAD</b>")
         about.append("Versions:")
         about.append(f"<b>Python</b>: {sys.version}<br>")
         w = q2WaitShow(len(q2_modules))
@@ -227,12 +250,16 @@ class Q2RadApp(Q2App):
         q2Mess("<br>".join(about))
 
     def asset_file_loader(self, name):
+        asset_url = f"{self.assets_url}/{name}"
         try:
-            open(f"assets/{name}", "wb").write(
-                read_url(f"https://andreipuchko.github.io/q2gui/assets/{name}")
-            )
+            asset_content = read_url(asset_url)
         except Exception:
-            print(f"Error reading asset/{name}")
+            print(f"Error reading {asset_url}")
+            return
+        try:
+            open(f"assets/{name}", "wb").write(asset_content)
+        except Exception:
+            print(f"Error writing asset/{name}")
 
     def write_restore_file(self, name, content):
         if "win" in sys.platform:
@@ -243,16 +270,27 @@ class Q2RadApp(Q2App):
         u_file.close()
 
     def load_assets(self, force_reload=False):
-        if os.path.isfile("poetry.lock"):
-            return
         if os.path.isdir("assets") and force_reload is False:
             return
         if not os.path.isdir("assets"):
             os.mkdir("assets")
         # first run
         # load icons
-        for x in ("q2rad.ico",):
+        icons = [getattr(q2app, x) for x in dir(q2app) if x.endswith("ICON")]
+        icons.append("q2gui.ico")
+
+        w = q2WaitShow(len(icons))
+        for x in icons:
+            w.step(x)
             self.asset_file_loader(x)
+        w.close()
+        if os.path.isfile("assets/q2gui.ico"):
+            shutil.copyfile("assets/q2gui.ico", "assets/q2rad.ico")
+
+        self.set_icon("assets/q2rad.ico")
+
+        if os.path.isfile("poetry.lock"):
+            return
 
         # create update_q2rad.sh
         self.write_restore_file(
@@ -576,6 +614,7 @@ class Q2RadApp(Q2App):
                 "form": _form,
                 "self": self,
                 "q2_app": self,
+                "myapp": self,
                 "__name__": __name__,
             }
             code = self.code_compiler(script)

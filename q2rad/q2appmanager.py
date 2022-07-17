@@ -9,10 +9,10 @@ if __name__ == "__main__":
 from q2db.db import Q2Db
 from q2gui.q2utils import num
 from q2gui import q2app
-from q2gui.q2dialogs import q2AskYN
+from q2gui.q2dialogs import q2AskYN, q2Mess
 
 from q2rad import Q2Form
-
+from datetime import datetime
 
 import json
 import os
@@ -84,8 +84,15 @@ class AppManager(Q2Form):
                         "save_app",
                         "As JSON file",
                         control="button",
-                        datalen=10,
+                        datalen=13,
                         valid=self.export_app,
+                    )
+                    self.add_control(
+                        "save_app_2_market",
+                        "Export to q2Market",
+                        control="button",
+                        datalen=14,
+                        valid=self.export_q2market,
                     )
                     self.add_control("/")
                 if self.add_control("/h", "Import"):
@@ -189,32 +196,72 @@ class AppManager(Q2Form):
             os.mkdir("demo_app")
         self.export_app("demo_app/demo_app.json")
 
-    def export_app(self, file=""):
+    def export_q2market(self):
+        if not self.q2_app.app_url:
+            q2Mess("No App URL!")
+            return
+        version = datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
+        app_name = os.path.basename(self.q2_app.app_url)
+        if 0 and (
+            q2AskYN(
+                "Do you really want to save App <br>"
+                f"<b>{app_name}</b>"
+                f"(<font color=blue>{self.q2_app.app_title}</font>)<br>"
+                " to the q2Market?"
+            )
+            != 2
+        ):
+            return
+        q2market_file = f"{self.q2_app.q2market_path}/q2market.json"
+        if os.path.isfile(q2market_file):
+            q2market = json.load(open(q2market_file))
+        else:
+            q2market = {}
+        q2market[self.q2_app.app_url] = {
+            "app_title": self.q2_app.app_title,
+            "app_version": version,
+            "app_description": self.q2_app.app_description,
+        }
+        json.dump(q2market, open(q2market_file, "w"), indent=2)
+        open(f"{self.q2_app.q2market_path}/{app_name}.version", "w").write(version)
+        app_json = self.get_app_json()
+
+        modules = app_json.get("modules")
+        if modules:
+            for row, dic in enumerate(modules):
+                if dic["name"] == "autorun":
+                    modules[row]["script"] = f"myapp.app_version     = '{version}'\n" + modules[row]["script"]
+
+        self.export_app(f"{self.q2_app.q2market_path}/{app_name}.json", app_json)
+
+    def export_app(self, file="", app_json=None):
         filetype = "JSON(*.json)"
         if not file:
             file, filetype = q2app.q2_app.get_save_file_dialoq(
                 "Export Application", filter=filetype
             )
-
         if not file:
             return
-
         file = self.validate_impexp_file_name(file, filetype)
         if file:
-            db: Q2Db = q2app.q2_app.db_logic
-            rez = {}
-            for x in db.get_tables():
-                if x.startswith("log_"):
-                    continue
-                rez[x] = []
-                for row in db.table(x).records():
-                    rez[x].append(row)
+            if app_json is None:
+                app_json = self.get_app_json()
+            if app_json:
+                json.dump(app_json, open(file, "w"), indent=1)
 
-            if rez:
-                json.dump(rez, open(file, "w"), indent=1)
+    def get_app_json(self):
+        db: Q2Db = q2app.q2_app.db_logic
+        rez = {}
+        for x in db.get_tables():
+            if x.startswith("log_"):
+                continue
+            rez[x] = []
+            for row in db.table(x).records():
+                rez[x].append(row)
+        return rez
 
     def export_demo_data(self):
-        if q2AskYN("Are you sure") != 2:
+        if q2AskYN("Are you sure?") != 2:
             return
         if not os.path.isdir("demo_app"):
             os.mkdir("demo_app")

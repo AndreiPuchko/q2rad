@@ -1,0 +1,12 @@
+{
+  "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/demo_app/demo_app.json": {
+    "app_title": "q2 Demo application",
+    "app_version": "2022-07-17 13:59:28",
+    "app_description": "q2 Demo application - WTF is it?"
+  },
+  "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/demo_app/demo_app2.json": {
+    "app_title": "q2 Demo application 2",
+    "app_version": "2022-07-17 14:01:37",
+    "app_description": "q2 Demo application - WTF is it?"
+  }
+}

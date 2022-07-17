@@ -9,7 +9,7 @@ if __name__ == "__main__":
 from q2gui import q2app
 from q2gui.q2form import NEW, COPY
 from q2gui.q2model import Q2CursorModel
-
+from q2gui.q2dialogs import q2Mess
 
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
@@ -17,6 +17,7 @@ from q2db.cursor import Q2Cursor
 
 import gettext
 import json
+import os
 
 from q2rad import Q2App, Q2Form
 from q2rad.q2raddb import q2cursor, insert
@@ -222,15 +223,17 @@ class Q2AppSelect(Q2Form):
                 self._select_application(cu.record(0))
                 return False
         if self.db.table("applications").row_count() <= 0:
+            if not os.path.isdir("q2rad_sqlite_databases"):
+                os.mkdir("q2rad_sqlite_databases")
             insert(
                 "applications",
                 {
                     "ordnum": 1,
                     "name": "My first app",
                     "driver_data": "Sqlite",
-                    "database_data": "my_first_app_data_storage.sqlite",
+                    "database_data": "q2rad_sqlite_databases/my_first_app_data_storage.sqlite",
                     "driver_logic": "Sqlite",
-                    "database_logic": "my_first_app_logic_storage.sqlite",
+                    "database_logic": "q2rad_sqlite_databases/my_first_app_logic_storage.sqlite",
                     "dev_mode": "*"
                 },
                 self.db,
@@ -238,6 +241,18 @@ class Q2AppSelect(Q2Form):
             self.refresh()
 
     def before_crud_save(self):
+        if self.s.name == "":
+            q2Mess(_("Give me some NAME!!!"))
+            self.w.name.set_focus()
+            return False
+        if self.s.database_data == "":
+            q2Mess(_("Give me some database!!!"))
+            self.w.database_data.set_focus()
+            return False
+        if self.s.database_logic == "":
+            q2Mess(_("Give me some database!!!"))
+            self.w.database_logic.set_focus()
+            return False
         if self.s.driver_logic == "Sqlite":
             self.s.host_logic = ""
             self.s.port_logic = ""
