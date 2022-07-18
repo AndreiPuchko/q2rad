@@ -239,7 +239,7 @@ class AppManager(Q2Form):
             for row, dic in enumerate(modules):
                 if dic["name"] == "autorun":
                     modules[row]["script"] = (
-                        f"myapp.app_version = '{version}'\n" + modules[row]["script"]
+                        f"self.app_version = '{version}'\n" + modules[row]["script"]
                     )
 
         self.export_app(f"{self.q2_app.q2market_path}/{app_name}.json", app_json)
