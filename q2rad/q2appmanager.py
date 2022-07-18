@@ -67,7 +67,7 @@ class AppManager(Q2Form):
                         "",
                         "App version",
                         control="line",
-                        data=q2app.q2_app.app_title,
+                        data=q2app.q2_app.app_version,
                         disabled=1,
                     )
                 self.add_control(
