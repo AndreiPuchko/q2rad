@@ -46,7 +46,7 @@ class Q2Modules(Q2Form):
         model.set_order("name").refresh()
         self.set_model(model)
         self.add_action("/crud")
-        self.add_action("Run", self.script_runner, hotkey="F4")
+        self.add_action("Run", self.script_runner, hotkey="F4", eof_disabled=1)
 
     def before_crud_save(self):
         code = self.q2_app.code_compiler(self.s.script)

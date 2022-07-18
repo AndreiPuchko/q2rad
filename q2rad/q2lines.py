@@ -209,6 +209,9 @@ class Q2Lines(Q2Form, SeqMover):
                     "label": x,
                     "datatype": cols[x]["datatype"],
                     "datalen": cols[x]["datalen"],
+                    "pk": cols[x]["pk"],
+                    "ai": cols[x]["ai"],
+                    "migrate": "*",
                 },
                 self.db,
             )

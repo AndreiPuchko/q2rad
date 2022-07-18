@@ -103,7 +103,9 @@ class Q2RadReport(Q2Report):
 
     def data_start(self):
         super().data_start()
-        self.waitbar = q2WaitShow(self.data_cursors[self.current_data_set_name].row_count())
+        self.waitbar = q2WaitShow(
+            self.data_cursors[self.current_data_set_name].row_count()
+        )
 
     def data_step(self):
         super().data_step()
@@ -144,6 +146,7 @@ class Q2RadReport(Q2Report):
                         self.data_cursors[x] = q2cursor(sql)
                         data[x] = self.data_cursors[x].records()
                         # print(q2app.q2_app.db_data.last_sql_error)
+
             return real_worker
 
         q2Wait(worker(), "W o r k i n g")
@@ -179,9 +182,9 @@ class Q2Reports(Q2Form):
         model.set_order("name").refresh()
         self.set_model(model)
         self.add_action("/crud")
-        self.add_action("Run", self.run_report, hotkey="F4")
+        self.add_action("Run", self.run_report, hotkey="F4", eof_disabled=1)
         self.add_action("-")
-        self.add_action("JSON", self.edit_json)
+        self.add_action("JSON", self.edit_json, eof_disabled=1)
 
     def run_report(self):
         rep = Q2RadReport(self.r.content)

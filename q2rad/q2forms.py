@@ -264,6 +264,10 @@ class Q2Forms(Q2Form, SeqMover):
         )
         setta.run()
         self.s.form_table = setta.heap.selected_table
+        if self.s.name == "":
+            self.s.name = self.s.form_table
+        if self.s.title == "":
+            self.s.title = self.s.form_table
 
     def select_table_sort_column(self):
         setta = Q2Form("Select column")

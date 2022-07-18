@@ -34,7 +34,7 @@ class Q2Queries(Q2Form):
         model.set_order("name").refresh()
         self.set_model(model)
         self.add_action("/crud")
-        self.add_action("JSON", self.edit_json)
+        self.add_action("JSON", self.edit_json, eof_disabled=1)
 
     def create_form(self):
         self.query_editor_form = Q2QueryEdit()

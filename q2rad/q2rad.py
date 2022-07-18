@@ -1,4 +1,5 @@
 import sys
+from xmlrpc.client import Marshaller
 
 if __name__ == "__main__":
 
@@ -66,21 +67,16 @@ class Q2RadApp(Q2App):
         self.db_logic = None
         self.dev_mode = False
         self.selected_application = {}
+        self.clear_app_info()
 
-        self.app_url = None
-        self.app_title = ""
-        self.app_version = ""
-        self.app_description = ""
-
-        self.q2market_path = "q2market"
+        self.q2market_path = "../q2market"
 
         self.q2market_url = (
-            f"https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
+            "https://raw.githubusercontent.com/AndreiPuchko/q2market/main/"
         )
 
-
         self.assets_url = (
-            f"https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
+            "https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
         )
 
         qss_file = "q2gui.qss"
@@ -97,6 +93,12 @@ class Q2RadApp(Q2App):
         self.set_icon("assets/q2rad.ico")
 
         self.const = const
+
+    def clear_app_info(self):
+        self.app_url = None
+        self.app_title = ""
+        self.app_version = ""
+        self.app_description = ""
 
     def make_desktop_shortcut(self):
         if "win" in sys.platform:
@@ -119,17 +121,19 @@ class Q2RadApp(Q2App):
     def on_start(self):
         if not os.path.isfile("poetry.lock"):
             self.load_assets()
-            self.check_upgrade()
+            self.check_q2_update()
         self.open_application(autoload_enabled=True)
 
     def open_application(self, autoload_enabled=False):
         Q2AppSelect().run(autoload_enabled)
         if self.selected_application != {}:
             self.open_selected_app()
+            self.check_app_update()
         else:
             self.close()
 
     def open_selected_app(self):
+        self.clear_app_info()
         self.migrate_db_logic()
         self.migrate_db_data()
         self.run_module("autorun")
@@ -140,7 +144,24 @@ class Q2RadApp(Q2App):
         # self.run_modules()
         # self.run_reports()
         # self.run_app_manager()
-        pass
+        if (
+            max(
+                [
+                    self.db_logic.table("forms").row_count(),
+                    self.db_logic.table("lines").row_count(),
+                    self.db_logic.table("actions").row_count(),
+                    self.db_logic.table("reports").row_count(),
+                    self.db_logic.table("modules").row_count(),
+                    self.db_logic.table("queries").row_count(),
+                ]
+            )
+            <= 0
+        ):
+            if (
+                q2AskYN("Application is empty! Would you like to download some App?")
+                == 2
+            ):
+                Q2Market().run()
 
     def migrate_db_data(self):
         data_schema = Q2DbSchema()
@@ -160,6 +181,7 @@ class Q2RadApp(Q2App):
                 from lines, forms
                 where forms.name = lines.name
                     and form_table <>'' and migrate <>''
+                order by forms.seq, lines.seq, forms.name
                 """,
             self.db_logic,
         )
@@ -189,30 +211,16 @@ class Q2RadApp(Q2App):
     def open_databases(self):
         self.db_data = Q2Db(database_name=self.selected_application["database_data"])
         self.db_logic = Q2Db(database_name=self.selected_application["database_logic"])
-        if (
-            max(
-                [
-                    self.db_logic.table("forms").row_count(),
-                    self.db_logic.table("lines").row_count(),
-                    self.db_logic.table("actions").row_count(),
-                    self.db_logic.table("reports").row_count(),
-                    self.db_logic.table("modules").row_count(),
-                    self.db_logic.table("queries").row_count(),
-                ]
-            )
-            <= 0
-        ):
-            Q2Market().run()
 
     def create_menu(self):
         self.clear_menu()
-        self.add_menu("File|About", self.about, icon="assets/info.png")
-        self.add_menu("File|Manage", self.run_app_manager, icon="assets/tools.png")
+        self.add_menu("File|About", self.about, icon="info.png")
+        self.add_menu("File|Manage", self.run_app_manager, icon="tools.png")
         self.add_menu("File|Constants", self.run_constants)
         self.add_menu("File|-")
-        self.add_menu("File|Open", self.open_application, icon="assets/open.png")
+        self.add_menu("File|Open", self.open_application, icon="open.png")
         self.add_menu("File|-")
-        self.add_menu("File|Close", self.close, toolbar=1, icon="assets/exit.png")
+        self.add_menu("File|Close", self.close, toolbar=1, icon="exit.png")
 
         self.create_form_menu()
 
@@ -224,20 +232,24 @@ class Q2RadApp(Q2App):
             self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
             self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
         self.build_menu()
-        self.show_toolbar(False)
+        # self.show_toolbar(False)
 
     def about(self, text=""):
         about = []
-        about.append(f"<b><font size=+1>{self.app_title}</font></b>")
-        about.append(f"<i>{self.app_description}</i>")
-        about.append(f"Uploaded: {self.app_version}")
-        about.append(f"URL: <u>{self.app_url}</u>")
+        if self.app_title:
+            about.append(f"<b><font size=+1>{self.app_title}</font></b>")
+        if self.app_description:
+            about.append(f"<i>{self.app_description}</i>")
+        if self.app_version:
+            about.append(f"Uploaded: {self.app_version}")
+        if self.app_url:
+            about.append(f"URL: <u>{self.app_url}</u>")
         about.append("")
         if text:
             about.append(text)
         about.append("<b>q2RAD</b>")
         about.append("Versions:")
-        about.append(f"<b>Python</b>: {sys.version}<br>")
+        about.append(f"<b>Python</b>: {sys.version}<p>")
         w = q2WaitShow(len(q2_modules))
         for package in q2_modules:
             w.step()
@@ -382,10 +394,10 @@ class Q2RadApp(Q2App):
         w.close()
         if upgraded:
             mess = (
-                "Upgrading complete!<br>" "The program will be restarted!" "<br><br>"
-            ) + "<br>".join(upgraded)
+                "Upgrading complete!<p>" "The program will be restarted!" "<p><p>"
+            ) + "<p>".join(upgraded)
         else:
-            mess = "Updates not found!<br>"
+            mess = "Updates not found!<p>"
         q2Mess(mess)
         if upgraded:
             os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
@@ -396,7 +408,21 @@ class Q2RadApp(Q2App):
             # self.close()
         pass
 
-    def check_upgrade(self):
+    def check_app_update(self):
+        if self.app_url and self.app_version:
+            market_version = read_url(self.app_url + ".version").decode("utf-8")
+            if market_version != self.app_version:
+                if q2AskYN(
+                    f"Update for App <b>{self.app_title}</b> detected!"
+                    f"<p>Current version <b>{self.app_version}</b>"
+                    f"<p>New version <b>{market_version}</b>"
+                    "<p>Download and install?"
+                ):
+                    data = json.load(open_url(self.app_url + ".json"))
+                    AppManager.import_json_app(data)
+                    self.open_selected_app()
+
+    def check_q2_update(self):
         can_upgrade = False
         for package in q2_modules:
             latest_version, current_version = self.get_package_versions(package)
@@ -406,8 +432,8 @@ class Q2RadApp(Q2App):
         if can_upgrade:
             if (
                 q2AskYN(
-                    "Updates is avaiable!<br><br>"
-                    "Do you want to proceed with update?<br><br>"
+                    "Updates for q2* packages are avaiable!<p><p>"
+                    "Do you want to proceed with update?<p><p>"
                     "The program will be restarted after the update!"
                 )
                 == 2

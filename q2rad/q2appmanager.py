@@ -6,6 +6,7 @@ if __name__ == "__main__":
 
     main()
 
+import re
 from q2db.db import Q2Db
 from q2gui.q2utils import num
 from q2gui import q2app
@@ -46,6 +47,29 @@ class AppManager(Q2Form):
 
         if self.add_control("/v", "Application"):
             if self.add_control("/f", ""):
+                self.add_control(
+                    "",
+                    "App title",
+                    control="line",
+                    data=q2app.q2_app.app_title,
+                    disabled=1,
+                )
+                if q2app.q2_app.app_url:
+                    self.add_control(
+                        "",
+                        "App URL",
+                        control="line",
+                        data=q2app.q2_app.app_url,
+                        disabled=1,
+                    )
+                if q2app.q2_app.app_version:
+                    self.add_control(
+                        "",
+                        "App version",
+                        control="line",
+                        data=q2app.q2_app.app_title,
+                        disabled=1,
+                    )
                 self.add_control(
                     "drl",
                     "Database type",
@@ -165,41 +189,25 @@ class AppManager(Q2Form):
             self.add_control("/")
 
         # if self.q2_app.dev_mode:
-        if os.path.isfile("poetry.lock"):
-            if self.add_control("/h", "Demo Application"):
-                self.add_control(
-                    "save_demo_app",
-                    "Export Application",
-                    mess="Write to demo_app/demo_app.json",
-                    control="button",
-                    datalen=10,
-                    valid=self.export_demo_app,
-                )
-                self.add_control(
-                    "save_demo_data",
-                    "Export Data",
-                    mess="Write to demo_app/demo_data.json",
-                    control="button",
-                    datalen=10,
-                    valid=self.export_demo_data,
-                )
-                self.add_control("/")
         self.cancel_button = 1
 
     def reload_assets(self):
         q2app.q2_app.load_assets(True)
 
-    def export_demo_app(self):
-        if q2AskYN("Are you sure") != 2:
-            return
-        if not os.path.isdir("demo_app"):
-            os.mkdir("demo_app")
-        self.export_app("demo_app/demo_app.json")
-
     def export_q2market(self):
         if not self.q2_app.app_url:
             q2Mess("No App URL!")
             return
+        if (
+            q2AskYN(
+                "<p>You are about to export App "
+                f"<p>into folder {os.path.abspath(self.q2_app.q2market_path)}"
+                "<p>Are you sure?"
+            )
+            != 2
+        ):
+            return
+
         version = datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
         app_name = os.path.basename(self.q2_app.app_url)
         if 0 and (
@@ -230,9 +238,13 @@ class AppManager(Q2Form):
         if modules:
             for row, dic in enumerate(modules):
                 if dic["name"] == "autorun":
-                    modules[row]["script"] = f"myapp.app_version     = '{version}'\n" + modules[row]["script"]
+                    modules[row]["script"] = (
+                        f"myapp.app_version = '{version}'\n" + modules[row]["script"]
+                    )
 
         self.export_app(f"{self.q2_app.q2market_path}/{app_name}.json", app_json)
+        if app_name == "demo_app":
+            self.export_data(f"{self.q2_app.q2market_path}/demo_data.json")
 
     def export_app(self, file="", app_json=None):
         filetype = "JSON(*.json)"
@@ -259,13 +271,6 @@ class AppManager(Q2Form):
             for row in db.table(x).records():
                 rez[x].append(row)
         return rez
-
-    def export_demo_data(self):
-        if q2AskYN("Are you sure?") != 2:
-            return
-        if not os.path.isdir("demo_app"):
-            os.mkdir("demo_app")
-        self.export_data("demo_app/demo_data.json")
 
     def export_data(self, file=""):
         filetype = "JSON(*.json)"
@@ -309,9 +314,9 @@ class AppManager(Q2Form):
     def import_json_app(data):
         db: Q2Db = q2app.q2_app.db_logic
         for table in data:
-            db.cursor(f"delete from {table}")
+            db.cursor(f'delete from {table} where name not like "\_%"')
             for row in data[table]:
-                if not db.raw_insert(table, row):
+                if not db.insert(table, row):
                     print(db.last_sql_error)
 
     def import_data(self, file=""):
@@ -330,7 +335,10 @@ class AppManager(Q2Form):
     @staticmethod
     def import_json_data(data):
         db: Q2Db = q2app.q2_app.db_data
+        db_tables = db.get_tables()
         for table in data:
+            if table not in db_tables:
+                continue
             db.cursor(f"delete from {table}")
             for row in data[table]:
                 if not db.raw_insert(table, row):
