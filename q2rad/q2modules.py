@@ -69,6 +69,12 @@ class Q2Modules(Q2Form):
                 return False
         return super().before_crud_save()
 
+    def before_form_show(self):
+        self.maximized = True
+
+    def after_form_show(self):
+        self.w.script.set_focus()
+
     def script_runner(self):
         self.q2_app.code_runner(self.r.script)()
 

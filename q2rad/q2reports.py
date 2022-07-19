@@ -116,7 +116,7 @@ class Q2RadReport(Q2Report):
         super().data_stop()
         self.waitbar.close()
         self.last_focus_widget.set_focus()
-        # print(self.last_focus_widget)
+        q2app.q2_app.process_events()
 
     def run(self, output_file="tmp/repo.html"):
         output_file = self.prepare_output_file(output_file)
@@ -217,6 +217,9 @@ class Q2Reports(Q2Form):
         if form.ok_pressed:
             self.model.update({"name": self.r.name, "content": form.s.json})
             self.set_grid_index(self.current_row)
+
+    def before_form_show(self):
+        self.maximized = True
 
     def after_form_show(self):
         self.anchor: Q2Widget = self.w.anchor

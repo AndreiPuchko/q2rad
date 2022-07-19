@@ -56,6 +56,9 @@ class Q2Queries(Q2Form):
         )
         self.add_control("comment", _("Comment"), datatype="text", noform=1)
 
+    def before_form_show(self):
+        self.maximized = True
+
     def after_form_show(self):
         if self.crud_mode == "NEW":
             self.query_editor_form.set_content("{}")
