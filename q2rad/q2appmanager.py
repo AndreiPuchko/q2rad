@@ -110,7 +110,7 @@ class AppManager(Q2Form):
                         datalen=13,
                         valid=self.export_app,
                     )
-                    if os.path.isdir("../q2market"):
+                    if os.path.isdir(self.q2_app.q2market_path):
                         self.add_control(
                             "save_app_2_market",
                             "Export to q2Market",

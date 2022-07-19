@@ -588,6 +588,7 @@ class Q2RadApp(Q2App):
                             child_form=lambda: self.get_form(child_form_name),
                             child_where=x["child_where"],
                             hotkey=x["action_key"],
+                            eof_disabled=1
                         )
                     else:
                         form.add_action(
@@ -596,6 +597,7 @@ class Q2RadApp(Q2App):
                             if x["action_worker"]
                             else None,
                             hotkey=x["action_key"],
+                            eof_disabled=x["eof_disabled"],
                         )
         return form
 
