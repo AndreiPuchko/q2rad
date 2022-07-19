@@ -311,7 +311,7 @@ class Q2RadApp(Q2App):
             + (
                 "q2rad\\scripts\\activate "
                 if "win" in sys.platform
-                else "source q2rad/bin/activate\n"
+                else "source q2rad/bin/activate"
             )
             + "&& pip install --upgrade q2gui"
             + "&& pip install --upgrade q2db"
