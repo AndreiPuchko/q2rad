@@ -6,11 +6,10 @@ if __name__ == "__main__":
 
     main()
 
-import re
 from q2db.db import Q2Db
 from q2gui.q2utils import num
 from q2gui import q2app
-from q2gui.q2dialogs import q2AskYN, q2Mess
+from q2gui.q2dialogs import q2AskYN, q2Mess, q2WaitShow
 
 from q2rad import Q2Form
 from datetime import datetime
@@ -111,13 +110,14 @@ class AppManager(Q2Form):
                         datalen=13,
                         valid=self.export_app,
                     )
-                    self.add_control(
-                        "save_app_2_market",
-                        "Export to q2Market",
-                        control="button",
-                        datalen=14,
-                        valid=self.export_q2market,
-                    )
+                    if os.path.isdir("../q2market"):
+                        self.add_control(
+                            "save_app_2_market",
+                            "Export to q2Market",
+                            control="button",
+                            datalen=14,
+                            valid=self.export_q2market,
+                        )
                     self.add_control("/")
                 if self.add_control("/h", "Import"):
                     self.add_control(
@@ -336,10 +336,16 @@ class AppManager(Q2Form):
     def import_json_data(data):
         db: Q2Db = q2app.q2_app.db_data
         db_tables = db.get_tables()
+        wait_table = q2WaitShow(len(data))
         for table in data:
+            wait_table.step(table)
             if table not in db_tables:
                 continue
+            wait_row = q2WaitShow(len(data[table]))
             db.cursor(f"delete from {table}")
             for row in data[table]:
+                wait_row.step()
                 if not db.raw_insert(table, row):
                     print(db.last_sql_error)
+            wait_row.close()
+        wait_table.close()
