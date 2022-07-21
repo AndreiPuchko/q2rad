@@ -13,6 +13,10 @@ pip install --upgrade pip && python3 -m venv q2rad && source q2rad/bin/activate 
 ```bash
 pip install --upgrade pip && py -m venv q2rad && call q2rad/scripts/activate && pip install --upgrade q2rad  && q2rad
 ```
+**Mac**
+```bash
+python3 -m pip install --upgrade pip && python3 -m venv q2rad && source q2rad/bin/activate && pip install --upgrade q2rad  && q2rad
+```
 ## Concept:
 ```python
 Forms:        #  may have main menu (menubar) definitions
