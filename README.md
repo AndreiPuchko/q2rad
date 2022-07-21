@@ -7,7 +7,7 @@
 ## Install & run
 **Linux**
 ```bash
-mkdir q2rad && cd q2rad && pip install --upgrade pip && python3 -m venv q2rad && source q2rad/bin/activate && pip install --upgrade q2rad  && q2rad
+mkdir q2rad && cd q2rad && py -m pip install --upgrade pip && python3 -m venv q2rad && source q2rad/bin/activate && pip install --upgrade q2rad  && q2rad
 ```
 **Windows**
 ```bash
