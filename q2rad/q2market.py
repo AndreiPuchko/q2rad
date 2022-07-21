@@ -61,6 +61,6 @@ class Q2Market(Q2Form):
                 selected_app["app_url"] += ".json"
             data = json.load(open_url(selected_app["app_url"]))
             AppManager.import_json_app(data)
-            self.q2_app.migrate_db_data()
             # self.q2_app.migrate_db_data()
+            self.q2_app.open_selected_app()
         self.close()

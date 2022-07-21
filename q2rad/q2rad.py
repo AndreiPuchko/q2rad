@@ -13,7 +13,17 @@ from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
 from q2rad.q2actions import Q2Actions
 from q2db.cursor import Q2Cursor
-from q2rad.q2raddb import read_url, open_url
+from q2rad.q2raddb import (
+    read_url,
+    open_url,
+    insert,
+    raw_insert,
+    update,
+    delete,
+    transaction,
+    commit,
+    rollback,
+)
 
 from q2gui import q2app
 from q2rad.q2raddb import q2cursor
@@ -119,6 +129,8 @@ class Q2RadApp(Q2App):
             open(f"{desktop}/q2rad.desktop", "w").writelines("\n".join(desktop_entry))
 
     def on_start(self):
+        # read_url("http://localhost:1234/jenkins.sqlite3.db", waitbar=1)
+
         if not os.path.isfile("poetry.lock"):
             self.load_assets()
             self.check_q2_update()
@@ -127,12 +139,12 @@ class Q2RadApp(Q2App):
     def open_application(self, autoload_enabled=False):
         Q2AppSelect().run(autoload_enabled)
         if self.selected_application != {}:
-            self.open_selected_app()
+            self.open_selected_app(True)
             self.check_app_update()
         else:
             self.close()
 
-    def open_selected_app(self):
+    def open_selected_app(self, go_to_q2market=False):
         self.clear_app_info()
         self.migrate_db_logic()
         self.migrate_db_data()
@@ -144,7 +156,7 @@ class Q2RadApp(Q2App):
         # self.run_modules()
         # self.run_reports()
         # self.run_app_manager()
-        if (
+        if go_to_q2market and (
             max(
                 [
                     self.db_logic.table("forms").row_count(),
@@ -588,7 +600,7 @@ class Q2RadApp(Q2App):
                             child_form=lambda: self.get_form(child_form_name),
                             child_where=x["child_where"],
                             hotkey=x["action_key"],
-                            eof_disabled=1
+                            eof_disabled=1,
                         )
                     else:
                         form.add_action(

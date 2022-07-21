@@ -10,7 +10,7 @@ from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import int_, num
 from q2gui import q2app
-from q2gui.q2dialogs import q2Mess
+from q2gui.q2dialogs import q2Mess, q2WaitShow
 
 from q2rad import Q2Form
 from q2gui.q2form import NEW, COPY
@@ -22,8 +22,24 @@ def open_url(url):
     return urllib.request.urlopen(url)
 
 
-def read_url(url):
-    return open_url(url).read()
+def read_url(url, waitbar=False, chunk_size=10000000):
+    urlop = open_url(url)
+    if waitbar:
+        datalen = int_(urlop.headers["content-length"])
+        chunk_count = int(datalen / chunk_size)
+        rez = b""
+        if chunk_count > 1:
+            w = q2WaitShow(chunk_count)
+            while True:
+                chunk = urlop.read(chunk_size)
+                if chunk:
+                    rez += chunk
+                else:
+                    break
+                w.step()
+            w.close()
+            return rez
+    return urlop.read()
 
 
 class q2cursor(Q2Cursor):
@@ -51,10 +67,45 @@ class q2cursor(Q2Cursor):
             return self
 
 
-def insert(table, row, q2_db=None):
+def get_default_db(q2_db):
     if q2_db is None:
         q2_db = q2app.q2_app.db_data
+    return q2_db
+
+
+def insert(table, row, q2_db=None):
+    q2_db = get_default_db(q2_db)
     return q2_db.insert(table, row)
+
+
+def raw_insert(table, row, q2_db=None):
+    q2_db = get_default_db(q2_db)
+    return q2_db.raw_insert(table, row)
+
+
+def update(table, row, q2_db=None):
+    q2_db = get_default_db(q2_db)
+    return q2_db.update(table, row)
+
+
+def delete(table, row, q2_db=None):
+    q2_db = get_default_db(q2_db)
+    return q2_db.delete(table, row)
+
+
+def transaction(q2_db=None):
+    q2_db = get_default_db(q2_db)
+    return q2_db.transaction()
+
+
+def commit(q2_db=None):
+    q2_db = get_default_db(q2_db)
+    return q2_db.commit()
+
+
+def rollback(q2_db=None):
+    q2_db = get_default_db(q2_db)
+    return q2_db.rollback()
 
 
 class SeqMover:

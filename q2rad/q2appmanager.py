@@ -308,16 +308,26 @@ class AppManager(Q2Form):
 
         data = json.load(open(file))
         self.import_json_app(data)
-        self.q2_app.migrate_db_data()
+        # self.q2_app.migrate_db_data()
+        self.q2_app.open_selected_app()
 
     @staticmethod
     def import_json_app(data):
         db: Q2Db = q2app.q2_app.db_logic
+        db_tables = db.get_tables()
+        wait_table = q2WaitShow(len(data))
         for table in data:
+            wait_table.step(table)
+            if table not in db_tables:
+                continue
+            wait_row = q2WaitShow(len(data[table]))
             db.cursor(f'delete from {table} where name not like "\_%"')
             for row in data[table]:
+                wait_row.step()
                 if not db.insert(table, row):
                     print(db.last_sql_error)
+            wait_row.close()
+        wait_table.close()
 
     def import_data(self, file=""):
         filetype = "JSON(*.json)"
