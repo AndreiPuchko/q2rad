@@ -7,15 +7,15 @@
 ## Install & run
 **Linux**
 ```bash
-pip install --upgrade pip && python3 -m venv q2rad && source q2rad/bin/activate && pip install --upgrade q2rad  && q2rad
+mkdir q2rad && cd q2rad && pip install --upgrade pip && python3 -m venv q2rad && source q2rad/bin/activate && pip install --upgrade q2rad  && q2rad
 ```
 **Windows**
 ```bash
-pip install --upgrade pip && py -m venv q2rad && call q2rad/scripts/activate && pip install --upgrade q2rad  && q2rad
+mkdir q2rad && cd q2rad && pip install --upgrade pip && py -m venv q2rad && call q2rad/scripts/activate && pip install --upgrade q2rad  && q2rad
 ```
 **Mac**
 ```bash
-python3 -m pip install --upgrade pip && python3 -m venv q2rad && source q2rad/bin/activate && python3 -m pip install --upgrade q2rad  && q2rad
+mkdir q2rad && cd q2rad && python3 -m pip install --upgrade pip && python3 -m venv q2rad && source q2rad/bin/activate && python3 -m pip install --upgrade q2rad  && q2rad
 ```
 ## Concept:
 ```python
