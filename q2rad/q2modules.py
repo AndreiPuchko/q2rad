@@ -28,7 +28,14 @@ class Q2Modules(Q2Form):
         self.editor_actions.add_action(
             "Run script", self.editor_script_runner, hotkey="F4"
         )
-        self.add_control("name", _("Name"), datatype="char", datalen=100, pk="*")
+        self.add_control(
+            "name",
+            _("Name"),
+            datatype="char",
+            datalen=100,
+            pk="*",
+            valid=self.name_valid,
+        )
         self.add_control("/")
         self.add_control("/t", "Script")
         self.add_control(
@@ -47,6 +54,16 @@ class Q2Modules(Q2Form):
         self.set_model(model)
         self.add_action("/crud")
         self.add_action("Run", self.script_runner, hotkey="F4", eof_disabled=1)
+
+    def name_valid(self):
+        if self.s.name == "autorun":
+            for x in [
+                'myapp.app_url = ""',
+                'myapp.app_description = ""',
+                'myapp.app_title = ""',
+            ]:
+                if x not in self.s.script:
+                    self.s.script = x + "\n" + self.s.script
 
     def before_crud_save(self):
         code = self.q2_app.code_compiler(self.s.script)
@@ -73,7 +90,8 @@ class Q2Modules(Q2Form):
         self.maximized = True
 
     def after_form_show(self):
-        self.w.script.set_focus()
+        if self.crud_mode == "EDIT":
+            self.w.script.set_focus()
 
     def script_runner(self):
         self.q2_app.code_runner(self.r.script)()
