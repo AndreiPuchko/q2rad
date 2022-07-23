@@ -7,5 +7,5 @@ dist
 q2gui.ini
 *.sqlite
 q2apps.sqlite
-*.sh
-
+./*.sh
+build_and_publish.sh
