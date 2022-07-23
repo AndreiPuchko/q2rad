@@ -6,7 +6,7 @@
     q2gui       (https://pypi.org/project/q2gui)  
     q2report    (https://pypi.org/project/q2report)  
 
-## [Read the docs](docs/index.md)
+## [Read the docs](docs/index.md) 
 ## Install & run
 **Linux**
 ```bash
