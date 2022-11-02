@@ -286,17 +286,20 @@ class Q2AppSelect(Q2Form):
         self.q2_app.migrate_db_logic()
 
         demo_app_url = f"{self.q2_app.q2market_url}/demo_app.json"
-        data = json.load(open_url(demo_app_url))
-        AppManager.import_json_app(data)
-
-        # self.q2_app.migrate_db_data()
-        self.q2_app.open_selected_app()
-
         demo_data_url = f"{self.q2_app.q2market_url}/demo_data.json"
-        data = json.load(open_url(demo_data_url))
-        AppManager.import_json_data(data)
+        response_app = open_url(demo_app_url)
+        response_data = open_url(demo_data_url)
+        if response_app and response_data:
+            data = json.load()
+            AppManager.import_json_app(data)
 
-        self.close()
+            self.q2_app.open_selected_app()
+
+            data = json.load()
+            AppManager.import_json_data(data)
+            self.close()
+        else:
+            q2Mess(_("Can't to load Demo App"))
 
     def _select_application(self, app_data={}):
         q2_app: Q2App = q2app.q2_app

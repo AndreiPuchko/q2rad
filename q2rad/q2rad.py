@@ -266,10 +266,15 @@ class Q2RadApp(Q2App):
         for package in q2_modules:
             w.step()
             latest_version, current_version = self.get_package_versions(package)
-            about.append(
-                f"<b>{package}</b>: {current_version}"
-                f"{'(' + latest_version + ' avaiable)' if current_version!=latest_version else ''}"
-            )
+            if latest_version:
+                if current_version != latest_version:
+                    latest_version_text = f"({latest_version })"
+                else:
+                    latest_version_text = ""
+            else:
+                latest_version_text = _(" (Can't to load packacke info)")
+
+            about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
         w.close()
         q2Mess("<br>".join(about))
 
@@ -277,13 +282,18 @@ class Q2RadApp(Q2App):
         asset_url = f"{self.assets_url}/{name}"
         try:
             asset_content = read_url(asset_url)
+            if asset_content is None:
+                return False
         except Exception:
             print(f"Error reading {asset_url}")
-            return
+            return False
+        
         try:
             open(f"assets/{name}", "wb").write(asset_content)
+            return True
         except Exception:
             print(f"Error writing asset/{name}")
+            return False
 
     def write_restore_file(self, name, content):
         if "win" in sys.platform:
@@ -304,12 +314,18 @@ class Q2RadApp(Q2App):
         icons.append("q2gui.ico")
 
         w = q2WaitShow(len(icons))
+        errors = []
         for x in icons:
             w.step(x)
-            self.asset_file_loader(x)
+            if self.asset_file_loader(x) is False:
+                errors.append(x)
         w.close()
         if os.path.isfile("assets/q2gui.ico"):
             shutil.copyfile("assets/q2gui.ico", "assets/q2rad.ico")
+
+        if errors:
+            q2Mess(_("<b>Loading failed for</b>:<br>") + "<br>".join(errors))
+            return
 
         self.set_icon("assets/q2rad.ico")
 
@@ -363,9 +379,11 @@ class Q2RadApp(Q2App):
             self.make_desktop_shortcut()
 
     def get_package_versions(self, package):
-        latest_version = json.load(
-            open_url(f"https://pypi.python.org/pypi/{package}/json")
-        )["info"]["version"]
+        response = open_url(f"https://pypi.python.org/pypi/{package}/json")
+        if response:
+            latest_version = json.load(response)["info"]["version"]
+        else:
+            latest_version = None
         current_version = sys.modules[package].__version__
         return latest_version, current_version
 
@@ -376,7 +394,8 @@ class Q2RadApp(Q2App):
             if w.step(package):
                 break
             latest_version, current_version = self.get_package_versions(package)
-            if latest_version != current_version:
+            if latest_version != current_version and latest_version:
+
                 runpip = lambda: subprocess.check_call(  # noqa:E731
                     [
                         sys.executable.replace("w.exe", ".exe"),
@@ -389,6 +408,7 @@ class Q2RadApp(Q2App):
                     ],
                     shell=True if "win" in sys.platform else False,
                 )
+
                 try:
                     runpip()
                 except Exception:

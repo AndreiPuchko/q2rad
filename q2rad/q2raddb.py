@@ -16,30 +16,40 @@ from q2rad import Q2Form
 from q2gui.q2form import NEW, COPY
 
 import urllib.request
+from socket import error as SocketError
+# import errno
 
 
 def open_url(url):
-    return urllib.request.urlopen(url)
+    try:
+        response = urllib.request.urlopen(url)
+    except SocketError as e:
+        response = None
+    return response
 
 
 def read_url(url, waitbar=False, chunk_size=10000000):
     urlop = open_url(url)
-    if waitbar:
-        datalen = int_(urlop.headers["content-length"])
-        chunk_count = int(datalen / chunk_size)
-        rez = b""
-        if chunk_count > 1:
-            w = q2WaitShow(chunk_count)
-            while True:
-                chunk = urlop.read(chunk_size)
-                if chunk:
-                    rez += chunk
-                else:
-                    break
-                w.step()
-            w.close()
-            return rez
-    return urlop.read()
+    if urlop:
+        if waitbar:
+            datalen = int_(urlop.headers["content-length"])
+            chunk_count = int(datalen / chunk_size)
+            rez = b""
+            if chunk_count > 1:
+                w = q2WaitShow(chunk_count)
+                while True:
+                    chunk = urlop.read(chunk_size)
+                    if chunk:
+                        rez += chunk
+                    else:
+                        break
+                    w.step()
+                w.close()
+                return rez
+        else:
+            return urlop.read()
+    else:
+        return None
 
 
 class q2cursor(Q2Cursor):
