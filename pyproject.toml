@@ -8,9 +8,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-q2gui = "^0.1.37"
-q2db = "^0.1.10"
-q2report = "^0.1.17"
+q2gui = "^0.1.36"
+q2db = "^0.1.9"
+q2report = "^0.1.16"
 
 [tool.poetry.scripts]
 q2rad = "q2rad.q2rad:main"
