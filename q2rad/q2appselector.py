@@ -290,13 +290,11 @@ class Q2AppSelect(Q2Form):
         response_app = open_url(demo_app_url)
         response_data = open_url(demo_data_url)
         if response_app and response_data:
-            data = json.load()
-            AppManager.import_json_app(data)
+            AppManager.import_json_app(json.load(response_app))
 
             self.q2_app.open_selected_app()
 
-            data = json.load()
-            AppManager.import_json_data(data)
+            AppManager.import_json_data(json.load(response_data))
             self.close()
         else:
             q2Mess(_("Can't to load Demo App"))
