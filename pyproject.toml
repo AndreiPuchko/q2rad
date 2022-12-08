@@ -7,7 +7,7 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8,<4.0"
 q2gui = "^0.1.36"
 q2db = "^0.1.9"
 q2report = "^0.1.16"
