@@ -151,7 +151,7 @@ class Q2RadApp(Q2App):
         # DEBUG
         # self.run_forms()
         # self.run_queries()
-        self.run_modules()
+        # self.run_modules()
         # self.run_reports()
         # self.run_app_manager()
         if go_to_q2market and (
@@ -635,19 +635,6 @@ class Q2RadApp(Q2App):
         return traceback.format_exc().replace("\n", "<br>").replace(" ", "&nbsp;")
 
     def code_compiler(self, script):
-        try:
-            code = compile(script, "'<worker>'", "exec")
-            return {"code": code, "error": ""}
-        except Exception:
-            trace = self.code_error()
-            return {
-                "code": False,
-                "error": f"""Compile error:<br><br>{trace}""",
-            }
-
-    def code_runner(self, script, form=None, __name__="__main__"):
-        _form = form
-        # to provide return ability for exec
         if "return" in script:
 
             def count_indent_spaces(line):
@@ -676,6 +663,19 @@ class Q2RadApp(Q2App):
                 nsl.append(x)
             script = "\n".join(nsl)
 
+        try:
+            code = compile(script, "'<worker>'", "exec")
+            return {"code": code, "error": ""}
+        except Exception:
+            trace = self.code_error()
+            return {
+                "code": False,
+                "error": f"""Compile error:<br><br>{trace}""",
+            }
+
+    def code_runner(self, script, form=None, __name__="__main__"):
+        _form = form
+        # to provide return ability for exec
         def real_runner():
             # make exec stop on return
             class ReturnEvent(Exception):
