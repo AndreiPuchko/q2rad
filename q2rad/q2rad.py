@@ -1,5 +1,5 @@
 import sys
-from xmlrpc.client import Marshaller
+import re
 
 if __name__ == "__main__":
 
@@ -65,7 +65,7 @@ def get_report(report_name):
 
 
 def run_module(module_name):
-    q2app.q2_app.run_module(module_name)
+    return q2app.q2_app.run_module(module_name)
 
 
 class Q2RadApp(Q2App):
@@ -129,8 +129,6 @@ class Q2RadApp(Q2App):
             open(f"{desktop}/q2rad.desktop", "w").writelines("\n".join(desktop_entry))
 
     def on_start(self):
-        # read_url("http://localhost:1234/jenkins.sqlite3.db", waitbar=1)
-
         if not os.path.isfile("poetry.lock"):
             self.load_assets()
             self.check_q2_update()
@@ -153,7 +151,7 @@ class Q2RadApp(Q2App):
         # DEBUG
         # self.run_forms()
         # self.run_queries()
-        # self.run_modules()
+        self.run_modules()
         # self.run_reports()
         # self.run_app_manager()
         if go_to_q2market and (
@@ -287,7 +285,7 @@ class Q2RadApp(Q2App):
         except Exception:
             print(f"Error reading {asset_url}")
             return False
-        
+
         try:
             open(f"assets/{name}", "wb").write(asset_content)
             return True
@@ -637,7 +635,6 @@ class Q2RadApp(Q2App):
         return traceback.format_exc().replace("\n", "<br>").replace(" ", "&nbsp;")
 
     def code_compiler(self, script):
-        script = script.replace("return", "pass;")
         try:
             code = compile(script, "'<worker>'", "exec")
             return {"code": code, "error": ""}
@@ -651,14 +648,31 @@ class Q2RadApp(Q2App):
     def code_runner(self, script, form=None, __name__="__main__"):
         _form = form
         # to provide return ability for exec
-        if "return " in script:
+        if "return" in script:
+
+            def count_indent_spaces(line):
+                spaces_count = 0
+                for x in line:
+                    if x == " ":
+                        spaces_count += 1
+                    else:
+                        break
+                return spaces_count
+
+            def_offset_list = []
             nsl = []
             for x in script.split("\n"):
-                if "return " in x:
-                    if x.strip() == "return":
-                        x = x.replace("return", "raise ReturnEvent")
-                    else:
-                        x = x.replace("return", "RETURN = ") + "; raise ReturnEvent"
+                if "def" in x:
+                    def_offset_list.append(count_indent_spaces(x))
+                elif def_offset_list:
+                    if count_indent_spaces(x) <= def_offset_list[-1]:
+                        def_offset_list.pop()
+                elif re.match(r".*return\W*.*", x):
+                    if "return " in x:
+                        if x.strip() == "return":
+                            x = x.replace("return", "raise ReturnEvent")
+                        else:
+                            x = x.replace("return", "RETURN = ") + "; raise ReturnEvent"
                 nsl.append(x)
             script = "\n".join(nsl)
 
@@ -696,7 +710,8 @@ class Q2RadApp(Q2App):
     def run_module(self, name=""):
         script = self.db_logic.get("modules", f"name = '{name}'", "script")
         if script:
-            return self.code_runner(script)()
+            ret = self.code_runner(script)()
+            return ret
 
 
 def main():
