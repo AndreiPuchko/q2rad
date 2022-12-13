@@ -71,6 +71,7 @@ def run_module(module_name):
 class Q2RadApp(Q2App):
     def __init__(self, title=""):
         super().__init__(title)
+        self.settings_title = "q2RAD"
         self.db = None
 
         self.db_data = None
@@ -81,19 +82,13 @@ class Q2RadApp(Q2App):
 
         self.q2market_path = "../q2market"
 
-        self.q2market_url = (
-            "https://raw.githubusercontent.com/AndreiPuchko/q2market/main/"
-        )
+        self.q2market_url = "https://raw.githubusercontent.com/AndreiPuchko/q2market/main/"
 
-        self.assets_url = (
-            "https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
-        )
+        self.assets_url = "https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
 
         qss_file = "q2gui.qss"
         if not os.path.isfile(qss_file):
-            qss_url = (
-                "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/q2gui.qss"
-            )
+            qss_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/q2gui.qss"
             open(qss_file, "w").write(read_url(qss_url).decode("utf-8"))
 
         if os.path.isfile(qss_file):
@@ -167,10 +162,7 @@ class Q2RadApp(Q2App):
             )
             <= 0
         ):
-            if (
-                q2AskYN("Application is empty! Would you like to download some App?")
-                == 2
-            ):
+            if q2AskYN("Application is empty! Would you like to download some App?") == 2:
                 Q2Market().run()
 
     def migrate_db_data(self):
@@ -234,13 +226,13 @@ class Q2RadApp(Q2App):
 
         self.create_form_menu()
 
-        self.dev_mode = self.selected_application.get("dev_mode")
+        self.dev_mode = self.selected_application.get("dev_mode") or os.path.isdir(self.q2market_path)
 
         if self.dev_mode:
-            self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
-            self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode)
-            self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
-            self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
+            self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode and 0)
+            self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode and 0)
+            self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode and 0)
+            self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode and 0)
         self.build_menu()
         # self.show_toolbar(False)
 
@@ -334,11 +326,7 @@ class Q2RadApp(Q2App):
         self.write_restore_file(
             "update_q2rad",
             ("" if "win" in sys.platform else "#!/bin/bash\n")
-            + (
-                "q2rad\\scripts\\activate "
-                if "win" in sys.platform
-                else "source q2rad/bin/activate"
-            )
+            + ("q2rad\\scripts\\activate " if "win" in sys.platform else "source q2rad/bin/activate")
             + "&& pip install --upgrade q2gui"
             + "&& pip install --upgrade q2db"
             + "&& pip install --upgrade q2report"
@@ -350,9 +338,7 @@ class Q2RadApp(Q2App):
             "run_q2rad",
             ("" if "win" in sys.platform else "#!/bin/bash\n")
             + (
-                "start q2rad\\scripts\\pythonw.exe -m q2rad"
-                if "win" in sys.platform
-                else "q2rad/bin/q2rad\n"
+                "start q2rad\\scripts\\pythonw.exe -m q2rad" if "win" in sys.platform else "q2rad/bin/q2rad\n"
             ),
         )
         if "win" in sys.platform:
@@ -416,16 +402,10 @@ class Q2RadApp(Q2App):
                         pass
 
                 latest_version, new_current_version = self.get_package_versions(package)
-                upgraded.append(
-                    f"{package} - "
-                    f"<b>{current_version}</b> => "
-                    f"<b>{latest_version}</b>"
-                )
+                upgraded.append(f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>")
         w.close()
         if upgraded:
-            mess = (
-                "Upgrading complete!<p>" "The program will be restarted!" "<p><p>"
-            ) + "<p>".join(upgraded)
+            mess = ("Upgrading complete!<p>" "The program will be restarted!" "<p><p>") + "<p>".join(upgraded)
         else:
             mess = "Updates not found!<p>"
         q2Mess(mess)
@@ -441,12 +421,16 @@ class Q2RadApp(Q2App):
     def check_app_update(self):
         if self.app_url and self.app_version:
             market_version = read_url(self.app_url + ".version").decode("utf-8")
+            print(self.app_url + ".version")
             if market_version != self.app_version:
-                if q2AskYN(
-                    f"Update for App <b>{self.app_title}</b> detected!"
-                    f"<p>Current version <b>{self.app_version}</b>"
-                    f"<p>New version <b>{market_version}</b>"
-                    "<p>Download and install?"
+                if (
+                    q2AskYN(
+                        f"Update for App <b>{self.app_title}</b> detected!"
+                        f"<p>Current version <b>{self.app_version}</b>"
+                        f"<p>New version <b>{market_version}</b>"
+                        "<p>Download and install?"
+                    )
+                    == 2
                 ):
                     data = json.load(open_url(self.app_url + ".json"))
                     AppManager.import_json_app(data)
@@ -494,11 +478,7 @@ class Q2RadApp(Q2App):
             self.db_logic,
         )
         for x in cu.records():
-            menu_path = (
-                x["menu_path"]
-                + "|"
-                + (x["menu_text"] if x["menu_text"] else x["title"])
-            )
+            menu_path = x["menu_path"] + "|" + (x["menu_text"] if x["menu_text"] else x["title"])
 
             def menu_worker(name):
                 def real_worker():
@@ -595,9 +575,7 @@ class Q2RadApp(Q2App):
 
         # add actions
         if form_dic["form_table"]:
-            form_cursor: Q2Cursor = self.db_data.table(
-                table_name=form_dic["form_table"]
-            )
+            form_cursor: Q2Cursor = self.db_data.table(table_name=form_dic["form_table"])
             form_model = Q2CursorModel(form_cursor)
             form.set_model(form_model)
             sql = f"select * from actions where name = '{name}' order by seq"
@@ -612,9 +590,7 @@ class Q2RadApp(Q2App):
                         child_form_name = x["child_form"]
                         form.add_action(
                             x["action_text"],
-                            self.code_runner(x["action_worker"])
-                            if x["action_worker"]
-                            else None,
+                            self.code_runner(x["action_worker"]) if x["action_worker"] else None,
                             child_form=lambda: self.get_form(child_form_name),
                             child_where=x["child_where"],
                             hotkey=x["action_key"],
@@ -623,9 +599,7 @@ class Q2RadApp(Q2App):
                     else:
                         form.add_action(
                             x["action_text"],
-                            self.code_runner(x["action_worker"], form=form)
-                            if x["action_worker"]
-                            else None,
+                            self.code_runner(x["action_worker"], form=form) if x["action_worker"] else None,
                             hotkey=x["action_key"],
                             eof_disabled=x["eof_disabled"],
                         )
@@ -676,8 +650,10 @@ class Q2RadApp(Q2App):
     def code_runner(self, script, form=None, __name__="__main__"):
         _form = form
         # to provide return ability for exec
+
         def real_runner():
             # make exec stop on return
+
             class ReturnEvent(Exception):
                 pass
 
@@ -716,7 +692,7 @@ class Q2RadApp(Q2App):
 
 def main():
     app = Q2RadApp("q2RAD")
-    app.dev_mode = 1
+    app.dev_mode = 0
     app.run()
 
 

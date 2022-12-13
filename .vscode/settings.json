@@ -7,9 +7,6 @@
         "poetry.lock": "ini",
     },
     "python.formatting.provider": "black",
-    "python.linting.flake8Args": [
-        "--max-line-length=110"
-    ],
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -25,6 +22,9 @@
         "../q2gui",
         "../q2db",
         "../q2report"
+    ],
+    "python.linting.flake8Args": [
+        "--max-line-length = 110"
     ],
     
 }

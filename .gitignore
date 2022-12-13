@@ -1,7 +1,7 @@
 *.pyc
 *.spec
 __pycache__
-tmp/*
+temp/*
 build
 dist
 q2gui.ini

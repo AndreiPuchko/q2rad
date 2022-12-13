@@ -40,7 +40,7 @@ class Q2RadReport(Q2Report):
     def prepare_output_file(self, output_file):
         rez_name = ""
         if "." not in output_file:
-            rez_name = f"tmp/repo.{output_file}"
+            rez_name = f"temp/repo.{output_file}"
         else:
             form = Q2Form("Report to")
             form.heap.mode = ""
@@ -83,7 +83,7 @@ class Q2RadReport(Q2Report):
             form.do_not_save_geometry = 1
             form.run()
             if form.heap.mode:
-                rez_name = f"tmp/repo.{form.heap.mode}"
+                rez_name = f"temp/repo.{form.heap.mode}"
             else:
                 rez_name = ""
         if rez_name:
@@ -118,7 +118,7 @@ class Q2RadReport(Q2Report):
         self.last_focus_widget.set_focus()
         q2app.q2_app.process_events()
 
-    def run(self, output_file="tmp/repo.html"):
+    def run(self, output_file="temp/repo.html"):
         output_file = self.prepare_output_file(output_file)
         if not output_file:
             return

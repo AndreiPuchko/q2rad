@@ -8,9 +8,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
-q2gui = "^0.1.36"
-q2db = "^0.1.9"
-q2report = "^0.1.16"
+#q2gui = "^0.1.36"
+q2gui = { path = "../q2gui/", develop = true }
+#q2db = "^0.1.9"
+q2db = { path = "../q2db/", develop = true }
+#q2report = "^0.1.16"
+q2report = { path = "../q2report/", develop = true }
 
 [tool.poetry.scripts]
 q2rad = "q2rad.q2rad:main"
@@ -22,3 +25,6 @@ black = {version = "^22.3.0", allow-prereleases = true}
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 110

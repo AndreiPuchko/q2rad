@@ -210,16 +210,16 @@ class AppManager(Q2Form):
 
         version = datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
         app_name = os.path.basename(self.q2_app.app_url)
-        if 0 and (
-            q2AskYN(
-                "Do you really want to save App <br>"
-                f"<b>{app_name}</b>"
-                f"(<font color=blue>{self.q2_app.app_title}</font>)<br>"
-                " to the q2Market?"
-            )
-            != 2
-        ):
-            return
+        # if 0 and (
+        #     q2AskYN(
+        #         "Do you really want to save App <br>"
+        #         f"<b>{app_name}</b>"
+        #         f"(<font color=blue>{self.q2_app.app_title}</font>)<br>"
+        #         " to the q2Market?"
+        #     )
+        #     != 2
+        # ):
+        #     return
         q2market_file = f"{self.q2_app.q2market_path}/q2market.json"
         if os.path.isfile(q2market_file):
             q2market = json.load(open(q2market_file))
@@ -235,12 +235,20 @@ class AppManager(Q2Form):
         app_json = self.get_app_json()
 
         modules = app_json.get("modules")
+        version_line = f"self.app_version = '{version}'"
         if modules:
             for row, dic in enumerate(modules):
                 if dic["name"] == "autorun":
-                    modules[row]["script"] = (
-                        f"myapp.app_version = '{version}'\n" + modules[row]["script"]
-                    )
+                    app_version_not_found = True
+                    rez = []
+                    for line in modules[row]["script"].split("\n"):
+                        if line.startswith("self.app_version"):
+                            app_version_not_found = False
+                            line = version_line
+                        rez.append(line)
+                    if app_version_not_found:
+                        rez.insert(0, version_line)
+                    modules[row]["script"] = "\n".join(rez)
 
         self.export_app(f"{self.q2_app.q2market_path}/{app_name}.json", app_json)
         if app_name == "demo_app":
@@ -249,9 +257,7 @@ class AppManager(Q2Form):
     def export_app(self, file="", app_json=None):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_save_file_dialoq(
-                "Export Application", filter=filetype
-            )
+            file, filetype = q2app.q2_app.get_save_file_dialoq("Export Application", filter=filetype)
         if not file:
             return
         file = self.validate_impexp_file_name(file, filetype)
@@ -275,9 +281,7 @@ class AppManager(Q2Form):
     def export_data(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_save_file_dialoq(
-                "Export Database", filter=filetype
-            )
+            file, filetype = q2app.q2_app.get_save_file_dialoq("Export Database", filter=filetype)
 
         if not file:
             return
@@ -299,9 +303,7 @@ class AppManager(Q2Form):
     def import_app(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_open_file_dialoq(
-                "Import Application", filter=filetype
-            )
+            file, filetype = q2app.q2_app.get_open_file_dialoq("Import Application", filter=filetype)
 
         if not file or not os.path.isfile(file):
             return
@@ -332,9 +334,7 @@ class AppManager(Q2Form):
     def import_data(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_open_file_dialoq(
-                "Import Data", filter=filetype
-            )
+            file, filetype = q2app.q2_app.get_open_file_dialoq("Import Data", filter=filetype)
 
         if not file or not os.path.isfile(file):
             return
