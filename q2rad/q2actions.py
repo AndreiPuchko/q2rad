@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
-from q2rad.q2raddb import  q2cursor, SeqMover
+from q2rad.q2raddb import q2cursor, SeqMover
 from q2gui import q2app
 from q2rad import Q2Form
 
@@ -43,8 +43,8 @@ class Q2Actions(Q2Form, SeqMover):
             to_table="forms",
             to_column="name",
             related="title",
-            nogrid=1,
-            noform=1,
+            # nogrid=1,
+            # noform=1,
         )
         self.add_control("action_text", _("Action text"))
         self.add_control("/")
@@ -60,15 +60,9 @@ class Q2Actions(Q2Form, SeqMover):
                     control="radio",
                     valid=self.action_mode_valid,
                 )
-                self.add_control(
-                    "action_mess", _("Action message"), datatype="char", datalen=100
-                )
-                self.add_control(
-                    "action_icon", _("Action icon"), datatype="char", datalen=100
-                )
-                self.add_control(
-                    "action_key", _("Hot key"), datatype="char", datalen=10
-                )
+                self.add_control("action_mess", _("Action message"), datatype="char", datalen=100)
+                self.add_control("action_icon", _("Action icon"), datatype="char", datalen=100)
+                self.add_control("action_key", _("Hot key"), datatype="char", datalen=10)
                 self.add_control(
                     "eof_disabled",
                     _("Disabled for empty grid"),
@@ -79,12 +73,8 @@ class Q2Actions(Q2Form, SeqMover):
                 self.add_control("/")
 
             if self.add_control("/f", "Child grid"):
-                self.add_control(
-                    "child_form", _("Child form"), datatype="char", datalen=100
-                )
-                self.add_control(
-                    "child_where", _("Child field"), datatype="char", datalen=100
-                )
+                self.add_control("child_form", _("Child form"), datatype="char", datalen=100)
+                self.add_control("child_where", _("Child field"), datatype="char", datalen=100)
                 self.add_control(
                     "child_noshow",
                     _("Don't show"),
@@ -111,9 +101,7 @@ class Q2Actions(Q2Form, SeqMover):
             nogrid="*",
         )
         self.add_control("/t", _("Comment"))
-        self.add_control(
-            "comment", gridlabel=_("Comments"), datatype="bigtext", control="text"
-        )
+        self.add_control("comment", gridlabel=_("Comments"), datatype="bigtext", control="text")
 
     def form_runner(self):
         self.prev_form.run_action("Run")
@@ -130,6 +118,7 @@ class Q2Actions(Q2Form, SeqMover):
                 continue
             else:
                 self.widgets()[x].set_disabled(self.s.action_mode != "2")
+        self.w.name.set_enabled(True)
 
     def before_form_show(self):
         self.action_mode_valid()

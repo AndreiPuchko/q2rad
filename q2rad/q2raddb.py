@@ -7,6 +7,7 @@ if __name__ == "__main__":
     main()
 
 from q2db.cursor import Q2Cursor
+from q2db.db import Q2Db
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import int_, num
 from q2gui import q2app
@@ -17,6 +18,7 @@ from q2gui.q2form import NEW, COPY
 
 import urllib.request
 from socket import error as SocketError
+
 # import errno
 
 
@@ -88,6 +90,19 @@ def insert(table, row, q2_db=None):
     return q2_db.insert(table, row)
 
 
+def insert_if_not_exist(table, row, key_column, q2_db=None):
+    q2_db: Q2Db = get_default_db(q2_db)
+    value = row.get(key_column, "0")
+    if q2_db.get(table, f"{key_column} = '{value}'") == {}:
+        if key_column not in row:
+            row[key_column] = value
+        if "name" not in row:
+            row["name"] = "-"
+        return q2_db.insert(table, row)
+    else:
+        return True
+
+
 def raw_insert(table, row, q2_db=None):
     q2_db = get_default_db(q2_db)
     return q2_db.raw_insert(table, row)
@@ -123,12 +138,8 @@ class SeqMover:
 
     def add_seq_actions(self):
         self.add_action("-")
-        self.add_action(
-            "Move up", self.move_seq_up, icon="arrow-up.png", eof_disabled=1
-        )
-        self.add_action(
-            "Move down", self.move_seq_down, icon="arrow-down.png", eof_disabled=1
-        )
+        self.add_action("Move up", self.move_seq_up, icon="arrow-up.png", eof_disabled=1)
+        self.add_action("Move down", self.move_seq_down, icon="arrow-down.png", eof_disabled=1)
         self.add_action("-")
 
     def move_seq_up(self):

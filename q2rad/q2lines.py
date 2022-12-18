@@ -75,12 +75,12 @@ class Q2Lines(Q2Form, SeqMover):
         self.add_control(
             "name",
             _("Form"),
-            disabled="*",
+            # disabled="*",
             to_table="forms",
             to_column="name",
             related="title",
-            nogrid=1,
-            noform=1,
+            # nogrid=1,
+            # noform=1,
         )
         self.add_control("column", _("Column name"))
         self.add_control("/")
@@ -129,7 +129,7 @@ class Q2Lines(Q2Form, SeqMover):
 
                 self.add_control(
                     "migrate",
-                    _("Migrate to database"),
+                    _("Migrate"),
                     control="check",
                     valid=self.database_valid,
                 )

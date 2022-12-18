@@ -61,7 +61,7 @@ class Q2Forms(Q2Form, SeqMover):
 
         self.add_seq_actions()
 
-        self.add_action("Migrate to DB", self.q2_app.migrate_db_data, eof_disabled=1)
+        self.add_action("Migrate", self.q2_app.migrate_db_data, eof_disabled=1)
         self.add_action("Run", self.form_runner, hotkey="F4", eof_disabled=1)
 
     def create_form(self):

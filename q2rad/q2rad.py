@@ -17,6 +17,7 @@ from q2rad.q2raddb import (
     read_url,
     open_url,
     insert,
+    insert_if_not_exist,
     raw_insert,
     update,
     delete,
@@ -76,11 +77,12 @@ class Q2RadApp(Q2App):
 
         self.db_data = None
         self.db_logic = None
-        self.dev_mode = False
         self.selected_application = {}
         self.clear_app_info()
 
         self.q2market_path = "../q2market"
+
+        self.dev_mode = os.path.isdir(self.q2market_path)
 
         self.q2market_url = "https://raw.githubusercontent.com/AndreiPuchko/q2market/main/"
 
@@ -229,10 +231,10 @@ class Q2RadApp(Q2App):
         self.dev_mode = self.selected_application.get("dev_mode") or os.path.isdir(self.q2market_path)
 
         if self.dev_mode:
-            self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode and 0)
-            self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode and 0)
-            self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode and 0)
-            self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode and 0)
+            self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
+            self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode)
+            self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
+            self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
         self.build_menu()
         # self.show_toolbar(False)
 
@@ -419,9 +421,9 @@ class Q2RadApp(Q2App):
         pass
 
     def check_app_update(self):
-        if self.app_url and self.app_version:
+
+        if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version:
             market_version = read_url(self.app_url + ".version").decode("utf-8")
-            print(self.app_url + ".version")
             if market_version != self.app_version:
                 if (
                     q2AskYN(
@@ -513,6 +515,9 @@ class Q2RadApp(Q2App):
             return
         form_dic = self.db_logic.get("forms", f"name ='{name}'")
 
+        if form_dic == {}:
+            return None
+
         sql = f"""
             select
                 column
@@ -540,7 +545,7 @@ class Q2RadApp(Q2App):
             where name = '{name}'
             order by seq
             """
-        cu = q2cursor(sql, self.db_logic)
+        cu: Q2Cursor = q2cursor(sql, self.db_logic)
 
         form = Q2Form(form_dic["title"])
         form.no_view_action = 1
