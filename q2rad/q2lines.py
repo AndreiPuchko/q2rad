@@ -22,17 +22,17 @@ _ = gettext.gettext
 SQL_DATATYPES = (
     "char",
     "varchar",
-    "text",
-    "longtext",
+    "int",
+    "bigint",
+    "integer",
     "num",
     "dec",
     "decimal",
+    "text",
+    "longtext",
     "date",
     "time",
     "datetime",
-    "integer",
-    "bigint",
-    "int",
 )
 HAS_DATADEC = ("dec", "numeric", "num")
 HAS_DATALEN = ("char", "varchar") + HAS_DATADEC

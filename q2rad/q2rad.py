@@ -13,18 +13,7 @@ from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
 from q2rad.q2actions import Q2Actions
 from q2db.cursor import Q2Cursor
-from q2rad.q2raddb import (
-    read_url,
-    open_url,
-    insert,
-    insert_if_not_exist,
-    raw_insert,
-    update,
-    delete,
-    transaction,
-    commit,
-    rollback,
-)
+from q2rad.q2raddb import *  # noqa:F403
 
 from q2gui import q2app
 from q2rad.q2raddb import q2cursor
@@ -49,6 +38,7 @@ import os
 import json
 import subprocess
 import shutil
+import types
 
 
 q2_modules = ("q2rad", "q2gui", "q2db", "q2report")
@@ -91,7 +81,7 @@ class Q2RadApp(Q2App):
         qss_file = "q2gui.qss"
         if not os.path.isfile(qss_file):
             qss_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/q2gui.qss"
-            open(qss_file, "w").write(read_url(qss_url).decode("utf-8"))
+            open(qss_file, "w").write(read_url(qss_url).decode("utf-8"))  # noqa F405
 
         if os.path.isfile(qss_file):
             self.style_file = qss_file
@@ -273,7 +263,7 @@ class Q2RadApp(Q2App):
     def asset_file_loader(self, name):
         asset_url = f"{self.assets_url}/{name}"
         try:
-            asset_content = read_url(asset_url)
+            asset_content = read_url(asset_url)  # noqa F405
             if asset_content is None:
                 return False
         except Exception:
@@ -365,7 +355,7 @@ class Q2RadApp(Q2App):
             self.make_desktop_shortcut()
 
     def get_package_versions(self, package):
-        response = open_url(f"https://pypi.python.org/pypi/{package}/json")
+        response = open_url(f"https://pypi.python.org/pypi/{package}/json")  # noqa F405
         if response:
             latest_version = json.load(response)["info"]["version"]
         else:
@@ -423,7 +413,7 @@ class Q2RadApp(Q2App):
     def check_app_update(self):
 
         if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version:
-            market_version = read_url(self.app_url + ".version").decode("utf-8")
+            market_version = read_url(self.app_url + ".version").decode("utf-8")  # noqa F405
             if market_version != self.app_version:
                 if (
                     q2AskYN(
@@ -434,7 +424,7 @@ class Q2RadApp(Q2App):
                     )
                     == 2
                 ):
-                    data = json.load(open_url(self.app_url + ".json"))
+                    data = json.load(open_url(self.app_url + ".json"))  # noqa F405
                     AppManager.import_json_app(data)
                     self.open_selected_app()
 
@@ -570,18 +560,22 @@ class Q2RadApp(Q2App):
         form.after_delete = self.code_runner(form_dic["after_delete"], form)
 
         # add controls
+        is_seq_column = False  # special column - seq - sequence
         for x in cu.records():
             if x.get("to_form"):
                 x["to_form"] = self.get_form(x["to_form"])
             x["valid"] = self.code_runner(x["valid"], form)
             # x["show"] = self.code_runner(x["show"], form)
             # x["when"] = self.code_runner(x["when"], form)
+            if x["column"] == "seq":
+                is_seq_column = True
             form.add_control(**x)
 
         # add actions
         if form_dic["form_table"]:
             form_cursor: Q2Cursor = self.db_data.table(table_name=form_dic["form_table"])
             form_model = Q2CursorModel(form_cursor)
+            form_model.set_order(form_dic["form_table_sort"]).refresh()
             form.set_model(form_model)
             sql = f"select * from actions where name = '{name}' order by seq"
             cu = q2cursor(sql, self.db_logic)
@@ -608,6 +602,11 @@ class Q2RadApp(Q2App):
                             hotkey=x["action_key"],
                             eof_disabled=x["eof_disabled"],
                         )
+            if is_seq_column:
+                form.move_seq_up = types.MethodType(SeqMover.move_seq_up, form)  # noqa F405
+                form.move_seq_down = types.MethodType(SeqMover.move_seq_down, form)  # noqa F405
+                SeqMover.add_seq_actions(form)  # noqa F405
+
         return form
 
     def code_error(self):

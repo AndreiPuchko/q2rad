@@ -17,7 +17,9 @@ from q2rad import Q2Form
 from q2gui.q2form import NEW, COPY
 
 import urllib.request
+
 from socket import error as SocketError
+import datetime
 
 # import errno
 
@@ -25,7 +27,7 @@ from socket import error as SocketError
 def open_url(url):
     try:
         response = urllib.request.urlopen(url)
-    except SocketError as e:
+    except SocketError:
         response = None
     return response
 
@@ -131,6 +133,10 @@ def commit(q2_db=None):
 def rollback(q2_db=None):
     q2_db = get_default_db(q2_db)
     return q2_db.rollback()
+
+
+def today():
+    return datetime.date.today()
 
 
 class SeqMover:
