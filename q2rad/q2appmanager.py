@@ -9,7 +9,7 @@ if __name__ == "__main__":
 from q2db.db import Q2Db
 from q2gui.q2utils import num
 from q2gui import q2app
-from q2gui.q2dialogs import q2AskYN, q2Mess, q2WaitShow
+from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow
 
 from q2rad import Q2Form
 from datetime import datetime
@@ -317,12 +317,12 @@ class AppManager(Q2Form):
     def import_json_app(data):
         db: Q2Db = q2app.q2_app.db_logic
         db_tables = db.get_tables()
-        wait_table = q2WaitShow(len(data))
+        wait_table = Q2WaitShow(len(data))
         for table in data:
             wait_table.step(table)
             if table not in db_tables:
                 continue
-            wait_row = q2WaitShow(len(data[table]))
+            wait_row = Q2WaitShow(len(data[table]))
             db.cursor(f'delete from {table} where name not like "\_%"')
             for row in data[table]:
                 wait_row.step()
@@ -346,12 +346,12 @@ class AppManager(Q2Form):
     def import_json_data(data):
         db: Q2Db = q2app.q2_app.db_data
         db_tables = db.get_tables()
-        wait_table = q2WaitShow(len(data))
+        wait_table = Q2WaitShow(len(data))
         for table in data:
             wait_table.step(table)
             if table not in db_tables:
                 continue
-            wait_row = q2WaitShow(len(data[table]))
+            wait_row = Q2WaitShow(len(data[table]))
             db.cursor(f"delete from {table}")
             for row in data[table]:
                 wait_row.step()

@@ -18,7 +18,7 @@ from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
 from q2rad.q2raddb import q2cursor
 from q2gui import q2app
-from q2gui.q2dialogs import q2WaitShow, q2Wait, q2WaitMax, q2WaitStep
+from q2gui.q2dialogs import Q2WaitShow, q2Wait, q2WaitMax, q2WaitStep
 import json
 import os
 import gettext
@@ -104,7 +104,7 @@ class Q2RadReport(Q2Report):
 
     def data_start(self):
         super().data_start()
-        self.waitbar = q2WaitShow(
+        self.waitbar = Q2WaitShow(
             self.data_cursors[self.current_data_set_name].row_count()
         )
 
@@ -125,7 +125,7 @@ class Q2RadReport(Q2Report):
         self.data_cursors = {}
 
         data = {}
-        # w = q2WaitShow("Open queries:", len(self.report_content["queries"]))
+        # w = Q2WaitShow("Open queries:", len(self.report_content["queries"]))
         # for x in self.report_content["queries"]:
         #     w.step(x)
         #     sql = self.report_content["queries"][x]

@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 
 from q2rad import Q2App, Q2Form
-from q2gui.q2dialogs import q2Mess, q2AskYN, q2WaitShow
+from q2gui.q2dialogs import q2Mess, q2AskYN, Q2WaitShow
 from q2gui.q2model import Q2CursorModel
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
@@ -244,7 +244,7 @@ class Q2RadApp(Q2App):
         about.append("<b>q2RAD</b>")
         about.append("Versions:")
         about.append(f"<b>Python</b>: {sys.version}<p>")
-        w = q2WaitShow(len(q2_modules))
+        w = Q2WaitShow(len(q2_modules))
         for package in q2_modules:
             w.step()
             latest_version, current_version = self.get_package_versions(package)
@@ -295,7 +295,7 @@ class Q2RadApp(Q2App):
         icons = [getattr(q2app, x) for x in dir(q2app) if x.endswith("ICON")]
         icons.append("q2gui.ico")
 
-        w = q2WaitShow(len(icons))
+        w = Q2WaitShow(len(icons))
         errors = []
         for x in icons:
             w.step(x)
@@ -365,7 +365,7 @@ class Q2RadApp(Q2App):
 
     def update_packages(self):
         upgraded = []
-        w = q2WaitShow(len(q2_modules))
+        w = Q2WaitShow(len(q2_modules))
         for package in q2_modules:
             if w.step(package):
                 break

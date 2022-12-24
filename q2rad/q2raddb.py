@@ -11,7 +11,7 @@ from q2db.db import Q2Db
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import int_, num
 from q2gui import q2app
-from q2gui.q2dialogs import q2Mess, q2WaitShow
+from q2gui.q2dialogs import q2Mess, Q2WaitShow
 
 from q2rad import Q2Form
 from q2gui.q2form import NEW, COPY
@@ -40,7 +40,7 @@ def read_url(url, waitbar=False, chunk_size=10000000):
             chunk_count = int(datalen / chunk_size)
             rez = b""
             if chunk_count > 1:
-                w = q2WaitShow(chunk_count)
+                w = Q2WaitShow(chunk_count)
                 while True:
                     chunk = urlop.read(chunk_size)
                     if chunk:
