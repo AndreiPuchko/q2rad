@@ -26,6 +26,7 @@ from q2rad.q2modules import Q2Modules
 from q2rad.q2forms import Q2Forms
 from q2rad.q2lines import Q2Lines
 from q2rad.q2market import Q2Market
+from q2rad.q2packages import Q2Packages
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
@@ -118,7 +119,7 @@ class Q2RadApp(Q2App):
     def on_start(self):
         if not os.path.isfile("poetry.lock"):
             self.load_assets()
-            self.check_q2_update()
+            self.check_packages_update()
         self.open_application(autoload_enabled=True)
 
     def open_application(self, autoload_enabled=False):
@@ -126,6 +127,8 @@ class Q2RadApp(Q2App):
         if self.selected_application != {}:
             self.open_selected_app(True)
             self.check_app_update()
+            self.update_app_packages()
+            print("update pack done")
         else:
             self.close()
 
@@ -141,6 +144,7 @@ class Q2RadApp(Q2App):
         # self.run_modules()
         # self.run_reports()
         # self.run_app_manager()
+
         if go_to_q2market and (
             max(
                 [
@@ -197,6 +201,7 @@ class Q2RadApp(Q2App):
             Q2Queries(),
             Q2Actions(),
             Q2Reports(),
+            Q2Packages(),
         ):
             for x in form.get_table_schema():
                 data_schema.add(**x)
@@ -225,8 +230,10 @@ class Q2RadApp(Q2App):
             self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode)
             self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
             self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
+            self.add_menu("Dev|Packages", self.run_packages, toolbar=self.dev_mode)
         self.build_menu()
         # self.show_toolbar(False)
+        pass
 
     def about(self, text=""):
         about = []
@@ -360,36 +367,22 @@ class Q2RadApp(Q2App):
             latest_version = json.load(response)["info"]["version"]
         else:
             latest_version = None
-        current_version = sys.modules[package].__version__
+        current_version = sys.modules[package].__version__ if package in sys.modules else ""
         return latest_version, current_version
 
-    def update_packages(self):
+    def update_packages(self, packages_list):
         upgraded = []
-        w = Q2WaitShow(len(q2_modules))
-        for package in q2_modules:
+        w = Q2WaitShow(len(packages_list))
+        for package in packages_list:
             if w.step(package):
                 break
             latest_version, current_version = self.get_package_versions(package)
             if latest_version != current_version and latest_version:
-
-                runpip = lambda: subprocess.check_call(  # noqa:E731
-                    [
-                        sys.executable.replace("w.exe", ".exe"),
-                        "-m",
-                        "pip",
-                        "install",
-                        "--upgrade",
-                        "--no-cache-dir",
-                        f"{package}=={latest_version}",
-                    ],
-                    shell=True if "win" in sys.platform else False,
-                )
-
                 try:
-                    runpip()
+                    self.pip_install(package, latest_version)
                 except Exception:
                     try:
-                        runpip()
+                        self.pip_install(package, latest_version)
                     except Exception:
                         pass
 
@@ -410,7 +403,35 @@ class Q2RadApp(Q2App):
             # self.close()
         pass
 
+    def pip_install(self, package, latest_version):
+        return subprocess.check_call(
+            [
+                sys.executable.replace("w.exe", ".exe"),
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "--no-cache-dir",
+                f"{package}=={latest_version}",
+            ],
+            shell=True if "win" in sys.platform else False,
+        )
+
+    def pip_uninstall(self, package):
+        return subprocess.check_call(
+            [
+                sys.executable.replace("w.exe", ".exe"),
+                "-m",
+                "pip",
+                "uninstall",
+                "-y",
+                f"{package}",
+            ],
+            shell=True if "win" in sys.platform else False,
+        )
+
     def check_app_update(self):
+        # self.update_app_packages()
 
         if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version:
             market_version = read_url(self.app_url + ".version").decode("utf-8")  # noqa F405
@@ -428,23 +449,41 @@ class Q2RadApp(Q2App):
                     AppManager.import_json_app(data)
                     self.open_selected_app()
 
-    def check_q2_update(self):
+    def update_app_packages(self):
+        if os.path.isdir(".vscode"):
+            # because of falls when running under VSCODE
+            return
+
+        extra_packages = [
+            x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()
+        ]
+        for x in extra_packages:
+            __import__(x)
+
+        self.check_packages_update(extra_packages)
+
+    def check_packages_update(self, packages_list=q2_modules):
         can_upgrade = False
-        for package in q2_modules:
+        list_2_upgrade = []
+        for package in packages_list:
             latest_version, current_version = self.get_package_versions(package)
-            can_upgrade = latest_version != current_version
+            if latest_version != current_version:
+                list_2_upgrade.append(f"<b>{package}</b>: {current_version} > {latest_version}")
+                if not can_upgrade:
+                    can_upgrade = True
             if can_upgrade:
                 break
         if can_upgrade:
             if (
                 q2AskYN(
-                    "Updates for q2* packages are avaiable!<p><p>"
+                    "Updates for packages are avaiable!<p><p>"
+                    f"{', '.join(list_2_upgrade)}<br><br>"
                     "Do you want to proceed with update?<p><p>"
                     "The program will be restarted after the update!"
                 )
                 == 2
             ):
-                self.update_packages()
+                self.update_packages(packages_list)
 
     def run_constants(self):
         Q2Constants().run()
@@ -496,6 +535,9 @@ class Q2RadApp(Q2App):
 
     def run_reports(self):
         Q2Reports().run()
+
+    def run_packages(self):
+        Q2Packages().run()
 
     def run_form(self, name):
         self.get_form(name).run()
