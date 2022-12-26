@@ -1872,7 +1872,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         group_rows = []
         if self.rows_data.role == "table":
             for x in self.get_rows_form_list():
-                if x.rows_data.role.startswith("group_"):
+                if x.rows_data.role.startswith("group_") and x.parent_rows == self:
                     group_rows.append(x)
         for x in range(int(len(group_rows) / 2)):
             group_data.append(

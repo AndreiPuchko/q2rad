@@ -128,7 +128,6 @@ class Q2RadApp(Q2App):
             self.open_selected_app(True)
             self.check_app_update()
             self.update_app_packages()
-            print("update pack done")
         else:
             self.close()
 
