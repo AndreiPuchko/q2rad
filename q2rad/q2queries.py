@@ -9,6 +9,7 @@ if __name__ == "__main__":
 
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel, Q2Model
+from q2gui.q2widget import Q2Widget
 from q2gui.q2app import Q2Actions
 from q2rad.q2raddb import q2cursor
 from q2gui.q2utils import set_dict_default
@@ -37,13 +38,12 @@ class Q2Queries(Q2Form):
         self.add_action("JSON", self.edit_json, eof_disabled=1)
 
     def create_form(self):
-        self.query_editor_form = Q2QueryEdit()
+        # self.query_editor_form = Q2QueryEdit()
 
         self.add_control("name", _("Name"), datatype="char", datalen=100, pk="*")
         self.add_control("/")
-        self.add_control(
-            "query_edit", "", widget=self.query_editor_form, nogrid=1, migrate=0
-        )
+        self.add_control("anchor", "**", control="label")
+        # self.add_control("query_edit", "", widget=self.query_editor_form, nogrid=1, migrate=0)
 
         self.add_control(
             "content",
@@ -60,10 +60,44 @@ class Q2Queries(Q2Form):
         self.maximized = True
 
     def after_form_show(self):
+        self.anchor: Q2Widget = self.w.anchor
+        if self.anchor is not None:
+            self.anchor.set_visible(False)
+
+            self.query_edit_container = Q2QueryEditContainer()
+            w = self.query_edit_container.get_widget()
+            self.widgets()["report_report"] = w
+            self.query_edit_container.form_stack = [w]
+            self.anchor.add_widget_below(w)
+            self.query_edit_container.widget().restore_grid_columns()
+            self.query_editor_form = self.query_edit_container.query_editor_form
+
+        if self.crud_mode == "NEW":
+            self.query_editor_form.set_content("")
+        else:
+            self.query_editor_form.set_content(self.r.content)
+        self.query_editor_form.query_list.set_grid_index(0)
+
+    def after_form_show0(self):
+        self.anchor: Q2Widget = self.w.anchor
+
+        if self.anchor is not None:
+            self.anchor.set_visible(False)
+
+            self.query_editor_form = Q2QueryEdit()
+            w = self.query_editor_form.get_widget()
+            self.widgets()["query_editor_form"] = w
+            self.query_editor_form.form_stack = [w]
+            self.anchor.add_widget_below(w)
+            w.show()
+            self.query_editor_form.widget().restore_grid_columns()
+            w.restore_grid_columns()
+
         if self.crud_mode == "NEW":
             self.query_editor_form.set_content("{}")
         else:
             self.query_editor_form.set_content(self.r.content)
+
         self.query_editor_form.query_list.set_grid_index(0)
         self.query_editor_form.query_list.w.form__grid.set_focus()
 
@@ -96,6 +130,23 @@ class Q2Queries(Q2Form):
             self.set_grid_index(self.current_row)
 
 
+class Q2QueryEditContainer(Q2Form):
+    def __init__(self):
+        super().__init__("Q E")
+
+    def on_init(self):
+        self.query_editor_form = Q2QueryEdit()
+        self.add_control("/v")
+        self.add_control("ql", "", widget=self.query_editor_form, nogrid=1, migrate=0)
+        self.add_control("/")
+
+    # def set_content(self, content):
+    #     self.query_editor_form.set_content(content)
+
+    # def get_content(self, str_mode=True):
+    #     return self.query_editor_form.get_content(str_mode)
+
+
 class Q2QueryEdit(Q2Form):
     def __init__(self):
         super().__init__("Query Edit")
@@ -123,17 +174,14 @@ class Q2QueryEdit(Q2Form):
             self.add_control("pl", "", widget=self.param_list, nogrid=1, migrate=0)
             self.add_control("/")
         self.add_control("code", control="codesql", nogrid=1, valid=self.sql_changed)
+        self.add_control("/")
 
     def set_content(self, content):
         if isinstance(content, str):
             content_json = json.loads(content)
         else:
             content_json = content
-        self.query_list.set_content(
-            content_json.get(
-                "queries", {"new_query":"select * from "}
-            )
-        )
+        self.query_list.set_content(content_json.get("queries", {"new_query": "select * from "}))
         self.param_list.set_content(content_json.get("params", []))
         self.param_list.put_params(self.get_all_sql())
 
@@ -151,6 +199,7 @@ class Q2QueryEdit(Q2Form):
         self.w.run_query_button.fix_default_height()
         self.w.hot_key_action.set_visible(0)
         self.query_list.grid_index_changed()
+        self.query_list.w.form__grid.set_focus()
 
     def sql_changed(self):
         if self.lock_code_widget is True:
@@ -170,6 +219,7 @@ class Q2QueryList(Q2Form):
         self.no_view_action = True
         self.add_control("name", "Name", datatype="char", datalen="50")
         self.add_control("sql", "Sql", datatype="bigtext", nogrid=1, noform=1)
+        self.add_control("/")
         self.set_model(Q2Model())
         self.add_action("/crud")
         self.model.readonly = False
@@ -206,6 +256,7 @@ class Q2QueryList(Q2Form):
 
     def get_content(self):
         content = {x["name"]: x["sql"] for x in self.model.records}
+        print(content)
         return content
 
 
@@ -216,9 +267,8 @@ class Q2ParamList(Q2Form):
         self.no_view_action = True
         self.add_control("name", "Name", datatype="char", datalen="50", disabled="*")
         self.add_control("value", "Value", datatype="text", control="codesql")
-        self.add_control(
-            "hidden", "Hidden", datatype="char", datalen=1, nogrid=1, noform=1
-        )
+        self.add_control("hidden", "Hidden", datatype="char", datalen=1, nogrid=1, noform=1)
+        self.add_control("/")
         self.set_model(Q2Model())
         self.add_action_edit()
         self.model.readonly = False
