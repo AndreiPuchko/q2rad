@@ -25,9 +25,7 @@ class Q2Modules(Q2Form):
 
     def on_init(self):
         self.editor_actions = Q2Actions()
-        self.editor_actions.add_action(
-            "Run script", self.editor_script_runner, hotkey="F4"
-        )
+        self.editor_actions.add_action("Run script", self.editor_script_runner, hotkey="F4")
         self.add_control(
             "name",
             _("Name"),

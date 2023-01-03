@@ -206,6 +206,20 @@ class Q2RadApp(Q2App):
                 data_schema.add(**x)
         self.db_logic.set_schema(data_schema)
 
+    def get_autocompletition_list(self):
+        rez = []
+        tables = (self.db_data.db_schema.get_schema_tables())
+        for ta in tables:
+            rez.append(ta)
+            rez.append(f"d.{ta}")
+            for co in tables[ta]["columns"]:
+                rez.append(f"d.{ta}.{co}")
+                rez.append(f"{ta}.{co}")
+        for x in q2cursor("select const_name from  constants").records():
+            rez.append("c.const.{const_name}".format(**x))
+            rez.append("const.{const_name}".format(**x))
+        return rez
+
     def open_databases(self):
         self.db_data = Q2Db(database_name=self.selected_application["database_data"])
         self.db_logic = Q2Db(database_name=self.selected_application["database_logic"])
@@ -470,13 +484,13 @@ class Q2RadApp(Q2App):
                 list_2_upgrade.append(f"<b>{package}</b>: {current_version} > {latest_version}")
                 if not can_upgrade:
                     can_upgrade = True
-            if can_upgrade:
-                break
+            # if can_upgrade:
+            #     break
         if can_upgrade:
             if (
                 q2AskYN(
                     "Updates for packages are avaiable!<p><p>"
-                    f"{', '.join(list_2_upgrade)}<br><br>"
+                    f"{',<br> '.join(list_2_upgrade)}<br><br>"
                     "Do you want to proceed with update?<p><p>"
                     "The program will be restarted after the update!"
                 )
