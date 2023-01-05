@@ -9,6 +9,7 @@ if __name__ == "__main__":
 from q2gui.q2model import Q2CursorModel
 from q2rad.q2raddb import Q2Cursor, SeqMover, insert
 from q2gui.q2dialogs import q2AskYN
+from q2rad.q2utils import choice_table, choice_column, choice_form
 
 from q2rad import Q2Form
 
@@ -149,18 +150,50 @@ class Q2Lines(Q2Form, SeqMover):
                 self.add_control("/")
             self.add_control("/")  # Linked
             if self.add_control("/f", _("Linked")):
-                self.add_control(
-                    "to_table", _("To table"), datatype="char", datalen=100
-                )
-                self.add_control(
-                    "to_column", _("To field"), datatype="char", datalen=100
-                )
-                self.add_control(
-                    "related", _("Data to show"), datatype="char", datalen=100
-                )
-                self.add_control(
-                    "to_form", _("Form to open"), datatype="char", datalen=100
-                )
+                if self.add_control("/h", _("To table")):
+                    self.add_control(
+                        "select_table",
+                        _("?"),
+                        mess=_("Open list of existing tables"),
+                        control="button",
+                        datalen=3,
+                        valid=self.select_linked_table,
+                    )
+                    self.add_control("to_table", gridlabel=_("To table"), datatype="char", datalen=100)
+                    self.add_control("/")
+                if self.add_control("/h", _("To field")):
+                    self.add_control(
+                        "select_pk",
+                        _("?"),
+                        mess=_("Open list of existing tables"),
+                        control="button",
+                        datalen=3,
+                        valid=self.select_linked_table_pk,
+                    )
+                    self.add_control("to_column", gridlabel=_("To field"), datatype="char", datalen=100)
+                    self.add_control("/")
+                if self.add_control("/h", _("Data to show")):
+                    self.add_control(
+                        "select_column",
+                        _("?"),
+                        mess=_("Open list of existing columns"),
+                        control="button",
+                        datalen=3,
+                        valid=self.select_linked_table_column,
+                    )
+                    self.add_control("related", gridlabel=_("Data to show"), datatype="char", datalen=100)
+                    self.add_control("/")
+                if self.add_control("/h", _("Form to open")):
+                    self.add_control(
+                        "select_form",
+                        _("?"),
+                        mess=_("Open list of existing forms"),
+                        control="button",
+                        datalen=3,
+                        valid=self.select_linked_form,
+                    )
+                    self.add_control("to_form", gridlabel=_("Form to open"), datatype="char", datalen=100)
+                    self.add_control("/")
 
                 self.add_control("/")
             self.add_control("/s")
@@ -197,9 +230,7 @@ class Q2Lines(Q2Form, SeqMover):
             if q2AskYN("Lines list is not empty! Are you sure") != 2:
                 return
 
-        cols = self.q2_app.db_data.db_schema.get_schema_columns(
-            self.prev_form.r.form_table
-        )
+        cols = self.q2_app.db_data.db_schema.get_schema_columns(self.prev_form.r.form_table)
         for x in cols:
             insert(
                 "lines",
@@ -250,3 +281,26 @@ class Q2Lines(Q2Form, SeqMover):
         if not self.s.migrate or self.db.cursor(sql).row_count() > 0:
             self.w.pk.set_disabled()
             self.w.ai.set_disabled()
+
+    def select_linked_table(self):
+        choice = choice_table()
+        if choice:
+            self.s.to_table = choice
+
+    def select_linked_table_pk(self):
+        if self.s.to_table:
+            choice = choice_column(self.s.to_table)
+            if choice:
+                self.s.to_column = choice
+
+    def select_linked_table_column(self):
+        if self.s.to_table:
+            choice = choice_column(self.s.to_table)
+            if choice:
+                self.s.related += ", " if self.s.related else ""
+                self.s.related += choice
+
+    def select_linked_form(self):
+        choice = choice_form()
+        if choice:
+            self.s.to_form = choice

@@ -9,6 +9,7 @@ if __name__ == "__main__":
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2rad.q2raddb import q2cursor, SeqMover
+from q2rad.q2utils import choice_form, choice_column
 from q2gui import q2app
 from q2rad import Q2Form
 
@@ -72,9 +73,28 @@ class Q2Actions(Q2Form, SeqMover):
                 )
                 self.add_control("/")
 
-            if self.add_control("/f", "Child grid"):
-                self.add_control("child_form", _("Child form"), datatype="char", datalen=100)
-                self.add_control("child_where", _("Child field"), datatype="char", datalen=100)
+            if self.add_control("/f", "Child form"):
+                if self.add_control("/h", _("Form name")):
+                    self.add_control(
+                        "Select_child_form",
+                        _("?"),
+                        mess=_("Open list of existing forms"),
+                        control="button",
+                        datalen=3,
+                        valid=self.select_child_form,
+                    )
+                    self.add_control("child_form", gridlabel=_("Child form"), datatype="char", datalen=100)
+                    self.add_control("/")
+                if self.add_control("/h", _("Child where")):
+                    self.add_control(
+                        "Select_child_fk",
+                        _("?"),
+                        mess=_("Open list of existing columns"),
+                        control="button",
+                        datalen=3,
+                        valid=self.select_child_foreign_key,
+                    )
+                    self.add_control("child_where", gridlabel=_("Child where"), datatype="char", datalen=100)
                 self.add_control(
                     "child_noshow",
                     _("Don't show"),
@@ -119,6 +139,26 @@ class Q2Actions(Q2Form, SeqMover):
             else:
                 self.widgets()[x].set_disabled(self.s.action_mode != "2")
         self.w.name.set_enabled(True)
+
+    def select_child_form(self):
+        choice = choice_form()
+        if choice:
+            self.s.child_form = choice
+            if self.s.child_where == "":
+                parent_pk = q2cursor(
+                    f"""select column
+                        from lines
+                        where name='{self.prev_form.r.name}' and pk='*'
+                    """,
+                    self.db,
+                ).r.column
+                self.s.child_where = "={%s}" % parent_pk
+
+    def select_child_foreign_key(self):
+        if self.s.child_where.startswith("=") or self.s.child_where == "":
+            choice = choice_column(self.s.child_form)
+            if choice:
+                self.s.child_where = choice + self.s.child_where
 
     def before_form_show(self):
         self.action_mode_valid()
