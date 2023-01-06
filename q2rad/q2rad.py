@@ -60,6 +60,10 @@ def run_module(module_name):
     return q2app.q2_app.run_module(module_name)
 
 
+def run_form(form_name):
+    return q2app.q2_app.run_form(form_name)
+
+
 class Q2RadApp(Q2App):
     def __init__(self, title=""):
         super().__init__(title)
@@ -189,6 +193,8 @@ class Q2RadApp(Q2App):
                 data_schema.add(**x)
 
         self.db_data.set_schema(data_schema)
+        if self.db_data.migrate_error_list:
+            q2Mess(self.db_data.migrate_error_list)
         self.create_menu()
 
     def migrate_db_logic(self):
@@ -208,7 +214,7 @@ class Q2RadApp(Q2App):
 
     def get_autocompletition_list(self):
         rez = []
-        tables = (self.db_data.db_schema.get_schema_tables())
+        tables = self.db_data.db_schema.get_schema_tables()
         for ta in tables:
             rez.append(ta)
             rez.append(f"d.{ta}")
@@ -642,12 +648,21 @@ class Q2RadApp(Q2App):
                 else:
                     if x["child_form"] and x["child_where"]:
                         child_form_name = x["child_form"]
+
+                        def get_action_form(child_form_name):
+                            def worker():
+                                return self.get_form(child_form_name)
+
+                            return worker
+
                         form.add_action(
                             x["action_text"],
                             self.code_runner(x["action_worker"]) if x["action_worker"] else None,
-                            child_form=lambda: self.get_form(child_form_name),
+                            child_form=get_action_form(child_form_name),
                             child_where=x["child_where"],
                             hotkey=x["action_key"],
+                            child_noshow=x["child_noshow"],
+                            child_copy_mode=x["child_copy_mode"],
                             eof_disabled=1,
                         )
                     else:
@@ -655,6 +670,8 @@ class Q2RadApp(Q2App):
                             x["action_text"],
                             self.code_runner(x["action_worker"], form=form) if x["action_worker"] else None,
                             hotkey=x["action_key"],
+                            no_show=x["child_noshow"],
+                            on_copy=x["child_copy_mode"],
                             eof_disabled=x["eof_disabled"],
                         )
             if is_seq_column:

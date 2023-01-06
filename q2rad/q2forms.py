@@ -9,13 +9,8 @@ if __name__ == "__main__":
 
 from q2db.cursor import Q2Cursor
 
-# from q2db.schema import Q2DbSchema
-
 from q2rad.q2raddb import SeqMover
 from q2gui.q2model import Q2CursorModel
-from q2gui.q2model import Q2Model
-
-# from q2gui.q2utils import int_
 
 from q2gui.q2dialogs import q2Mess
 from q2gui import q2app

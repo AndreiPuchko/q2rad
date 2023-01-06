@@ -95,21 +95,21 @@ class Q2Actions(Q2Form, SeqMover):
                         valid=self.select_child_foreign_key,
                     )
                     self.add_control("child_where", gridlabel=_("Child where"), datatype="char", datalen=100)
-                self.add_control(
-                    "child_noshow",
-                    _("Don't show"),
-                    control="check",
-                    datatype="char",
-                    datalen=1,
-                )
-                self.add_control(
-                    "child_copy_mode",
-                    _("Copy mode"),
-                    pic=_("Ask;Always;Newer"),
-                    control="radio",
-                    datatype="int",
-                )
                 self.add_control("/")
+            self.add_control(
+                "child_noshow",
+                _("Don't show"),
+                control="check",
+                datatype="char",
+                datalen=1,
+            )
+            self.add_control(
+                "child_copy_mode",
+                _("Copy mode"),
+                pic=_("Ask;Always;Newer"),
+                control="radio",
+                datatype="int",
+            )
 
             self.add_control("/s")
         self.add_control("/t", _("Action Script"))
