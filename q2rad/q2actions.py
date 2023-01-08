@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
-from q2rad.q2raddb import q2cursor, SeqMover
+from q2rad.q2raddb import q2cursor
 from q2rad.q2utils import choice_form, choice_column
 from q2gui import q2app
 from q2rad import Q2Form
@@ -18,7 +18,7 @@ import gettext
 _ = gettext.gettext
 
 
-class Q2Actions(Q2Form, SeqMover):
+class Q2Actions(Q2Form):
     def __init__(self):
         super().__init__("Actions")
         self.no_view_action = True
@@ -32,7 +32,7 @@ class Q2Actions(Q2Form, SeqMover):
         self.set_model(model)
 
         self.add_action("/crud")
-        self.add_seq_actions()
+        # self.add_seq_actions()
         self.add_action("Run", self.form_runner, hotkey="F4")
 
     def create_form(self):
@@ -162,4 +162,4 @@ class Q2Actions(Q2Form, SeqMover):
 
     def before_form_show(self):
         self.action_mode_valid()
-        self.next_sequense()
+        # self.next_sequense()

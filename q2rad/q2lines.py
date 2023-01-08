@@ -7,7 +7,7 @@ if __name__ == "__main__":
     main()
 
 from q2gui.q2model import Q2CursorModel
-from q2rad.q2raddb import Q2Cursor, SeqMover, insert
+from q2rad.q2raddb import Q2Cursor, insert
 from q2gui.q2dialogs import q2AskYN
 from q2rad.q2utils import choice_table, choice_column, choice_form
 
@@ -53,7 +53,7 @@ WIDGETS = ("line", "text", "code", "button", "check", "radio", "combo", "list", 
 HAS_PIC = "radio;" "combo;" "list;"
 
 
-class Q2Lines(Q2Form, SeqMover):
+class Q2Lines(Q2Form):
     def __init__(self):
         super().__init__("Lines")
         self.no_view_action = True
@@ -66,7 +66,7 @@ class Q2Lines(Q2Form, SeqMover):
         self.set_model(model)
 
         self.add_action("/crud")
-        self.add_seq_actions()
+        # self.add_seq_actions()
 
         self.add_action("Run", self.form_runner, hotkey="F4")
         self.add_action("Fill", self.filler)
@@ -260,7 +260,7 @@ class Q2Lines(Q2Form, SeqMover):
         self.datatype_valid()
         self.control_valid()
         self.database_valid()
-        self.next_sequense()
+        # self.next_sequense()
 
     def datatype_valid(self):
         self.w.datalen.set_enabled(self.s.datatype in ";".join(HAS_DATALEN))

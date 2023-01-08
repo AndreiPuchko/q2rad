@@ -674,10 +674,6 @@ class Q2RadApp(Q2App):
                             on_copy=x["child_copy_mode"],
                             eof_disabled=x["eof_disabled"],
                         )
-            if is_seq_column:
-                form.move_seq_up = types.MethodType(SeqMover.move_seq_up, form)  # noqa F405
-                form.move_seq_down = types.MethodType(SeqMover.move_seq_down, form)  # noqa F405
-                SeqMover.add_seq_actions(form)  # noqa F405
 
         return form
 
@@ -744,6 +740,7 @@ class Q2RadApp(Q2App):
                 "__name__": __name__,
             }
             code = self.code_compiler(script)
+            # print("code compiled", "\n" ,script)
             if code["code"]:
                 try:
                     exec(code["code"], globals(), __locals_dict)

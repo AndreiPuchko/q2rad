@@ -9,7 +9,6 @@ if __name__ == "__main__":
 
 from q2db.cursor import Q2Cursor
 
-from q2rad.q2raddb import SeqMover
 from q2gui.q2model import Q2CursorModel
 
 from q2gui.q2dialogs import q2Mess
@@ -26,7 +25,7 @@ import gettext
 _ = gettext.gettext
 
 
-class Q2Forms(Q2Form, SeqMover):
+class Q2Forms(Q2Form):
     def __init__(self):
         super().__init__("Forms")
         self.no_view_action = True
@@ -56,7 +55,7 @@ class Q2Forms(Q2Form, SeqMover):
             eof_disabled=1,
         )
 
-        self.add_seq_actions()
+        # self.add_seq_actions()
 
         self.add_action("Migrate", self.q2_app.migrate_db_data, eof_disabled=1)
         self.add_action("Run", self.form_runner, hotkey="F4", eof_disabled=1)
@@ -242,8 +241,8 @@ class Q2Forms(Q2Form, SeqMover):
         name = self.r.name
         self.q2_app.run_form(name)
 
-    def before_form_show(self):
-        self.next_sequense()
+    # def before_form_show(self):
+    #     self.next_sequense()
 
     def before_crud_save(self):
         if self.s.name == "":
