@@ -53,8 +53,15 @@ class Q2Packages(Q2Form):
             if self.r.package_version
             else self.q2_app.get_package_versions(self.r.package_name)[0]
         )
-        self.q2_app.pip_install(self.r.package_name, version)
-        self.q2_app.code_runner(f"import {self.r.package_name}")()
+        if version:
+            try:
+                self.q2_app.pip_install(self.r.package_name, version)
+            except Exception:
+                q2Mess(_(f"pip install <b>{self.r.package_name}</b> error!"))
+            finally:
+                self.q2_app.code_runner(f"import {self.r.package_name}")()
+        else:
+            q2Mess(f"Package <b>{self.r.package_name}</b> not found!")
 
     def info(self):
         latest_version, current_version = self.q2_app.get_package_versions(self.r.package_name)

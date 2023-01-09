@@ -1,5 +1,6 @@
 import sys
 import re
+import importlib
 
 if __name__ == "__main__":
 
@@ -39,7 +40,7 @@ import os
 import json
 import subprocess
 import shutil
-import types
+import pkgutil
 
 
 q2_modules = ("q2rad", "q2gui", "q2db", "q2report")
@@ -128,6 +129,7 @@ class Q2RadApp(Q2App):
 
     def open_application(self, autoload_enabled=False):
         Q2AppSelect().run(autoload_enabled)
+        # __import__("pdfplumber")
         if self.selected_application != {}:
             self.open_selected_app(True)
             self.check_app_update()
@@ -469,16 +471,20 @@ class Q2RadApp(Q2App):
                     self.open_selected_app()
 
     def update_app_packages(self):
-        if os.path.isdir(".vscode"):
-            # because of falls when running under VSCODE
-            return
+        # if os.path.isdir(".vscode"):
+        #     # because of falls when running under VSCODE
+        #     return
 
         extra_packages = [
             x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()
         ]
-        for x in extra_packages:
-            __import__(x)
+        installed_packages = [x.name for x in pkgutil.iter_modules()]
 
+        for x in extra_packages:
+            if x in installed_packages:
+                __import__(x)
+                # importlib.import_module(x)
+                print(x)
         self.check_packages_update(extra_packages)
 
     def check_packages_update(self, packages_list=q2_modules):
@@ -486,7 +492,7 @@ class Q2RadApp(Q2App):
         list_2_upgrade = []
         for package in packages_list:
             latest_version, current_version = self.get_package_versions(package)
-            if latest_version != current_version:
+            if latest_version != current_version and current_version:
                 list_2_upgrade.append(f"<b>{package}</b>: {current_version} > {latest_version}")
                 if not can_upgrade:
                     can_upgrade = True
@@ -621,15 +627,12 @@ class Q2RadApp(Q2App):
         form.after_delete = self.code_runner(form_dic["after_delete"], form)
 
         # add controls
-        is_seq_column = False  # special column - seq - sequence
         for x in cu.records():
             if x.get("to_form"):
                 x["to_form"] = self.get_form(x["to_form"])
             x["valid"] = self.code_runner(x["valid"], form)
             # x["show"] = self.code_runner(x["show"], form)
             # x["when"] = self.code_runner(x["when"], form)
-            if x["column"] == "seq":
-                is_seq_column = True
             form.add_control(**x)
 
         # add actions
@@ -670,8 +673,8 @@ class Q2RadApp(Q2App):
                             x["action_text"],
                             self.code_runner(x["action_worker"], form=form) if x["action_worker"] else None,
                             hotkey=x["action_key"],
-                            no_show=x["child_noshow"],
-                            on_copy=x["child_copy_mode"],
+                            child_noshow=x["child_noshow"],
+                            child_copy_mode=x["child_copy_mode"],
                             eof_disabled=x["eof_disabled"],
                         )
 

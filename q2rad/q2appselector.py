@@ -217,11 +217,11 @@ class Q2AppSelect(Q2Form):
         self.q2_app.sleep(0.2)
         if self.q2_app.keyboard_modifiers() != "":
             return
-        if self.autoload_enabled:
-            cu = q2cursor("select * from applications where autoselect<>''", self.db)
-            if cu.row_count() > 0:
-                self._select_application(cu.record(0))
-                return False
+        # if self.autoload_enabled:
+        #     cu = q2cursor("select * from applications where autoselect<>''", self.db)
+        #     if cu.row_count() > 0:
+        #         self._select_application(cu.record(0))
+        #         return False
         if self.db.table("applications").row_count() <= 0:
             if not os.path.isdir("q2rad_sqlite_databases"):
                 os.mkdir("q2rad_sqlite_databases")
@@ -314,4 +314,9 @@ class Q2AppSelect(Q2Form):
 
     def run(self, autoload_enabled=True):
         self.autoload_enabled = autoload_enabled
-        return super().run()
+        if autoload_enabled:
+            cu = q2cursor("select * from applications where autoselect<>''", self.db)
+            if cu.row_count() > 0:
+                self._select_application(cu.record(0))
+                return False
+        super().run()
