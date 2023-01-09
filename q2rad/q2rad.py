@@ -131,7 +131,7 @@ class Q2RadApp(Q2App):
         if self.selected_application != {}:
             self.open_selected_app(True)
             self.check_app_update()
-            self.update_app_packages()
+            # self.update_app_packages()
         else:
             self.close()
 
@@ -139,6 +139,7 @@ class Q2RadApp(Q2App):
         self.clear_app_info()
         self.migrate_db_logic()
         self.migrate_db_data()
+        self.update_app_packages()
         self.run_module("autorun")
         self.set_title(f"{self.app_title}({self.selected_application.get('name', '')})")
         # DEBUG
@@ -386,7 +387,13 @@ class Q2RadApp(Q2App):
             latest_version = json.load(response)["info"]["version"]
         else:
             latest_version = None
-        current_version = sys.modules[package].__version__ if package in sys.modules else ""
+        # current_version = sys.modules[package].__version__ if package in sys.modules else ""
+        installed_packages = [x.name for x in pkgutil.iter_modules()]
+        if package in installed_packages:
+            current_version = self.code_runner(f"from {package} import __version__ as tmpv;return tmpv")()
+        else:
+            current_version = None
+
         return latest_version, current_version
 
     def update_packages(self, packages_list):
@@ -488,7 +495,7 @@ class Q2RadApp(Q2App):
         list_2_upgrade = []
         for package in packages_list:
             latest_version, current_version = self.get_package_versions(package)
-            if latest_version != current_version and current_version:
+            if latest_version != current_version:
                 list_2_upgrade.append(f"<b>{package}</b>: {current_version} > {latest_version}")
                 if not can_upgrade:
                     can_upgrade = True

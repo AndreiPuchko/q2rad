@@ -65,12 +65,12 @@ class Q2Packages(Q2Form):
 
     def info(self):
         latest_version, current_version = self.q2_app.get_package_versions(self.r.package_name)
-        if not current_version:
-            current_version = "Was not imported; "
-            _cv = self.q2_app.code_runner(
-                f"import {self.r.package_name};return {self.r.package_name}.__version__"
-            )()
-            current_version += f"Installed version: {_cv}"
+        # if not current_version:
+        #     current_version = "Was not imported; "
+        #     _cv = self.q2_app.code_runner(
+        #         f"import {self.r.package_name};return {self.r.package_name}.__version__"
+        #     )()
+        #     current_version += f"Installed version: {_cv}"
         q2Mess(
             f"Package name: <b>{self.r.package_name}</b><br><br>"
             f"Installed version:<b>{current_version}</b><br><br>"
