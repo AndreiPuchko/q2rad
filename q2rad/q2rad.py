@@ -1,6 +1,5 @@
 import sys
 import re
-import importlib
 
 if __name__ == "__main__":
 
@@ -129,7 +128,6 @@ class Q2RadApp(Q2App):
 
     def open_application(self, autoload_enabled=False):
         Q2AppSelect().run(autoload_enabled)
-        # __import__("pdfplumber")
         if self.selected_application != {}:
             self.open_selected_app(True)
             self.check_app_update()
@@ -478,13 +476,11 @@ class Q2RadApp(Q2App):
         extra_packages = [
             x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()
         ]
-        installed_packages = [x.name for x in pkgutil.iter_modules()]
+        # installed_packages = [x.name for x in pkgutil.iter_modules()]
 
-        for x in extra_packages:
-            if x in installed_packages:
-                __import__(x)
-                # importlib.import_module(x)
-                print(x)
+        # for x in extra_packages:
+        #     if x in installed_packages:
+        #         __import__(x)
         self.check_packages_update(extra_packages)
 
     def check_packages_update(self, packages_list=q2_modules):
