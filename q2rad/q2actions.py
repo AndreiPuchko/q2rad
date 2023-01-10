@@ -43,7 +43,7 @@ class Q2Actions(Q2Form):
             disabled="*",
             to_table="forms",
             to_column="name",
-            related="title",
+            related="name",
             # nogrid=1,
             # noform=1,
         )
