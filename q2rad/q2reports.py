@@ -53,11 +53,11 @@ class Q2RadReport(Q2Report):
             form.add_control("/s")
             form.add_control("/v")
             form.add_control(
-                "html",
-                "HTML",
+                "xlsx",
+                "XLSX",
                 control="button",
                 datalen=10,
-                valid=lambda: repo_valid("html"),
+                valid=lambda: repo_valid("xlsx"),
                 eat_enter=1,
             )
             form.add_control(
@@ -69,11 +69,11 @@ class Q2RadReport(Q2Report):
                 eat_enter=1,
             )
             form.add_control(
-                "docx",
-                "XLSX",
+                "html",
+                "HTML",
                 control="button",
                 datalen=10,
-                valid=lambda: repo_valid("xlsx"),
+                valid=lambda: repo_valid("html"),
                 eat_enter=1,
             )
             form.add_control("/")
@@ -92,9 +92,7 @@ class Q2RadReport(Q2Report):
             co = 0
             name, ext = os.path.splitext(rez_name)
             while True:
-                lockfile = (
-                    f"{os.path.dirname(rez_name)}/.~lock.{os.path.basename(rez_name)}#"
-                )
+                lockfile = f"{os.path.dirname(rez_name)}/.~lock.{os.path.basename(rez_name)}#"
                 if os.path.isfile(lockfile):
                     co += 1
                     rez_name = f"{name}{co:03d}{ext}"
@@ -104,9 +102,7 @@ class Q2RadReport(Q2Report):
 
     def data_start(self):
         super().data_start()
-        self.waitbar = Q2WaitShow(
-            self.data_cursors[self.current_data_set_name].row_count()
-        )
+        self.waitbar = Q2WaitShow(self.data_cursors[self.current_data_set_name].row_count())
 
     def data_step(self):
         super().data_step()
@@ -125,16 +121,6 @@ class Q2RadReport(Q2Report):
         self.data_cursors = {}
 
         data = {}
-        # w = Q2WaitShow("Open queries:", len(self.report_content["queries"]))
-        # for x in self.report_content["queries"]:
-        #     w.step(x)
-        #     sql = self.report_content["queries"][x]
-        #     sql_params = re_find_param.findall(sql)
-        #     for p in sql_params:
-        #         value = self.params.get(p[1:], "")
-        #         sql = sql.replace(p, f"'{value}'")
-        #         data[x] = q2cursor(sql).records()
-        # w.close()
 
         def worker():
             def real_worker():
@@ -146,9 +132,9 @@ class Q2RadReport(Q2Report):
                     for p in sql_params:
                         value = self.params.get(p[1:], "")
                         sql = sql.replace(p, f"'{value}'")
-                        self.data_cursors[x] = q2cursor(sql)
-                        data[x] = self.data_cursors[x].records()
-                        # print(q2app.q2_app.db_data.last_sql_error)
+                    self.data_cursors[x] = q2cursor(sql)
+                    data[x] = self.data_cursors[x].records()
+                    # print(q2app.q2_app.db_data.last_sql_error)
 
             return real_worker
 
@@ -271,9 +257,7 @@ class ReportForm:
         self.w.style_button.set_auto_expand()
         self.w.style_button.set_row_count(1)
         self.w.style_button.set_column_count(1)
-        self.w.style_button.set_cell_style_sheet(
-            self.report_report_form.style_cell_style
-        )
+        self.w.style_button.set_cell_style_sheet(self.report_report_form.style_cell_style)
         self.set_style_button_text(text)
 
     def set_style_button_text(self, text):
@@ -534,9 +518,7 @@ class Q2ReportReport(Q2Form):
         set_dict_default(self.report_data.style, "font-weight", "normal")
 
         set_dict_default(self.report_data.style, "border-width", "0 0 0 0")
-        set_dict_default(
-            self.report_data.style, "padding", "0.05cm 0.05cm 0.05cm 0.05cm"
-        )
+        set_dict_default(self.report_data.style, "padding", "0.05cm 0.05cm 0.05cm 0.05cm")
 
         # set_dict_default(self.report_data.style, "background-color", "white")
         # set_dict_default(self.report_data.style, "color", "black")
@@ -551,9 +533,7 @@ class Q2ReportReport(Q2Form):
         self.property_changed("font_family", f"{self.s.font_family}")
 
     def prop_font_weight(self):
-        self.property_changed(
-            "font_weight", f"{'bold' if self.s.font_weight else 'normal'}"
-        )
+        self.property_changed("font_weight", f"{'bold' if self.s.font_weight else 'normal'}")
 
     def prop_border(self):
         self.property_changed(
@@ -618,9 +598,7 @@ class Q2ReportReport(Q2Form):
     def style_button_pressed(self):
         self.focus_changed(self.w.style_button)
 
-        self.report_report_form.update_style_bar(
-            self.get_style(), self.report_data.style
-        )
+        self.report_report_form.update_style_bar(self.get_style(), self.report_data.style)
 
     def focus_changed(self, widget):
         """for every style-holding widget"""
@@ -841,19 +819,13 @@ class Q2ReportPage(Q2Form, ReportForm):
         self.report_report_form.update_style_bar(self.get_style(), self.page_data.style)
 
     def clone(self):
-        self.widget().add_widget_below(
-            Q2ReportPage(self.report_report_form, self.get_content()).get_widget()
-        )
+        self.widget().add_widget_below(Q2ReportPage(self.report_report_form, self.get_content()).get_widget())
 
     def add_below(self):
-        self.widget().add_widget_below(
-            Q2ReportPage(self.report_report_form, {}).get_widget()
-        )
+        self.widget().add_widget_below(Q2ReportPage(self.report_report_form, {}).get_widget())
 
     def add_above(self):
-        self.widget().add_widget_above(
-            Q2ReportPage(self.report_report_form, {}).get_widget()
-        )
+        self.widget().add_widget_above(Q2ReportPage(self.report_report_form, {}).get_widget())
 
     def remove_me(self):
         return super().remove_me("page")
@@ -884,9 +856,7 @@ class Q2ReportPage(Q2Form, ReportForm):
         if self.anchor is not None:
             self.anchor.set_visible(False)
             for columns in self.page_data["columns"]:
-                self.anchor.add_widget_below(
-                    Q2ReportColumns(self, columns).get_widget(), -1
-                )
+                self.anchor.add_widget_below(Q2ReportColumns(self, columns).get_widget(), -1)
 
     def get_rows_form_list(self):
         rez = []
@@ -1004,9 +974,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
         if current_column >= self.get_column_count() - 1 or current_column < 0:
             return
         tmph = self.columns_data.widths[current_column]
-        self.columns_data.widths[current_column] = self.columns_data.widths[
-            current_column + 1
-        ]
+        self.columns_data.widths[current_column] = self.columns_data.widths[current_column + 1]
         self.columns_data.widths[current_column + 1] = tmph
 
         self.columns_sheet.move_column(current_column)
@@ -1047,16 +1015,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
         if width != 0:
             return True
         else:
-            return (
-                len(
-                    [
-                        x
-                        for x in self.columns_sheet.get_cell_text()
-                        if self.get_dec_width(x) == 0
-                    ]
-                )
-                > 1
-            )
+            return len([x for x in self.columns_sheet.get_cell_text() if self.get_dec_width(x) == 0]) > 1
 
     def edit_column_width(self):
         width = self.columns_sheet.get_text()
@@ -1095,9 +1054,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
 
     def style_button_pressed(self):
         self.report_report_form.focus_changed(self.w.style_button)
-        self.report_report_form.update_style_bar(
-            self.get_style(), self.columns_data.style
-        )
+        self.report_report_form.update_style_bar(self.get_style(), self.columns_data.style)
 
     def column_sheet_focus_changed(self):
         # self.report_report_form.focus_changed(self.columns_sheet.get_current_widget())
@@ -1116,21 +1073,17 @@ class Q2ReportColumns(Q2Form, ReportForm):
         self._pixel_columns_widths = [0 for x in range(_columns_count)]
 
         _fixed_columns_width = [
-            num(x) if "%" not in x and num(x) != 0 else 0
-            for x in self.columns_data.widths
+            num(x) if "%" not in x and num(x) != 0 else 0 for x in self.columns_data.widths
         ]
         _procent_columns_width = [
-            num(x.replace("%", "").strip()) if "%" in x else 0
-            for x in self.columns_data.widths
+            num(x.replace("%", "").strip()) if "%" in x else 0 for x in self.columns_data.widths
         ]
         _float_columns_count = (
             _columns_count
             - len([x for x in _procent_columns_width if x != 0])
             - len([x for x in _fixed_columns_width if x != 0])
         )
-        _procent_width = num(
-            (_cm_page_width - num(sum(_fixed_columns_width))) / num(100)
-        )
+        _procent_width = num((_cm_page_width - num(sum(_fixed_columns_width))) / num(100))
 
         for x in range(_columns_count):
             if _fixed_columns_width[x] != 0:
@@ -1138,15 +1091,11 @@ class Q2ReportColumns(Q2Form, ReportForm):
             else:
                 prc = _procent_columns_width[x]
                 if prc == 0:
-                    prc = (
-                        num(100) - sum(_procent_columns_width)
-                    ) / _float_columns_count
+                    prc = (num(100) - sum(_procent_columns_width)) / _float_columns_count
                 self._pixel_columns_widths[x] = round(_procent_width * prc, 2)
 
         ratio = self.report_page_form.report_report_form.ratio
-        self._pixel_columns_widths = [
-            round(x * ratio) for x in self._pixel_columns_widths
-        ]
+        self._pixel_columns_widths = [round(x * ratio) for x in self._pixel_columns_widths]
 
     def clone(self):
         self.widget().add_widget_below(
@@ -1154,14 +1103,10 @@ class Q2ReportColumns(Q2Form, ReportForm):
         )
 
     def add_below(self):
-        self.widget().add_widget_below(
-            Q2ReportColumns(self.report_page_form, {}).get_widget()
-        )
+        self.widget().add_widget_below(Q2ReportColumns(self.report_page_form, {}).get_widget())
 
     def add_above(self):
-        self.widget().add_widget_above(
-            Q2ReportColumns(self.report_page_form, {}).get_widget()
-        )
+        self.widget().add_widget_above(Q2ReportColumns(self.report_page_form, {}).get_widget())
 
     def get_style(self):
         style = self.report_page_form.get_style()
@@ -1192,9 +1137,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
         if self.anchor is not None:
             self.anchor.set_visible(False)
             for rowdata in self.columns_data["rows"]:
-                self.anchor.add_widget_below(
-                    Q2ReportRows(self, rowdata).get_widget(), -1
-                )
+                self.anchor.add_widget_below(Q2ReportRows(self, rowdata).get_widget(), -1)
 
     def after_form_show(self):
         self.columns_sheet = self.w.columns_sheet
@@ -1210,9 +1153,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
 
     def _repaint(self):
         self.columns_sheet.set_column_count(self.get_column_count())
-        self.columns_sheet.set_fixed_width(
-            self.report_page_form.get_pixel_page_width(), ""
-        )
+        self.columns_sheet.set_fixed_width(self.report_page_form.get_pixel_page_width(), "")
 
         self.recalc_columns_pixel_width()
 
@@ -1432,10 +1373,7 @@ class Q2ReportRows(Q2Form, ReportForm):
                 tmp[f"{key[0]},{key[1]+1}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
             elif key[1] <= current_column:
-                if (
-                    key[1] + self.rows_data.cells[cell_key].get("colspan", 0)
-                    > current_column
-                ):
+                if key[1] + self.rows_data.cells[cell_key].get("colspan", 0) > current_column:
                     tmp[cell_key] = self.rows_data.cells[cell_key]
                     tmp[cell_key]["colspan"] = tmp[cell_key]["colspan"] + 1
 
@@ -1513,10 +1451,7 @@ class Q2ReportRows(Q2Form, ReportForm):
                 tmp[f"{key[0]+1},{key[1]}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
             elif key[0] <= current_row:
-                if (
-                    key[0] + self.rows_data.cells[cell_key].get("rowspan", 1)
-                    > current_row
-                ):
+                if key[0] + self.rows_data.cells[cell_key].get("rowspan", 1) > current_row:
                     tmp[cell_key] = self.rows_data.cells[cell_key]
                     tmp[cell_key]["rowspan"] = tmp[cell_key]["rowspan"] + 1
         self.rows_data.cells.update(tmp)
@@ -1646,9 +1581,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             )
 
         form.add_control("print_when", _("Print when"), data=self.rows_data.print_when)
-        form.add_control(
-            "print_after", _("After print"), data=self.rows_data.print_after
-        )
+        form.add_control("print_after", _("After print"), data=self.rows_data.print_after)
         form.add_control("/")
         form.add_control("/h")
         form.add_control(
@@ -1777,9 +1710,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.rows_sheet.action_set_visible("Unmerge", self.can_i_unmerge())
         self.rows_sheet.action_set_visible("Merge selection", self.can_i_merge())
         self.rows_sheet.action_set_visible("Move row up", len(self.spanned_cells) == 0)
-        self.rows_sheet.action_set_visible(
-            "Move row down", len(self.spanned_cells) == 0
-        )
+        self.rows_sheet.action_set_visible("Move row down", len(self.spanned_cells) == 0)
 
         all_style = self.get_style()
 
@@ -1794,9 +1725,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         all_style.update(self.rows_data.cells[cell_key]["style"])
 
         self.report_report_form.focus_changed(self.rows_sheet)
-        self.report_report_form.update_style_bar(
-            all_style, self.rows_data.cells[cell_key]["style"]
-        )
+        self.report_report_form.update_style_bar(all_style, self.rows_data.cells[cell_key]["style"])
 
     def rows_sheet_focus_out(self):
         pass
@@ -1816,18 +1745,14 @@ class Q2ReportRows(Q2Form, ReportForm):
         crows = self.get_rows_form_list()
         von, cur, bis = self.get_table_rows_index(self, crows)
 
-        self.widget().add_widget_below(
-            Q2ReportRows(self.report_columns_form, {}).get_widget(), bis - cur
-        )
+        self.widget().add_widget_below(Q2ReportRows(self.report_columns_form, {}).get_widget(), bis - cur)
 
     def add_above(self):
         crows = self.get_rows_form_list()
         von, cur, bis = self.get_table_rows_index(self, crows)
         cur = crows.index(self)
 
-        self.widget().add_widget_above(
-            Q2ReportRows(self.report_columns_form, {}).get_widget(), cur - von
-        )
+        self.widget().add_widget_above(Q2ReportRows(self.report_columns_form, {}).get_widget(), cur - von)
 
     def hide_show(self):
         if self.rows_sheet is None:
@@ -1915,9 +1840,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             for column in range(self.report_columns_form.get_column_count()):
                 cell_data = self.rows_data.cells.get(f"{row},{column}", {})
 
-                self.rows_sheet.cell_styles[f"{row},{column}"] = cell_data.get(
-                    "style", {}
-                )
+                self.rows_sheet.cell_styles[f"{row},{column}"] = cell_data.get("style", {})
                 rowspan = cell_data.get("rowspan", 1)
                 colspan = cell_data.get("colspan", 1)
                 if rowspan > 1 or colspan > 1:
@@ -1938,9 +1861,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.children_rows.append(table_header_rows)
         self.table_header_rows = table_header_rows
         self.rows_data["table_header"] = header_data
-        self.widget().add_widget_above(
-            table_header_rows.get_widget(), len(self.rows_data["table_groups"])
-        )
+        self.widget().add_widget_above(table_header_rows.get_widget(), len(self.rows_data["table_groups"]))
 
     def add_table_footer(self, footer_data={}):
         if self.rows_data.role != "table":
@@ -1955,9 +1876,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.children_rows.append(table_footer_rows)
         self.table_footer_rows = table_footer_rows
         self.rows_data["table_footer"] = footer_data
-        self.widget().add_widget_below(
-            table_footer_rows.get_widget(), len(self.rows_data["table_groups"])
-        )
+        self.widget().add_widget_below(table_footer_rows.get_widget(), len(self.rows_data["table_groups"]))
 
     def add_table_group(self, group_data=None):
         if not isinstance(group_data, dict):
@@ -1972,12 +1891,8 @@ class Q2ReportRows(Q2Form, ReportForm):
         group_data["group_header"]["role"] = "group_header"
         group_data["group_footer"]["role"] = "group_footer"
 
-        group_header = Q2ReportRows(
-            self.report_columns_form, group_data["group_header"]
-        )
-        group_footer = Q2ReportRows(
-            self.report_columns_form, group_data["group_footer"]
-        )
+        group_header = Q2ReportRows(self.report_columns_form, group_data["group_header"])
+        group_footer = Q2ReportRows(self.report_columns_form, group_data["group_footer"])
 
         group_header.group_mate = group_footer
         group_footer.group_mate = group_header
@@ -2068,20 +1983,14 @@ class Q2ReportRows(Q2Form, ReportForm):
         ratio = self.report_columns_form.report_page_form.report_report_form.ratio
         self.apply_style()
         self.rows_sheet.set_row_count(self.get_row_count())
-        self.rows_sheet.set_column_count(
-            self.report_columns_form.get_column_count() + 1
-        )
+        self.rows_sheet.set_column_count(self.report_columns_form.get_column_count() + 1)
 
-        self.rows_sheet.set_fixed_width(
-            self.report_columns_form.report_page_form.get_pixel_page_width(), ""
-        )
+        self.rows_sheet.set_fixed_width(self.report_columns_form.report_page_form.get_pixel_page_width(), "")
         for i, x in enumerate(self.rows_data.heights):
             h = max([num(h) for h in x.split("-")] + [0.7])
             self.rows_sheet.set_row_size(h * ratio, i)
 
-        self.rows_sheet.set_column_size(
-            self.report_columns_form._pixel_columns_widths + [ratio]
-        )
+        self.rows_sheet.set_column_size(self.report_columns_form._pixel_columns_widths + [ratio])
 
         self.rows_sheet.set_cell_style_sheet(
             self.report_columns_form.report_page_form.report_report_form.sizes_cell_style,

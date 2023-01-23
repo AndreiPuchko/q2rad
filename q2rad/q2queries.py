@@ -256,7 +256,6 @@ class Q2QueryList(Q2Form):
 
     def get_content(self):
         content = {x["name"]: x["sql"] for x in self.model.records}
-        print(content)
         return content
 
 
