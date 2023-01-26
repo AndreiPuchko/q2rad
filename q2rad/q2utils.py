@@ -1,5 +1,6 @@
+import sys
+
 if __name__ == "__main__":
-    import sys
 
     sys.path.insert(0, ".")
     from q2rad.q2rad import main
@@ -10,6 +11,7 @@ from q2rad import Q2Form
 from q2rad.q2raddb import q2cursor
 from q2gui.q2model import Q2Model
 from q2gui import q2app
+from subprocess import Popen, PIPE, STDOUT
 
 import gettext
 
@@ -77,3 +79,43 @@ def choice_form():
         title="Select form",
         column_title="Form name",
     )
+
+
+class Q2Terminal:
+    def __init__(self, terminal=None):
+        if terminal is None:
+            terminal = "powershell" if "win" in sys.platform else "bash"
+        self.proc = Popen(
+            [terminal],
+            stdin=PIPE,
+            stdout=PIPE,
+            stderr=STDOUT,
+        )
+        self.run("echo 0")
+
+    def run(self, cmd="", echo=False):
+        cmd = f"{cmd}; echo q2eoc\n"
+        self.proc.stdin.writelines([bytes(cmd, "utf8")])
+        self.proc.stdin.flush()
+        rez = []
+
+        first_line = True
+        for line in self.proc.stdout:
+            line = line.decode("utf8").rstrip()
+            if not line:
+                continue
+            if first_line:
+                first_line = False
+                continue
+
+            if line.strip() == "q2eoc":
+                return rez
+            elif line == "":
+                continue
+            else:
+                rez.append(line)
+                if echo:
+                    print("*", line)
+
+    def close(self):
+        self.proc.terminate()
