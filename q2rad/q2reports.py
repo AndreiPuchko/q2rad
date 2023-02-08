@@ -333,7 +333,6 @@ class Q2ReportReport(Q2Form):
                 """
 
         self.current_focus = None
-        # self.current_style = ""
 
         if 1:  # Actions
             actions = Q2Actions()
@@ -353,7 +352,8 @@ class Q2ReportReport(Q2Form):
                     dblclick=self.style_button_pressed,
                 )
 
-                self.add_control("", control="label", tag="pages", actions=actions)
+                self.add_control("", tag="pages", actions=actions)
+                # self.add_control("", control="label", tag="pages", actions=actions)
                 self.add_control("/")
                 if self.add_control("/vr", tag="pages"):
                     self.add_control("anchor", "*", control="label")

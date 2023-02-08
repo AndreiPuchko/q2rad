@@ -140,8 +140,11 @@ class Q2RadApp(Q2App):
         self.migrate_db_logic()
         self.migrate_db_data()
         self.update_app_packages()
+        if self.app_title:
+            self.set_title(f"{self.app_title}({self.selected_application.get('name', '')})")
+        else:
+            self.set_title(f"{self.selected_application.get('name', '')}")
         self.run_module("autorun")
-        self.set_title(f"{self.app_title}({self.selected_application.get('name', '')})")
         # DEBUG
         # self.run_forms()
         # self.run_queries()
@@ -346,10 +349,10 @@ class Q2RadApp(Q2App):
             "update_q2rad",
             ("" if "win" in sys.platform else "#!/bin/bash\n")
             + ("q2rad\\scripts\\activate " if "win" in sys.platform else "source q2rad/bin/activate")
-            + "&& pip install --upgrade q2gui"
-            + "&& pip install --upgrade q2db"
-            + "&& pip install --upgrade q2report"
-            + "&& pip install --upgrade q2rad",
+            + "&& pip install --upgrade --force-reinstall q2gui"
+            + "&& pip install --upgrade --force-reinstall q2db"
+            + "&& pip install --upgrade --force-reinstall q2report"
+            + "&& pip install --upgrade --force-reinstall q2rad",
         )
 
         # create run_q2rad
