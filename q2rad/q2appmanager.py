@@ -13,7 +13,7 @@ from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow
 
 from q2rad import Q2Form
 from q2rad.q2utils import Q2Terminal
-from q2rad.q2raddb import today
+from q2rad.q2raddb import today, insert, update, get
 from datetime import datetime
 
 import json
@@ -197,6 +197,7 @@ class AppManager(Q2Form):
         q2app.q2_app.load_assets(True)
 
     def export_q2market(self):
+        self.q2_app.run_module("manifest")
         if not self.q2_app.app_url:
             q2Mess("No App URL!")
             return
@@ -211,6 +212,7 @@ class AppManager(Q2Form):
             return
 
         version = datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
+        version_line = f"self.app_version = '{version}'"
         app_name = os.path.basename(self.q2_app.app_url)
         q2market_file = f"{self.q2_app.q2market_path}/q2market.json"
         if os.path.isfile(q2market_file):
@@ -224,34 +226,24 @@ class AppManager(Q2Form):
         }
         json.dump(q2market, open(q2market_file, "w"), indent=2)
         open(f"{self.q2_app.q2market_path}/{app_name}.version", "w").write(version)
-        app_json = self.get_app_json()
 
-        modules = app_json.get("modules")
-        version_line = f"self.app_version = '{version}'"
-        if modules:
-            for row, dic in enumerate(modules):
-                if dic["name"] == "autorun":
-                    app_version_not_found = True
-                    rez = []
-                    for line in modules[row]["script"].split("\n"):
-                        if line.startswith("self.app_version"):
-                            app_version_not_found = False
-                            line = version_line
-                        rez.append(line)
-                    if app_version_not_found:
-                        rez.insert(0, version_line)
-                    modules[row]["script"] = "\n".join(rez)
+        if get("modules", "name='version'", q2_db=self.q2_app.db_logic):
+            update("modules", {"name": "version", "script": version_line}, q2app.q2_app.db_logic)
+        else:
+            insert("modules", {"name": "version", "script": version_line}, q2app.q2_app.db_logic)
+        self.q2_app.run_module("version")
+
+        app_json = self.get_app_json()
 
         self.export_app(f"{self.q2_app.q2market_path}/{app_name}.json", app_json)
         if app_name == "demo_app":
             self.export_data(f"{self.q2_app.q2market_path}/demo_data.json")
 
-        commit_message = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         trm = Q2Terminal()
         trm.run(f"cd {self.q2_app.q2market_path}")
         trm.run("git add -A")
-        trm.run(f"""git commit -a -m"{commit_message}"  """)
-        q2Mess(trm.run(f"""git push"""))
+        trm.run(f"""git commit -a -m"{version}"  """)
+        q2Mess(trm.run("""git push"""))
         trm.close()
 
     def export_app(self, file="", app_json=None):

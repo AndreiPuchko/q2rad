@@ -140,6 +140,9 @@ class Q2RadApp(Q2App):
         self.migrate_db_logic()
         self.migrate_db_data()
         self.update_app_packages()
+        # TODO: q2market module
+        self.run_module("manifest")
+        self.run_module("version")
         if self.app_title:
             self.set_title(f"{self.app_title}({self.selected_application.get('name', '')})")
         else:

@@ -54,7 +54,7 @@ class Q2Modules(Q2Form):
         self.add_action("Run", self.script_runner, hotkey="F4", eof_disabled=1)
 
     def name_valid(self):
-        if self.s.name == "autorun":
+        if self.s.name == "manifest":
             for x in [
                 'myapp.app_url = ""',
                 'myapp.app_description = ""',
