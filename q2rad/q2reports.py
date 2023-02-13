@@ -27,6 +27,8 @@ from q2rad import Q2Form
 
 _ = gettext.gettext
 
+# TODO: selected rows removing - bug
+
 
 class Q2RadReport(Q2Report):
     def __init__(self, content=""):
@@ -154,8 +156,7 @@ class Q2Reports(Q2Form):
         self.add_control("name", _("Name"), datatype="char", datalen=100, pk="*")
         self.add_control("/")
 
-        self.add_control("anchor", "**", control="label")
-
+        self.add_control("anchor", "**", control="label", nogrid=1)
         self.add_control(
             "content",
             "",
