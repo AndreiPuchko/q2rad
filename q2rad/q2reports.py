@@ -504,6 +504,15 @@ class Q2ReportReport(Q2Form):
                 )
                 self.add_control("/")
 
+            if self.add_control("/f", "Cell"):
+                # self.add_control("", _("Name"))
+                # self.add_control("", _("Format"))
+                self.add_control("name", _("Name"), control="line", disabled=1)
+                self.add_control("format", _("Format"), control="line", disabled=1)
+                self.add_control("data", _("Data"), control="text", disabled=1)
+                self.add_control("/")
+            self.add_control("/s")
+
         self.set_content()
 
     def run_report(self, output_file="html"):
@@ -619,7 +628,7 @@ class Q2ReportReport(Q2Form):
             value_list.append(value_list[2])
         return value_list
 
-    def update_style_bar(self, parent_style, selected_style):
+    def update_style_bar(self, parent_style, selected_style, cell_data=None):
         if selected_style is None:
             return
         if self.current_focus is None:
@@ -658,7 +667,18 @@ class Q2ReportReport(Q2Form):
             w = self.widgets().get(x.replace("-", "_"))
             if w:
                 w.check.set_text(True)
+        self.show_cell_content(cell_data)
         self.lock_status_bar = False
+
+    def show_cell_content(self, cell_data):
+        if cell_data:
+            self.s.data = cell_data.get("data", "")
+            self.s.format = cell_data.get("format", "")
+            self.s.name = cell_data.get("name", "")
+        else:
+            self.s.data = ""
+            self.s.format = ""
+            self.s.name = ""
 
     def set_style_button_text(self, text):
         ReportForm.set_style_button_text(self, text)
@@ -1475,24 +1495,30 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.edit_cell_content()
 
     def edit_cell_content(self):
-        form = Q2Form(_("Enter row height"))
-        form.add_control("/h")
+        key = f"{self.rows_sheet.current_row()},{self.rows_sheet.current_column()}"
+        cell_data = self.rows_data.cells.get(key, {})
+        form = Q2Form(_("Edit cell content"))
+        form.add_control("/v")
         form.add_control("content", control="code", data=self.rows_sheet.get_text())
+        form.add_control("format", "Format", control="line", data=cell_data.get("format", ""))
+        form.add_control("name", "Name", control="line", data=cell_data.get("name", ""))
         form.ok_button = 1
         form.cancel_button = 1
 
-        def after_form_show():
-            form.w._ok_button.set_focus()
+        # def after_form_show():
+        # form.w._ok_button.set_focus()
 
-        form.after_form_show = after_form_show
+        # form.after_form_show = after_form_show
         form.run()
         if form.ok_pressed:
-            key = f"{self.rows_sheet.current_row()},{self.rows_sheet.current_column()}"
             if key not in self.rows_data.cells:
                 self.rows_data.cells[key] = {}
-            self.rows_data.cells[key]["data"] = form.s.content
+            cell_data["data"] = form.s.content
+            cell_data["format"] = form.s.format
+            cell_data["name"] = form.s.name
             self.rows_sheet.set_text(form.s.content)
             self._repaint()
+            self.report_report_form.show_cell_content(cell_data)
 
     def edit_row_height(self):
         height = self.rows_sheet.get_cell_text(
@@ -1726,7 +1752,10 @@ class Q2ReportRows(Q2Form, ReportForm):
         all_style.update(self.rows_data.cells[cell_key]["style"])
 
         self.report_report_form.focus_changed(self.rows_sheet)
-        self.report_report_form.update_style_bar(all_style, self.rows_data.cells[cell_key]["style"])
+
+        self.report_report_form.update_style_bar(
+            all_style, self.rows_data.cells[cell_key]["style"], self.rows_data.cells[cell_key]
+        )
 
     def rows_sheet_focus_out(self):
         pass
@@ -1782,6 +1811,10 @@ class Q2ReportRows(Q2Form, ReportForm):
                 del self.rows_data.cells[x]["style"]
             if self.rows_data.cells[x].get("data") == "":
                 del self.rows_data.cells[x]["data"]
+            if self.rows_data.cells[x].get("format") == "":
+                del self.rows_data.cells[x]["format"]
+            if self.rows_data.cells[x].get("name") == "":
+                del self.rows_data.cells[x]["name"]
             if self.rows_data.cells[x] == {}:
                 cell2del.append(x)
 
