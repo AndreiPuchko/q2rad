@@ -339,6 +339,7 @@ class AppManager(Q2Form):
         db: Q2Db = q2app.q2_app.db_data
         db_tables = db.get_tables()
         wait_table = Q2WaitShow(len(data))
+        errors = []
         for table in data:
             wait_table.step(table)
             if table not in db_tables:
@@ -348,6 +349,9 @@ class AppManager(Q2Form):
             for row in data[table]:
                 wait_row.step()
                 if not db.raw_insert(table, row):
+                    errors.append(db.last_sql_error)
                     print(db.last_sql_error)
             wait_row.close()
+            if errors:
+                q2Mess("<br>".join(errors))
         wait_table.close()

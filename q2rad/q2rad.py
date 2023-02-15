@@ -42,6 +42,9 @@ import shutil
 import pkgutil
 
 
+# TODO: excel custom format 2 report
+
+
 q2_modules = ("q2rad", "q2gui", "q2db", "q2report")
 const = q2const()
 _ = gettext.gettext
