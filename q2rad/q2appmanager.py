@@ -352,6 +352,6 @@ class AppManager(Q2Form):
                     errors.append(db.last_sql_error)
                     print(db.last_sql_error)
             wait_row.close()
-            if errors:
-                q2Mess("<br>".join(errors))
+        if errors:
+            q2Mess("<br>".join(errors))
         wait_table.close()
