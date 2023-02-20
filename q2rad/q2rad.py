@@ -43,7 +43,9 @@ import pkgutil
 
 
 # TODO: excel custom format 2 report
-# TODO: page header
+# TODO: page header - 2 finish
+# TODO: page footers
+# TODO: reports - get data from first row of datasource with ds_name.col_name
 
 
 q2_modules = ("q2rad", "q2gui", "q2db", "q2report")

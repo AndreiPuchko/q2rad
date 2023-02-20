@@ -219,6 +219,7 @@ class Q2Reports(Q2Form):
             self.report_edit_form.form_stack = [w]
             self.anchor.add_widget_below(w)
             w.show()
+            self.report_edit_form.s.comment = self.s.comment
             self.report_edit_form.widget().restore_grid_columns()
 
         if self.crud_mode == "NEW":
@@ -228,6 +229,7 @@ class Q2Reports(Q2Form):
 
     def before_crud_save(self):
         self.s.content = self.report_edit_form.get_content()
+        self.s.comment = self.report_edit_form.s.comment
 
 
 class ReportForm:
