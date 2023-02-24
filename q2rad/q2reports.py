@@ -36,7 +36,7 @@ class Q2RadReport(Q2Report):
         self.load(content)
         self.data["const"] = q2app.q2_app.const
         self.waitbar = None
-        self.data_sources_lenght = {}
+        # self.data_sources_lenght = {}
         self.last_focus_widget = q2app.q2_app.focus_widget()
 
     def prepare_output_file(self, output_file):
@@ -136,6 +136,7 @@ class Q2RadReport(Q2Report):
                         sql = sql.replace(p, f"'{value}'")
                     self.data_cursors[x] = q2cursor(sql)
                     data[x] = self.data_cursors[x].records()
+                    data[x] = [row for row in self.data_cursors[x].records()]
                     # print(q2app.q2_app.db_data.last_sql_error)
 
             return real_worker
