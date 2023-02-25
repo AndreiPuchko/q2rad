@@ -1365,7 +1365,8 @@ class Q2ReportRows(Q2Form, ReportForm):
                 tmp[f"{key[0]},{key[1]-1}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
             elif key[1] <= current_column:
-                if self.rows_data.cells[cell_key].get("colspan", 0) > 1:
+                col_span = self.rows_data.cells[cell_key].get("colspan", 0)
+                if col_span > 1 and key[1] + col_span > current_column:
                     tmp[cell_key] = self.rows_data.cells[cell_key]
                     tmp[cell_key]["colspan"] = tmp[cell_key]["colspan"] - 1
 
@@ -1420,7 +1421,8 @@ class Q2ReportRows(Q2Form, ReportForm):
                     tmp[f"{key[0]-1},{key[1]}"] = self.rows_data.cells[cell_key]
                     del self.rows_data.cells[cell_key]
                 elif key[0] <= current_row:
-                    if self.rows_data.cells[cell_key].get("rowspan", 0) > 1:
+                    row_span = self.rows_data.cells[cell_key].get("rowspan", 0)
+                    if row_span > 1 and key[0] + row_span > current_row:
                         tmp[cell_key] = self.rows_data.cells[cell_key]
                         tmp[cell_key]["rowspan"] = tmp[cell_key]["rowspan"] - 1
             self.rows_data.cells.update(tmp)
@@ -1700,19 +1702,16 @@ class Q2ReportRows(Q2Form, ReportForm):
 
     def can_i_merge(self):
         selection = self.rows_sheet.get_selection()
+        # open up spanned cells
+        for x in selection:
+            if x in self.spanned_cells:
+                for row in range(x[0], x[0]+self.spanned_cells[x][0]):
+                    for col in range(x[1], x[1]+self.spanned_cells[x][1]):
+                        if (row, col) not in selection:
+                            selection.append((row, col))
+
         if len(selection) == 1:
             return False
-        #  megre merged cells
-        # _selection = []
-        # for x in selection:
-        #     if x not in self.spanned_cells:
-        #         continue
-        #     for _row in range(x[0], self.spanned_cells[x][0] + 1):
-        #         for _col in range(x[1], self.spanned_cells[x][1] + 1):
-        #             if _row == x[0] and _col == x[1]:
-        #                 continue
-        #             _selection.append((_row, _col))
-        # selection.extend(_selection)
 
         rows = set([x[0] for x in selection])
         cols = set([x[1] for x in selection])

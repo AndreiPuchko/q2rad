@@ -42,6 +42,7 @@ import shutil
 import pkgutil
 
 
+
 # TODO: excel custom format 2 report
 
 
@@ -139,10 +140,17 @@ class Q2RadApp(Q2App):
             self.close()
 
     def open_selected_app(self, go_to_q2market=False):
+        wait = Q2WaitShow(5, "Loading app> ")
+        wait.step("Prepare")
         self.clear_app_info()
+        wait.step("Migrate logic DB")
         self.migrate_db_logic()
+        wait.step("Migrate data DB")
         self.migrate_db_data()
+        wait.step("looking for updates")
         self.update_app_packages()
+        wait.step("Done!")
+        wait.close()
         self.run_module("manifest")
         self.run_module("version")
         if self.app_title:
@@ -150,12 +158,6 @@ class Q2RadApp(Q2App):
         else:
             self.set_title(f"{self.selected_application.get('name', '')}")
         self.run_module("autorun")
-        # DEBUG
-        # self.run_forms()
-        # self.run_queries()
-        # self.run_modules()
-        # self.run_reports()
-        # self.run_app_manager()
 
         if go_to_q2market and (
             max(
