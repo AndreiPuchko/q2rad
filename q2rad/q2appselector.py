@@ -284,6 +284,7 @@ class Q2AppSelect(Q2Form):
         }
         self._select_application(row)
         self.q2_app.migrate_db_logic()
+        self.q2_app.migrate_db_logic()
 
         demo_app_url = f"{self.q2_app.q2market_url}/demo_app.json"
         demo_data_url = f"{self.q2_app.q2market_url}/demo_data.json"
@@ -293,7 +294,7 @@ class Q2AppSelect(Q2Form):
             AppManager.import_json_app(json.load(response_app))
 
             self.q2_app.open_selected_app()
-
+            self.q2_app.migrate_db_data()
             AppManager.import_json_data(json.load(response_data))
             self.close()
         else:
