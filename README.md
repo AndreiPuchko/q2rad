@@ -20,13 +20,13 @@ mkdir q2rad && \
 ```
 **Windows**
 ```bash
-mkdir q2rad && \
-    cd q2rad && \
-    py -m pip install --upgrade pip && \
-    py -m venv q2rad && \
-    call q2rad/scripts/activate && \
-    pip install --upgrade q2rad  && \
-    q2rad
+mkdir q2rad &&^
+cd q2rad &&^
+py -m pip install --upgrade pip &&^
+py -m venv q2rad &&^
+call q2rad/scripts/activate &&^
+pip install --upgrade q2rad &&^
+q2rad
 ```
 **Mac**
 ```bash
