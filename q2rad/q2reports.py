@@ -983,6 +983,9 @@ class Q2ReportColumns(Q2Form, ReportForm):
         self.add_control("/")
 
     def column_remove(self):
+        rows_qt = len(self.columns_data.rows)
+        if rows_qt > 1 and q2AskYN(f"This will also remove column(s) in {rows_qt} row sections ") != 2:
+            return
         selected_columns = list(set([x[1] for x in self.columns_sheet.get_selection()]))
         selected_columns.reverse()
         for current_column in selected_columns:
@@ -1212,6 +1215,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.table_page_footer_rows = None
 
         self.spanned_cells = {}
+        self.selection_first_cell = None
 
         self.report_columns_form = report_columns_form
         self.report_report_form: Q2ReportReport = report_columns_form.report_report_form
@@ -1409,7 +1413,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         selected_rows = self.get_selected_rows()
         selected_rows.reverse()
         for current_row in selected_rows:
-            current_row = self.rows_sheet.current_row()
+            # current_row = self.rows_sheet.current_row()
             self.rows_data.heights.pop(current_row)
             self.rows_sheet.remove_row(current_row)
             tmp = {}
@@ -1705,8 +1709,8 @@ class Q2ReportRows(Q2Form, ReportForm):
         # open up spanned cells
         for x in selection:
             if x in self.spanned_cells:
-                for row in range(x[0], x[0]+self.spanned_cells[x][0]):
-                    for col in range(x[1], x[1]+self.spanned_cells[x][1]):
+                for row in range(x[0], x[0] + self.spanned_cells[x][0]):
+                    for col in range(x[1], x[1] + self.spanned_cells[x][1]):
                         if (row, col) not in selection:
                             selection.append((row, col))
 
@@ -1746,18 +1750,18 @@ class Q2ReportRows(Q2Form, ReportForm):
         row = self.rows_sheet.current_row()
         column = self.rows_sheet.current_column()
         cell_key = f"{row},{column}"
-        if cell_key not in self.rows_data.cells:
-            self.rows_data.cells[cell_key] = {}
-        set_dict_default(self.rows_data.cells[cell_key], "data", "")
-        set_dict_default(self.rows_data.cells[cell_key], "style", {})
+        self.ensure_cell(cell_key)
 
-        all_style.update(self.rows_data.cells[cell_key]["style"])
+        # when selection - using style of first selected cell - fix it
+        if len(self.rows_sheet.get_selection()) == 1:
+            self.selection_first_cell = cell_key
+            all_style.update(self.rows_data.cells[cell_key]["style"])
 
-        self.report_report_form.focus_changed(self.rows_sheet)
+            self.report_report_form.focus_changed(self.rows_sheet)
 
-        self.report_report_form.update_style_bar(
-            all_style, self.rows_data.cells[cell_key]["style"], self.rows_data.cells[cell_key]
-        )
+            self.report_report_form.update_style_bar(
+                all_style, self.rows_data.cells[cell_key]["style"], self.rows_data.cells[cell_key]
+            )
 
     def rows_sheet_focus_out(self):
         pass
@@ -1868,6 +1872,16 @@ class Q2ReportRows(Q2Form, ReportForm):
                 self.add_table_footer(self.rows_data.get("table_footer"))
 
     def apply_style(self):
+        selection = self.rows_sheet.get_selection()
+        if len(selection) > 1:
+            for cell_key in selection:
+                cell_key = "{0},{1}".format(cell_key[0],cell_key[1])
+                if cell_key != self.selection_first_cell:
+                    self.ensure_cell(cell_key)
+                    self.rows_data.cells[cell_key]["style"] = dict(
+                        self.rows_data.cells[self.selection_first_cell]["style"]
+                    )
+
         self.rows_sheet.sheet_styles = self.get_style()
         self.rows_sheet.cell_styles = {}
         self.rows_sheet.clear_spans()
@@ -1883,6 +1897,12 @@ class Q2ReportRows(Q2Form, ReportForm):
                     self.spanned_cells[(row, column)] = (rowspan, colspan)
                     self.rows_sheet.set_span(row, column, rowspan, colspan)
                 self.rows_sheet.set_cell_style_sheet(None, row, column)
+
+    def ensure_cell(self, cell_key):
+        if cell_key not in self.rows_data.cells:
+            self.rows_data.cells[cell_key] = {}
+        set_dict_default(self.rows_data.cells[cell_key], "data", "")
+        set_dict_default(self.rows_data.cells[cell_key], "style", {})
 
     def add_table_header(self, header_data={}):
         if self.rows_data.role != "table":
