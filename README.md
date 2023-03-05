@@ -10,7 +10,8 @@
 ## Install & run
 **Linux**
 ```bash
-mkdir q2rad && \
+sudo apt install python3-venv python3-pip -y &&\
+    mkdir q2rad && \
     cd q2rad && \
     python3 -m pip install --upgrade pip && \
     python3 -m venv q2rad && \
