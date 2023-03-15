@@ -181,7 +181,7 @@ class Q2Lines(Q2Form):
                         datalen=3,
                         valid=self.select_linked_table_column,
                     )
-                    self.add_control("related", gridlabel=_("Data to show"), datatype="char", datalen=100)
+                    self.add_control("related", gridlabel=_("Data to show"), datatype="text")
                     self.add_control("/")
                 if self.add_control("/h", _("Form to open")):
                     self.add_control(

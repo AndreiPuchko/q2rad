@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 
 from q2rad import Q2App, Q2Form
-from q2gui.q2dialogs import q2Mess, q2AskYN, Q2WaitShow
+from q2gui.q2dialogs import q2Mess, q2AskYN, Q2WaitShow, q2Wait
 from q2gui.q2model import Q2CursorModel
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
@@ -36,6 +36,7 @@ import gettext
 
 # import urllib.request
 import os
+import pip
 import json
 import subprocess
 import shutil
@@ -439,30 +440,15 @@ class Q2RadApp(Q2App):
         pass
 
     def pip_install(self, package, latest_version):
-        return subprocess.check_call(
-            [
-                sys.executable.replace("w.exe", ".exe"),
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                "--no-cache-dir",
-                f"{package}=={latest_version}",
-            ],
-            shell=True if "win" in sys.platform else False,
+        q2Wait(
+            lambda: pip.main(["install", "--upgrade", "--no-cache-dir", f"{package}=={latest_version}"]),
+            _("Installing package %s...") % package,
         )
 
     def pip_uninstall(self, package):
-        return subprocess.check_call(
-            [
-                sys.executable.replace("w.exe", ".exe"),
-                "-m",
-                "pip",
-                "uninstall",
-                "-y",
-                f"{package}",
-            ],
-            shell=True if "win" in sys.platform else False,
+        q2Wait(
+            lambda: pip.main(["uninstall", "-y", f"{package}"]),
+            _("Uninstalling package %s...") % package,
         )
 
     def check_app_update(self):
@@ -608,8 +594,8 @@ class Q2RadApp(Q2App):
                 ,related
                 ,to_form
                 ,code_valid as valid
-                /*,code_when as when
-                ,code_show as show*/
+                ,code_when as _when
+                /*,code_show as show*/
             from lines
             where name = '{name}'
             order by seq
@@ -644,7 +630,7 @@ class Q2RadApp(Q2App):
                 x["to_form"] = self.get_form(x["to_form"])
             x["valid"] = self.code_runner(x["valid"], form)
             # x["show"] = self.code_runner(x["show"], form)
-            # x["when"] = self.code_runner(x["when"], form)
+            x["when"] = self.code_runner(x["_when"], form)
             form.add_control(**x)
 
         # add actions

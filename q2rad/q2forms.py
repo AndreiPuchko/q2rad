@@ -68,6 +68,7 @@ class Q2Forms(Q2Form):
             self.add_control("/h")
             self.add_control("title", _("Title"), datatype="char", datalen=100)
             self.add_control("seq", _("Sequence number"), datatype="int")
+            self.add_control("/s")
             self.add_control("/")
             self.add_control("/f", _("Main menu"))
             self.add_control("menu_path", _("Menu bar path"), datatype="char", datalen=100)
