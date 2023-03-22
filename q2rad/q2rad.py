@@ -44,6 +44,8 @@ import pkgutil
 
 
 # TODO: excel custom format 2 report
+# TODO: child grid first show - splitter size
+# TODO: qrid - hightlight current column
 
 
 q2_modules = ("q2rad", "q2gui", "q2db", "q2report")

@@ -152,7 +152,7 @@ class Q2Actions(Q2Form):
                     """,
                     self.db,
                 ).r.column
-                self.s.child_where = "={%s}" % parent_pk
+                self.s.child_where = parent_pk + "={%s}" % parent_pk
 
     def select_child_foreign_key(self):
         if self.s.child_where.startswith("=") or self.s.child_where == "":
