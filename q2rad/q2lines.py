@@ -94,6 +94,8 @@ class Q2Lines(Q2Form):
                 self.add_control("nogrid", _("No grid"), control="check")
                 self.add_control("noform", _("No form"), control="check")
                 self.add_control("check", _("Has checkbox"), control="check")
+                self.add_control("disabled", _("Disabled"), control="check")
+                self.add_control("readonly", _("Readonly"), control="check")
                 self.add_control("/s")
                 self.add_control("/")
             if self.add_control("/h", _("Control type")):
@@ -181,7 +183,7 @@ class Q2Lines(Q2Form):
                         datalen=3,
                         valid=self.select_linked_table_column,
                     )
-                    self.add_control("related", gridlabel=_("Data to show"), datatype="text")
+                    self.add_control("related", control="codesql", gridlabel=_("Data to show"), datatype="text")
                     self.add_control("/")
                 if self.add_control("/h", _("Form to open")):
                     self.add_control(

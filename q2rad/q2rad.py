@@ -48,7 +48,7 @@ import pkgutil
 # TODO: qrid - hightlight current column
 
 
-q2_modules = ("q2rad", "q2gui", "q2db", "q2report")
+q2_modules = ["q2rad", "q2gui", "q2db", "q2report"]
 const = q2const()
 _ = gettext.gettext
 
@@ -443,13 +443,34 @@ class Q2RadApp(Q2App):
 
     def pip_install(self, package, latest_version):
         q2Wait(
-            lambda: pip.main(["install", "--upgrade", "--no-cache-dir", f"{package}=={latest_version}"]),
+            lambda: subprocess.check_call(
+                [
+                    sys.executable.replace("w.exe", ".exe"),
+                    "-m",
+                    "pip",
+                    "install",
+                    "--upgrade",
+                    "--no-cache-dir",
+                    f"{package}=={latest_version}",
+                ],
+                shell=True if "win" in sys.platform else False,
+            ),
             _("Installing package %s...") % package,
         )
 
     def pip_uninstall(self, package):
         q2Wait(
-            lambda: pip.main(["uninstall", "-y", f"{package}"]),
+            lambda: subprocess.check_call(
+                [
+                    sys.executable.replace("w.exe", ".exe"),
+                    "-m",
+                    "pip",
+                    "uninstall",
+                    "-y",
+                    f"{package}",
+                ],
+                shell=True if "win" in sys.platform else False,
+            ),
             _("Uninstalling package %s...") % package,
         )
 
@@ -489,6 +510,7 @@ class Q2RadApp(Q2App):
 
     def check_packages_update(self, packages_list=q2_modules):
         can_upgrade = False
+        packages_list.insert(0, "pip")
         list_2_upgrade = []
         for package in packages_list:
             latest_version, current_version = self.get_package_versions(package)
@@ -578,26 +600,28 @@ class Q2RadApp(Q2App):
         sql = f"""
             select
                 column
-                ,label
-                ,gridlabel
-                ,nogrid
-                ,noform
-                ,`check`
-                ,control
-                ,pic
-                ,datatype
-                ,datalen
-                ,datadec
-                ,migrate
-                ,pk
-                ,ai
-                ,to_table
-                ,to_column
-                ,related
-                ,to_form
-                ,code_valid as valid
-                ,code_when as _when
-                /*,code_show as show*/
+                , label
+                , gridlabel
+                , nogrid
+                , noform
+                , `check`
+                , control
+                , pic
+                , datatype
+                , datalen
+                , datadec
+                , migrate
+                , disabled
+                , readonly
+                , pk
+                , ai
+                , to_table
+                , to_column
+                , related
+                , to_form
+                , code_valid as valid
+                , code_when as _when
+                , code_show as _show
             from lines
             where name = '{name}'
             order by seq
@@ -631,7 +655,8 @@ class Q2RadApp(Q2App):
             if x.get("to_form"):
                 x["to_form"] = self.get_form(x["to_form"])
             x["valid"] = self.code_runner(x["valid"], form)
-            # x["show"] = self.code_runner(x["show"], form)
+            if x.get("_show"):
+                x["show"] = self.code_runner(x["_show"], form)
             x["when"] = self.code_runner(x["_when"], form)
             form.add_control(**x)
 
@@ -726,9 +751,8 @@ class Q2RadApp(Q2App):
         _form = form
         # to provide return ability for exec
 
-        def real_runner():
+        def real_runner(**args):
             # make exec stop on return
-
             class ReturnEvent(Exception):
                 pass
 
@@ -742,6 +766,9 @@ class Q2RadApp(Q2App):
                 "myapp": self,
                 "__name__": __name__,
             }
+            for x in args:
+                __locals_dict[x] = args[x]
+
             code = self.code_compiler(script)
             # print("code compiled", "\n" ,script)
             if code["code"]:
