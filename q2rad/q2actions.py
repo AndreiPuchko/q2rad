@@ -116,12 +116,12 @@ class Q2Actions(Q2Form):
         self.add_control(
             "action_worker",
             gridlabel=_("Action Script"),
-            datatype="bigtext",
+            datatype="longtext",
             control="code",
             nogrid="*",
         )
         self.add_control("/t", _("Comment"))
-        self.add_control("comment", gridlabel=_("Comments"), datatype="bigtext", control="text")
+        self.add_control("comment", gridlabel=_("Comments"), datatype="longtext", control="text")
 
     def form_runner(self):
         self.prev_form.run_action("Run")

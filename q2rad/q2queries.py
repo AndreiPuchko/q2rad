@@ -48,13 +48,13 @@ class Q2Queries(Q2Form):
         self.add_control(
             "content",
             "",
-            datatype="bigtext",
+            datatype="longtext",
             control="codejson",
             nogrid=1,
             noform=1,
             # readonly=1,
         )
-        self.add_control("comment", _("Comment"), datatype="text", noform=1)
+        self.add_control("comment", _("Comment"), datatype="longtext", noform=1)
 
     def before_form_show(self):
         self.maximized = True
@@ -218,7 +218,7 @@ class Q2QueryList(Q2Form):
         self.query_editor_form = query_editor_form
         self.no_view_action = True
         self.add_control("name", "Name", datatype="char", datalen="50")
-        self.add_control("sql", "Sql", datatype="bigtext", nogrid=1, noform=1)
+        self.add_control("sql", "Sql", datatype="longtext", nogrid=1, noform=1)
         self.add_control("/")
         self.set_model(Q2Model())
         self.add_action("/crud")

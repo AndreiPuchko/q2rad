@@ -44,7 +44,7 @@ class Q2Modules(Q2Form):
             actions=self.editor_actions,
         )
         self.add_control("/t", "Comment")
-        self.add_control("comment", _("Comment"), datatype="text")
+        self.add_control("comment", _("Comment"), control="text")
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="modules")
         model = Q2CursorModel(cursor)

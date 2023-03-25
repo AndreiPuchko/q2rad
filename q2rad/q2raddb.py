@@ -78,7 +78,7 @@ class q2cursor(Q2Cursor):
                 form.add_control(x, x, datalen=250)
             form.set_model(Q2CursorModel(self))
             form.run()
-            return self
+        return self
 
 
 def get_default_db(q2_db):

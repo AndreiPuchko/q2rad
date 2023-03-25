@@ -36,7 +36,6 @@ import gettext
 
 # import urllib.request
 import os
-import pip
 import json
 import subprocess
 import shutil
@@ -44,7 +43,6 @@ import pkgutil
 
 
 # TODO: excel custom format 2 report
-# TODO: child grid first show - splitter size
 # TODO: qrid - hightlight current column
 
 
@@ -78,6 +76,7 @@ class Q2RadApp(Q2App):
 
         self.db_data = None
         self.db_logic = None
+        self.last_root_password = ""
         self.selected_application = {}
         self.clear_app_info()
 
@@ -183,23 +182,25 @@ class Q2RadApp(Q2App):
             """
                 select
                     forms.form_table as `table`
-                    , lines.column
-                    , lines.datatype
-                    , lines.datalen
-                    , lines.datadec
-                    , lines.to_table
-                    , lines.to_column
-                    , lines.related
-                    , lines.ai
-                    , lines.pk
-                from lines, forms
-                where forms.name = lines.name
+                    , `lines`.column
+                    , `lines`.datatype
+                    , `lines`.datalen
+                    , `lines`.datadec
+                    , `lines`.to_table
+                    , `lines`.to_column
+                    , `lines`.related
+                    , `lines`.ai
+                    , `lines`.pk
+                from `lines`, forms
+                where forms.name = `lines`.name
                     and form_table <>'' and migrate <>''
-                order by forms.seq, lines.seq, forms.name
+                order by forms.seq, `lines`.seq, forms.name
                 """,
             self.db_logic,
         )
         for column in cu.records():
+            # column['table'] = column['_table']
+            # del column['_table']
             data_schema.add(**column)
         for form in (Q2Constants(),):
             for x in form.get_table_schema():
@@ -239,9 +240,43 @@ class Q2RadApp(Q2App):
             rez.append("const.{const_name}".format(**x))
         return rez
 
+    def get_db_admin_credential(self, name="", engine="", host="", port="", rootuser=""):
+        ac = Q2Form("Enter database admin credential")
+        ac.add_control("name", _("Database name"), data=name, disabled=1)
+        ac.add_control("engine", _("Engine"), data=engine, disabled=1)
+        ac.add_control("host", _("Host"), data=host, disabled=1)
+        ac.add_control("host", _("Port"), data=port, disabled=1)
+        ac.add_control("user", _("User name"), data=rootuser)
+        ac.add_control("password", _("Password"), pic="*", data=self.last_root_password)
+        ac.ok_button = 1
+        ac.cancel_button = 1
+        ac.after_form_show = lambda: ac.w.password.set_focus()
+        ac.run()
+        if ac.ok_pressed:
+            self.last_root_password = ac.s.password
+            return (ac.s.user, ac.s.password)
+
     def open_databases(self):
-        self.db_data = Q2Db(database_name=self.selected_application["database_data"])
-        self.db_logic = Q2Db(database_name=self.selected_application["database_logic"])
+        self.db_data = Q2Db(
+            database_name=self.selected_application.get("database_data", ""),
+            db_engine_name=self.selected_application.get("driver_data", "").lower(),
+            host=self.selected_application.get("host_data", ""),
+            port=self.selected_application.get("port_data", ""),
+            guest_mode=self.selected_application.get("guest_mode", ""),
+            password="q2password",
+            user="q2user",
+            get_admin_credential_callback=self.get_db_admin_credential,
+        )
+        self.db_logic = Q2Db(
+            database_name=self.selected_application.get("database_logic", ""),
+            db_engine_name=self.selected_application.get("driver_logic", "").lower(),
+            host=self.selected_application.get("host_logic", ""),
+            port=self.selected_application.get("port_logic", ""),
+            password="q2password",
+            user="q2user",
+            get_admin_credential_callback=self.get_db_admin_credential,
+        )
+        self.last_root_password = ""
 
     def create_menu(self):
         self.clear_menu()
@@ -599,7 +634,7 @@ class Q2RadApp(Q2App):
 
         sql = f"""
             select
-                column
+                `column`
                 , label
                 , gridlabel
                 , nogrid
@@ -622,7 +657,7 @@ class Q2RadApp(Q2App):
                 , code_valid as valid
                 , code_when as _when
                 , code_show as _show
-            from lines
+            from `lines`
             where name = '{name}'
             order by seq
             """

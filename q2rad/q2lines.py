@@ -183,7 +183,9 @@ class Q2Lines(Q2Form):
                         datalen=3,
                         valid=self.select_linked_table_column,
                     )
-                    self.add_control("related", control="codesql", gridlabel=_("Data to show"), datatype="text")
+                    self.add_control(
+                        "related", control="codesql", gridlabel=_("Data to show"), datatype="text"
+                    )
                     self.add_control("/")
                 if self.add_control("/h", _("Form to open")):
                     self.add_control(
@@ -201,14 +203,14 @@ class Q2Lines(Q2Form):
             self.add_control("/s")
 
         self.add_control("/t", _("Comment"))
-        self.add_control("comment", gridlabel=_("Comments"), datatype="bigtext")
+        self.add_control("comment", gridlabel=_("Comments"), datatype="longtext")
         self.add_control("/t", _("Script When"))
         self.add_control(
             "code_when",
             _("Script When"),
             control="code",
             nogrid="*",
-            datatype="bigtext",
+            datatype="longtext",
         )
         self.add_control("/t", _("Script Show"))
         self.add_control(
@@ -216,7 +218,7 @@ class Q2Lines(Q2Form):
             _("Script When"),
             control="code",
             nogrid="*",
-            datatype="bigtext",
+            datatype="longtext",
         )
         self.add_control("/t", _("Script Valid"))
         self.add_control(
@@ -224,7 +226,7 @@ class Q2Lines(Q2Form):
             _("Script When"),
             control="code",
             nogrid="*",
-            datatype="bigtext",
+            datatype="longtext",
         )
 
     def filler(self):

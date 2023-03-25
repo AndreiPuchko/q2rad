@@ -9,7 +9,7 @@ if __name__ == "__main__":
 from q2gui import q2app
 from q2gui.q2form import NEW, COPY
 from q2gui.q2model import Q2CursorModel
-from q2gui.q2dialogs import q2Mess
+from q2gui.q2dialogs import q2Mess, q2Wait
 
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
@@ -307,11 +307,11 @@ class Q2AppSelect(Q2Form):
         q2_app.show_statusbar()
         q2_app.show_tabbar()
         q2_app.selected_application = app_data
-        q2_app.open_databases()
+        q2Wait(q2_app.open_databases, _("Open database"))
 
     def select_application(self):
-        self._select_application(self.model.get_record(self.current_row))
         self.close()
+        self._select_application(self.model.get_record(self.current_row))
 
     def run(self, autoload_enabled=True):
         self.autoload_enabled = autoload_enabled

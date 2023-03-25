@@ -161,7 +161,7 @@ class Q2Reports(Q2Form):
         self.add_control(
             "content",
             "",
-            datatype="bigtext",
+            datatype="longtext",
             control="codejson",
             nogrid=0,
             noform=1,

@@ -136,9 +136,9 @@ class Q2Forms(Q2Form):
             self.add_control("/")
             self.add_control("/s")
 
-        self.add_control("/t", _("Comment"))
+        self.add_control("/t", _("Comments"))
         self.add_control("/f")
-        self.add_control("comment", gridlabel=_("Comments"), datatype="bigtext")
+        self.add_control("comment", gridlabel=_("Comments"), datatype="longtext")
 
         if self.add_control("/t", _("Build")):
             self.add_control("/vs")
