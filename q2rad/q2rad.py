@@ -256,27 +256,73 @@ class Q2RadApp(Q2App):
             self.last_root_password = ac.s.password
             return (ac.s.user, ac.s.password)
 
+    def _open_database(self, database_name, db_engine_name, host, port, password, user, guest_mode=None):
+        db = None
+        first_pass = 0
+
+        while True:
+            try:
+                db = q2Wait(
+                    lambda: Q2Db(
+                        database_name=database_name,
+                        db_engine_name=db_engine_name,
+                        host=host,
+                        port=port,
+                        guest_mode=guest_mode,
+                        user=user,
+                        password=password,
+                    ),
+                    mess=_("Opening database"),
+                )
+            except Exception:
+                pass
+            if first_pass != 0 or db is not None:
+                return db
+            first_pass += 1
+            if db is None:
+                root_user, root_password = self.get_db_admin_credential(
+                    database_name, db_engine_name, host, port, Q2Db.get_default_admin_name(db_engine_name)
+                )
+                try:
+                    q2Wait(
+                        lambda: Q2Db(
+                            database_name=database_name,
+                            db_engine_name=db_engine_name,
+                            host=host,
+                            port=port,
+                            guest_mode=guest_mode,
+                            user=root_user,
+                            password=root_password,
+                            create_only=True,
+                        ),
+                        mess=_("Creating database"),
+                    )
+                except Exception:
+                    return None
+
     def open_databases(self):
-        self.db_data = Q2Db(
+        self.db_data = self._open_database(
             database_name=self.selected_application.get("database_data", ""),
             db_engine_name=self.selected_application.get("driver_data", "").lower(),
             host=self.selected_application.get("host_data", ""),
             port=self.selected_application.get("port_data", ""),
             guest_mode=self.selected_application.get("guest_mode", ""),
-            password="q2password",
             user="q2user",
-            get_admin_credential_callback=self.get_db_admin_credential,
-        )
-        self.db_logic = Q2Db(
-            database_name=self.selected_application.get("database_logic", ""),
-            db_engine_name=self.selected_application.get("driver_logic", "").lower(),
-            host=self.selected_application.get("host_logic", ""),
-            port=self.selected_application.get("port_logic", ""),
             password="q2password",
-            user="q2user",
-            get_admin_credential_callback=self.get_db_admin_credential,
         )
+        if self.db_data:
+            self.db_logic = self._open_database(
+                database_name=self.selected_application.get("database_logic", ""),
+                db_engine_name=self.selected_application.get("driver_logic", "").lower(),
+                host=self.selected_application.get("host_logic", ""),
+                port=self.selected_application.get("port_logic", ""),
+                user="q2user",
+                password="q2password",
+            )
         self.last_root_password = ""
+        if self.db_data is None or self.db_logic is None:
+            q2Mess(_("Can not open database"))
+            self.open_application()
 
     def create_menu(self):
         self.clear_menu()

@@ -302,15 +302,16 @@ class Q2AppSelect(Q2Form):
 
     def _select_application(self, app_data={}):
         q2_app: Q2App = q2app.q2_app
+        q2_app.selected_application = app_data
+        q2_app.open_databases()
         q2_app.show_menubar()
         q2_app.show_toolbar()
         q2_app.show_statusbar()
         q2_app.show_tabbar()
-        q2_app.selected_application = app_data
-        q2Wait(q2_app.open_databases, _("Open database"))
 
     def select_application(self):
         self.close()
+        self.q2_app.process_events()
         self._select_application(self.model.get_record(self.current_row))
 
     def run(self, autoload_enabled=True):
