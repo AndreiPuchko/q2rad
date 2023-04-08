@@ -283,6 +283,7 @@ class Q2RadApp(Q2App):
                 root_user, root_password = self.get_db_admin_credential(
                     database_name, db_engine_name, host, port, Q2Db.get_default_admin_name(db_engine_name)
                 )
+
                 try:
                     q2Wait(
                         lambda: Q2Db(
@@ -291,8 +292,10 @@ class Q2RadApp(Q2App):
                             host=host,
                             port=port,
                             guest_mode=guest_mode,
-                            user=root_user,
-                            password=root_password,
+                            user=user,
+                            password=password,
+                            root_user=root_user,
+                            root_password=root_password,
                             create_only=True,
                         ),
                         mess=_("Creating database"),
