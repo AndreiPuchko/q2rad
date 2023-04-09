@@ -10,6 +10,7 @@ from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2dialogs import q2AskYN
 from q2rad import Q2Form
+from q2gui.q2utils import num
 
 import gettext
 
@@ -25,7 +26,9 @@ class Q2Modules(Q2Form):
 
     def on_init(self):
         self.editor_actions = Q2Actions()
-        self.editor_actions.add_action("Run script", self.editor_script_runner, hotkey="F4")
+        self.editor_actions.add_action("Save and run", self.editor_script_runner, hotkey="F4")
+        self.editor_actions.add_action("Just save", self.editor_just_save, hotkey="F2")
+        self.editor_actions.add_action("Just run", self.editor_script_runner, hotkey="Ctrl+R")
         self.add_control(
             "name",
             _("Name"),
@@ -45,6 +48,8 @@ class Q2Modules(Q2Form):
         )
         self.add_control("/t", "Comment")
         self.add_control("comment", _("Comment"), control="text")
+
+        self.add_control("last_line", "Last line", datatype="int", noform=1, migrate=1)
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="modules")
         model = Q2CursorModel(cursor)
@@ -82,10 +87,16 @@ class Q2Modules(Q2Form):
                 != 2
             ):
                 return False
+        self.s.last_line = self.w.script.current_line()
         return super().before_crud_save()
 
     def before_form_show(self):
         self.maximized = True
+        if self.crud_mode != "EDIT":
+            self.editor_actions.set_disabled("Save and run")
+            self.editor_actions.set_disabled("Just save")
+        if num(self.s.last_line):
+            self.w.script.goto_line(num(self.s.last_line))
 
     def after_form_show(self):
         if self.crud_mode == "EDIT":
@@ -95,4 +106,12 @@ class Q2Modules(Q2Form):
         self.q2_app.code_runner(self.r.script)()
 
     def editor_script_runner(self):
+        self.editor_just_save()
+        self.editor_just_run()
+
+    def editor_just_save(self):
+        self.crud_save(close_form=False)
+
+    def editor_just_run(self):
         self.q2_app.code_runner(self.s.script)()
+        self.w.script.set_focus()

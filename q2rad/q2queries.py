@@ -178,7 +178,10 @@ class Q2QueryEdit(Q2Form):
 
     def set_content(self, content):
         if isinstance(content, str):
-            content_json = json.loads(content)
+            if content:
+                content_json = json.loads(content)
+            else:
+                content_json = {}
         else:
             content_json = content
         self.query_list.set_content(content_json.get("queries", {"new_query": "select * from "}))

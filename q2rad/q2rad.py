@@ -862,7 +862,14 @@ class Q2RadApp(Q2App):
                     pass
                 except Exception:
                     trace = self.code_error()
-                    q2Mess(f"""Runtime error:<br><br>{trace}""")
+                    vars = "<br>".join(
+                        [
+                            f"<b>{x}</b>:{__locals_dict[x]}"
+                            for x in __locals_dict
+                            if x not in ("RETURN", "ReturnEvent", "mem", "self", "q2_app")
+                        ]
+                    )
+                    q2Mess(f"""Runtime error:<br><br>{trace}<br><br>{vars}""")
             else:
                 q2Mess(code["error"])
 
