@@ -88,14 +88,9 @@ class Q2RadApp(Q2App):
 
         self.assets_url = "https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
 
-        qss_file = "q2gui.qss"
-        if not os.path.isfile(qss_file):
-            qss_url = "https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/q2gui.qss"
-            open(qss_file, "w").write(read_url(qss_url).decode("utf-8"))  # noqa F405
-
-        if os.path.isfile(qss_file):
-            self.style_file = qss_file
-            self.set_style_sheet()
+        # if os.path.isfile(qss_file):
+        #     self.style_file = qss_file
+        #     self.set_style_sheet()
 
         self.set_icon("assets/q2rad.ico")
 

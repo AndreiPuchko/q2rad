@@ -11,7 +11,7 @@
 **Linux**
 ```bash
 sudo apt install python3-venv python3-pip -y &&\
-    mkdir q2rad && \
+    mkdir -p q2rad && \
     cd q2rad && \
     python3 -m pip install --upgrade pip && \
     python3 -m venv q2rad && \
@@ -31,12 +31,13 @@ q2rad
 ```
 **Mac**
 ```bash
-mkdir q2rad && \
+mkdir -p q2rad && \
     cd q2rad && \
-    python3 -m pip install --upgrade pip && \
+    pip3 install --upgrade pip && \
     python3 -m venv q2rad && \
     source q2rad/bin/activate && \
-    python3 -m pip install --upgrade q2rad && \
+    pip3 -m pip install --upgrade pip && \
+    pip3 -m pip install --upgrade q2rad && \
     q2rad
 ```
 **Docker**

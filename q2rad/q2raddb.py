@@ -1,6 +1,6 @@
-if __name__ == "__main__":
-    import sys
+import sys
 
+if __name__ == "__main__":
     sys.path.insert(0, ".")
     from q2rad.q2rad import main
 
@@ -17,8 +17,12 @@ from q2rad import Q2Form
 from q2gui.q2form import NEW, COPY
 
 import urllib.request
-
 from socket import error as SocketError
+
+if "darwin" in sys.platform:
+    import ssl
+
+    ssl._create_default_https_context = ssl._create_unverified_context
 import datetime
 
 # import errno
