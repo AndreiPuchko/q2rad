@@ -47,13 +47,13 @@ class AppManager(Q2Form):
             self.add_control("/")
 
         if self.add_control("/v", "Application"):
-            if self.add_control("/f", ""):
+            if self.add_control("/f"):
                 self.add_control(
                     "",
                     "App title",
                     control="line",
                     data=q2app.q2_app.app_title,
-                    disabled=1,
+                    readonly=1,
                 )
                 if q2app.q2_app.app_url:
                     self.add_control(
@@ -103,34 +103,34 @@ class AppManager(Q2Form):
                     )
                 self.add_control("/")
 
-            if self.add_control("/h", ""):
-                if self.add_control("/h", "Export"):
-                    self.add_control(
-                        "save_app",
-                        "As JSON file",
-                        control="button",
-                        datalen=13,
-                        valid=self.export_app,
-                    )
-                    if os.path.isdir(self.q2_app.q2market_path):
+                if self.add_control("/h", ""):
+                    if self.add_control("/h", "Export"):
                         self.add_control(
-                            "save_app_2_market",
-                            "Export to q2Market",
+                            "save_app",
+                            "As JSON file",
                             control="button",
-                            datalen=14,
-                            valid=self.export_q2market,
+                            datalen=13,
+                            valid=self.export_app,
                         )
+                        if os.path.isdir(self.q2_app.q2market_path):
+                            self.add_control(
+                                "save_app_2_market",
+                                "Export to q2Market",
+                                control="button",
+                                datalen=14,
+                                valid=self.export_q2market,
+                            )
+                        self.add_control("/")
+                    if self.add_control("/h", "Import"):
+                        self.add_control(
+                            "load_app",
+                            "From JSON file",
+                            control="button",
+                            datalen=10,
+                            valid=self.import_app,
+                        )
+                        self.add_control("/")
                     self.add_control("/")
-                if self.add_control("/h", "Import"):
-                    self.add_control(
-                        "load_app",
-                        "From JSON file",
-                        control="button",
-                        datalen=10,
-                        valid=self.import_app,
-                    )
-                    self.add_control("/")
-                self.add_control("/")
 
             self.add_control("/")
 

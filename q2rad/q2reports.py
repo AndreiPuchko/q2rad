@@ -304,6 +304,9 @@ class Q2ReportEdit(Q2Form):
         else:
             return content
 
+    def after_form_show(self):
+        self.w.rl.meta["form_window"].set_style_sheet("* {font-size: 8pt;}")
+
 
 class Q2ReportReport(Q2Form):
     def __init__(self, report_edit_form_form):
@@ -328,8 +331,8 @@ class Q2ReportReport(Q2Form):
                 border-radius:0;
                 """
 
-        self.style_cell_style = """
-                background:LightCyan;
+        self.style_cell_style = f"""
+                background:{"palette(Dark)" if self.q2_app.q2style.color_mode == "dark" else "palette(Light)"};
                 text-align:center;
                 vertical-align:middle;
                 border-style:solid;
@@ -717,6 +720,7 @@ class Q2ReportReport(Q2Form):
         self.w.font_weight.set_title("Bold")
         ReportForm.set_style_button(self, "Report")
         self.w.style_button.set_focus()
+        self.w.style_button.meta["form_window"].set_style_sheet("* {font-size: 8pt;}")
 
     def show_content(self):
         if self.widget() is None:

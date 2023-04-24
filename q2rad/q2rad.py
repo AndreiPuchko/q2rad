@@ -18,6 +18,8 @@ from q2rad.q2raddb import *  # noqa:F403
 from q2gui import q2app
 from q2rad.q2raddb import q2cursor
 from q2rad.q2appmanager import AppManager
+from q2rad.q2stylesettings import AppStyleSettings
+
 
 # from random import randint
 
@@ -30,6 +32,7 @@ from q2rad.q2packages import Q2Packages
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
+
 
 import traceback
 import gettext
@@ -78,6 +81,9 @@ class Q2RadApp(Q2App):
         self.db_logic = None
         self.last_root_password = ""
         self.selected_application = {}
+        self.q2style.font_size = int_(self.settings.get("Style Settings", "font_size", "10"))
+        self.set_color_mode(self.settings.get("Style Settings", "color_mode", ""))
+
         self.clear_app_info()
 
         self.q2market_path = "../q2market"
@@ -326,6 +332,7 @@ class Q2RadApp(Q2App):
         self.clear_menu()
         self.add_menu("File|About", self.about, icon="info.png")
         self.add_menu("File|Manage", self.run_app_manager, icon="tools.png")
+        self.add_menu("File|Settings", self.run_stylesettings)
         self.add_menu("File|Constants", self.run_constants)
         self.add_menu("File|-")
         self.add_menu("File|Open", self.open_application, icon="open.png")
@@ -610,6 +617,9 @@ class Q2RadApp(Q2App):
                 == 2
             ):
                 self.update_packages(packages_list)
+
+    def run_stylesettings(self):
+        AppStyleSettings().run()
 
     def run_constants(self):
         Q2Constants().run()
