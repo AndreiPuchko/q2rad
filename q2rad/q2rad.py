@@ -19,6 +19,7 @@ from q2gui import q2app
 from q2rad.q2raddb import q2cursor
 from q2rad.q2appmanager import AppManager
 from q2rad.q2stylesettings import AppStyleSettings
+from q2rad.q2utils import Q2Logger
 
 
 # from random import randint
@@ -53,6 +54,11 @@ q2_modules = ["q2rad", "q2gui", "q2db", "q2report"]
 const = q2const()
 _ = gettext.gettext
 
+import logging
+
+_logger = logging.getLogger(__name__)
+Q2Logger()
+
 
 def get_report(report_name):
     content = q2app.q2_app.db_logic.get("reports", f"name='{report_name}'", "content")
@@ -73,6 +79,8 @@ def run_form(form_name):
 
 class Q2RadApp(Q2App):
     def __init__(self, title=""):
+
+        _logger.info("About to start")
         super().__init__(title)
         self.settings_title = "q2RAD"
         self.db = None

@@ -1,4 +1,5 @@
 import sys
+import os
 
 if __name__ == "__main__":
 
@@ -12,6 +13,8 @@ from q2rad.q2raddb import q2cursor
 from q2gui.q2model import Q2Model
 from q2gui import q2app
 from subprocess import Popen, PIPE, STDOUT
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
 import gettext
 
@@ -119,3 +122,27 @@ class Q2Terminal:
 
     def close(self):
         self.proc.terminate()
+
+
+class Q2Logger:
+    def __init__(self, log_folder="log"):
+        self.sys_stderr = sys.stderr
+        self.buffer = ""
+        if not os.path.isdir(log_folder):
+            os.mkdir(log_folder)
+        handler = TimedRotatingFileHandler(f"{log_folder}/q2.log", when="midnight", interval=1, backupCount=5)
+        formatter = logging.Formatter("%(asctime)s-%(name)s: %(levelname)s: %(message)s")
+        handler.setFormatter(formatter)
+        logging.basicConfig(handlers=[handler])
+        sys.stderr = self
+
+    def write(self, message):
+        if message:
+            self.buffer += message
+        sys.stdout.write(message)
+
+    def flush(self):
+        if self.buffer.strip():
+            logging.error(self.buffer)
+        sys.stdout.flush()
+        self.buffer = ""

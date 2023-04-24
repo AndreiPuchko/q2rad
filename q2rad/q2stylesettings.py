@@ -8,6 +8,9 @@ if __name__ == "__main__":
 
 from q2rad import Q2Form
 from q2rad.q2raddb import int_
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class AppStyleSettings(Q2Form):
