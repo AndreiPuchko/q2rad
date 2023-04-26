@@ -83,6 +83,7 @@ class Q2RadApp(Q2App):
         _logger.info("About to start")
         super().__init__(title)
         self.settings_title = "q2RAD"
+        self.style_file = "q2rad.qss"
         self.db = None
 
         self.db_data = None

@@ -18,11 +18,13 @@ class AppStyleSettings(Q2Form):
         super().__init__("Style Settings")
 
     def on_init(self):
-
+        self.last_font_size = self.q2_app.q2style.font_size
+        # print("==", self.last_font_size)
+        self.last_color_mode = self.q2_app.q2style.color_mode
         self.add_control(
             "color_mode",
             "Color mode",
-            pic="System defaulf;Dark;Light",
+            pic="System defaulf;Dark;Light;Clean",
             datatype="char",
             control="radio",
             datalen=10,
@@ -44,18 +46,19 @@ class AppStyleSettings(Q2Form):
         self.cancel_button = 1
 
     def after_form_show(self):
-        self.s.color_mode = {"dark": "Dark", "light": "Light"}.get(
+        self.s.color_mode = {"dark": "Dark", "light": "Light", "clean": "Clean"}.get(
             self.q2_app.q2style.color_mode, self.q2_app.q2style.get_system_color_mode()
         )
 
     def get_color_mode(self):
         color_mode = self.s.color_mode.lower()
-        if color_mode not in ("dark", "light"):
+        if color_mode not in ("dark", "light", "clean"):
             color_mode = None
         return color_mode
 
     def valid(self):
         color_mode = self.get_color_mode()
+        self.q2_app.q2style.font_size = int_(self.s.font_size)
         self.q2_app.settings.set("Style Settings", "color_mode", color_mode)
         self.q2_app.settings.set("Style Settings", "font_size", self.s.font_size)
         self.q2_app.set_color_mode(color_mode)
@@ -63,3 +66,10 @@ class AppStyleSettings(Q2Form):
     def style_valid(self):
         self.q2_app.q2style.font_size = int_(self.s.font_size)
         self.q2_app.set_color_mode(self.get_color_mode())
+        self.q2_app.set_color_mode(self.get_color_mode())
+
+    def close(self):
+        if not self.ok_pressed:
+            self.q2_app.q2style.font_size = self.last_font_size
+            self.q2_app.set_color_mode(self.last_color_mode)
+        return super().close()
