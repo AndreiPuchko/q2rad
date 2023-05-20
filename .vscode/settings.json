@@ -12,7 +12,7 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.autoComplete.extraPaths": ["../q2gui", "../q2db", "../q2report"],
+    "python.autoComplete.extraPaths": ["../q2gui", "../q2db", "../q2report", "../q2terminal"],
     "workbench.colorCustomizations": {
         "editor.lineHighlightBorder": "#08d43b70",
         "editor.selectionHighlightBorder": "#ff0000",
@@ -21,9 +21,7 @@
     "python.analysis.extraPaths": [
         "../q2gui",
         "../q2db",
+        "../q2terminal",
         "../q2report"
-    ],
-    "python.linting.flake8Args": [
-        "--max-line-length = 110"
     ],
 }

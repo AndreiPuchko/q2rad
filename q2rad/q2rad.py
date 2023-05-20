@@ -7,7 +7,21 @@ if __name__ == "__main__":
 
 
 from q2rad import Q2App, Q2Form
-from q2gui.q2dialogs import q2Mess, q2AskYN, Q2WaitShow, q2Wait
+from q2gui.q2dialogs import (  # noqa: F401
+    q2Mess,
+    q2_mess,
+    q2mess,
+    q2AskYN,
+    Q2WaitShow,
+    q2Wait,
+    q2wait,
+    q2_wait,
+    q2_wait_show,
+    q2ask,
+    q2_ask,
+    q2_ask_yn,
+    q2askyn,
+)
 from q2gui.q2model import Q2CursorModel
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
@@ -19,7 +33,7 @@ from q2gui import q2app
 from q2rad.q2raddb import q2cursor
 from q2rad.q2appmanager import AppManager
 from q2rad.q2stylesettings import AppStyleSettings
-from q2rad.q2utils import Q2Logger
+from q2rad.q2utils import set_logging
 
 
 # from random import randint
@@ -44,20 +58,20 @@ import json
 import subprocess
 import shutil
 import pkgutil
+import logging
 
 
 # TODO: excel custom format 2 report
 # TODO: qrid - hightlight current column
 
 
-q2_modules = ["q2rad", "q2gui", "q2db", "q2report"]
+q2_modules = ["q2rad", "q2gui", "q2db", "q2report", "q2terminal"]
 const = q2const()
 _ = gettext.gettext
 
-import logging
 
+set_logging()
 _logger = logging.getLogger(__name__)
-Q2Logger()
 
 
 def get_report(report_name):
@@ -80,7 +94,7 @@ def run_form(form_name):
 class Q2RadApp(Q2App):
     def __init__(self, title=""):
 
-        _logger.info("About to start")
+        _logger.warning("About to start")
         super().__init__(title)
         self.settings_title = "q2RAD"
         self.style_file = "q2rad.qss"
@@ -90,7 +104,7 @@ class Q2RadApp(Q2App):
         self.db_logic = None
         self.last_root_password = ""
         self.selected_application = {}
-        self.q2style.font_size = int_(self.settings.get("Style Settings", "font_size", "10"))
+        self.q2style.font_size = int_(self.settings.get("Style Settings", "font_size", "10"))  # noqa F405
         self.set_color_mode(self.settings.get("Style Settings", "color_mode", ""))
 
         self.clear_app_info()
@@ -118,7 +132,7 @@ class Q2RadApp(Q2App):
         self.app_description = ""
 
     def make_desktop_shortcut(self):
-        if "win" in sys.platform:
+        if sys.platform == "win32":
             subprocess.check_call(["cscript", "make_shortcut.vbs"], shell=True)
         else:
             basepath = os.path.abspath(".")
@@ -388,7 +402,7 @@ class Q2RadApp(Q2App):
                 else:
                     latest_version_text = ""
             else:
-                latest_version_text = _(" (Can't to load packacke info)")
+                latest_version_text = _(" (Can't load packacke info)")
 
             about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
         w.close()
@@ -412,7 +426,7 @@ class Q2RadApp(Q2App):
             return False
 
     def write_restore_file(self, name, content):
-        if "win" in sys.platform:
+        if sys.platform == "win32":
             u_file = open(f"{name}.bat", "w")
         else:
             u_file = open(os.open(f"{name}.sh", os.O_CREAT | os.O_WRONLY, 0o777), "w")
@@ -431,7 +445,10 @@ class Q2RadApp(Q2App):
 
         w = Q2WaitShow(len(icons))
         errors = []
+        q2Mess
         for x in icons:
+            if x == "":
+                continue
             w.step(x)
             if self.asset_file_loader(x) is False:
                 errors.append(x)
@@ -451,23 +468,26 @@ class Q2RadApp(Q2App):
         # create update_q2rad.sh
         self.write_restore_file(
             "update_q2rad",
-            ("" if "win" in sys.platform else "#!/bin/bash\n")
-            + ("q2rad\\scripts\\activate " if "win" in sys.platform else "source q2rad/bin/activate")
+            ("" if "win32" in sys.platform else "#!/bin/bash\n")
+            + ("q2rad\\scripts\\activate " if "win32" in sys.platform else "source q2rad/bin/activate")
             + "&& pip install --upgrade --force-reinstall q2gui"
             + "&& pip install --upgrade --force-reinstall q2db"
             + "&& pip install --upgrade --force-reinstall q2report"
+            + "&& pip install --upgrade --force-reinstall q2terminal"
             + "&& pip install --upgrade --force-reinstall q2rad",
         )
 
         # create run_q2rad
         self.write_restore_file(
             "run_q2rad",
-            ("" if "win" in sys.platform else "#!/bin/bash\n")
+            ("" if "win32" in sys.platform else "#!/bin/bash\n")
             + (
-                "start q2rad\\scripts\\pythonw.exe -m q2rad" if "win" in sys.platform else "q2rad/bin/q2rad\n"
+                "start q2rad\\scripts\\pythonw.exe -m q2rad"
+                if "win32" in sys.platform
+                else "q2rad/bin/q2rad\n"
             ),
         )
-        if "win" in sys.platform:
+        if "win32" in sys.platform:
             open("run_q2rad.vbs", "w").write(
                 'WScript.CreateObject("WScript.Shell").Run '
                 '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
@@ -487,6 +507,7 @@ class Q2RadApp(Q2App):
 
         if q2AskYN("Can I make desktop shortcut?") == 2:
             self.make_desktop_shortcut()
+        self.process_events()
 
     def get_package_versions(self, package):
         response = open_url(f"https://pypi.python.org/pypi/{package}/json")  # noqa F405
@@ -503,13 +524,14 @@ class Q2RadApp(Q2App):
 
         return latest_version, current_version
 
-    def update_packages(self, packages_list):
+    def update_packages(self, packages_list=q2_modules):
         upgraded = []
         w = Q2WaitShow(len(packages_list))
         for package in packages_list:
             if w.step(package):
                 break
             latest_version, current_version = self.get_package_versions(package)
+            self.process_events()
             if latest_version != current_version and latest_version:
                 try:
                     self.pip_install(package, latest_version)
@@ -529,7 +551,7 @@ class Q2RadApp(Q2App):
         q2Mess(mess)
         if upgraded:
             os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
-            # if "win" in sys.platform:
+            # if "win32" in sys.platform:
             #     os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
             # else:
             #     os.execv(sys.argv[0], sys.argv)
@@ -548,7 +570,7 @@ class Q2RadApp(Q2App):
                     "--no-cache-dir",
                     f"{package}=={latest_version}",
                 ],
-                shell=True if "win" in sys.platform else False,
+                shell=True if "win32" in sys.platform else False,
             ),
             _("Installing package %s...") % package,
         )
@@ -564,7 +586,7 @@ class Q2RadApp(Q2App):
                     "-y",
                     f"{package}",
                 ],
-                shell=True if "win" in sys.platform else False,
+                shell=True if "win32" in sys.platform else False,
             ),
             _("Uninstalling package %s...") % package,
         )
@@ -573,8 +595,8 @@ class Q2RadApp(Q2App):
         # self.update_app_packages()
 
         if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version:
-            market_version = read_url(self.app_url + ".version").decode("utf-8")  # noqa F405
-            if market_version != self.app_version:
+            market_version = read_url(self.app_url + ".version")  # noqa F405
+            if market_version and market_version.decode("utf-8") != self.app_version:
                 if (
                     q2AskYN(
                         f"Update for App <b>{self.app_title}</b> detected!"
@@ -608,8 +630,9 @@ class Q2RadApp(Q2App):
         packages_list.insert(0, "pip")
         list_2_upgrade = []
         for package in packages_list:
+            self.process_events()
             latest_version, current_version = self.get_package_versions(package)
-            if latest_version != current_version:
+            if latest_version != current_version and latest_version:
                 list_2_upgrade.append(f"<b>{package}</b>: {current_version} > {latest_version}")
                 if not can_upgrade:
                     can_upgrade = True
@@ -900,7 +923,7 @@ class Q2RadApp(Q2App):
 
 def main():
     app = Q2RadApp("q2RAD")
-    app.dev_mode = 0
+    app.dev_mode = 1
     app.run()
 
 

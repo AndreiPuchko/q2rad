@@ -12,7 +12,7 @@ from q2gui import q2app
 from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow
 
 from q2rad import Q2Form
-from q2rad.q2utils import Q2Terminal
+from q2terminal.q2terminal import Q2Terminal
 from q2rad.q2raddb import today, insert, update, get
 from datetime import datetime
 

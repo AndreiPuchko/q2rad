@@ -84,49 +84,18 @@ def choice_form():
     )
 
 
-class Q2Terminal:
-    def __init__(self, terminal=None):
-        if terminal is None:
-            terminal = "powershell" if "win" in sys.platform else "bash"
-        self.proc = Popen(
-            [terminal],
-            stdin=PIPE,
-            stdout=PIPE,
-            stderr=STDOUT,
-        )
-        self.run("echo 0")
-
-    def run(self, cmd="", echo=False):
-        cmd = f"{cmd}; echo q2eoc\n"
-        self.proc.stdin.writelines([bytes(cmd, "utf8")])
-        self.proc.stdin.flush()
-        rez = []
-
-        first_line = True
-        for line in self.proc.stdout:
-            line = line.decode("utf8").rstrip()
-            if not line:
-                continue
-            if first_line:
-                first_line = False
-                continue
-
-            if line.strip() == "q2eoc":
-                return rez
-            elif line == "":
-                continue
-            else:
-                rez.append(line)
-                if echo:
-                    print("*", line)
-
-    def close(self):
-        self.proc.terminate()
+def set_logging(log_folder="log"):
+    if not os.path.isdir(log_folder):
+        os.mkdir(log_folder)
+    handler = TimedRotatingFileHandler(f"{log_folder}/q2.log", when="midnight", interval=1, backupCount=5)
+    formatter = logging.Formatter("%(asctime)s-%(name)s: %(levelname)s: %(message)s")
+    handler.setFormatter(formatter)
+    logging.basicConfig(handlers=[handler])
 
 
 class Q2Logger:
     def __init__(self, log_folder="log"):
-        self.sys_stderr = sys.stderr
+        # self.sys_stderr = sys.stderr
         self.buffer = ""
         if not os.path.isdir(log_folder):
             os.mkdir(log_folder)
@@ -134,7 +103,7 @@ class Q2Logger:
         formatter = logging.Formatter("%(asctime)s-%(name)s: %(levelname)s: %(message)s")
         handler.setFormatter(formatter)
         logging.basicConfig(handlers=[handler])
-        sys.stderr = self
+        # sys.stderr = self
 
     def write(self, message):
         if message:

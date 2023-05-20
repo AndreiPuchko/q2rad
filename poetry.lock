@@ -298,7 +298,7 @@ url = "../q2db"
 
 [[package]]
 name = "q2gui"
-version = "0.1.75"
+version = "0.1.85"
 description = "Python GUI toolkit"
 category = "main"
 optional = false
@@ -332,6 +332,14 @@ type = "directory"
 url = "../q2report"
 
 [[package]]
+name = "q2terminal"
+version = "0.1.10"
+description = ""
+category = "main"
+optional = false
+python-versions = ">=3.8.1"
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -358,7 +366,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8.1"
-content-hash = "8287f58d9ebafff7652b402676822ea0bc45959fb17b74af0e933b792e169fb7"
+content-hash = "822a6bb27d60788569f8eaed41dd6f326ed35221cd11c4dc6808c7e73355ed8c"
 
 [metadata.files]
 atomicwrites = [
@@ -622,6 +630,9 @@ pyflakes = [
     {file = "pyflakes-3.0.1.tar.gz", hash = "sha256:ec8b276a6b60bd80defed25add7e439881c19e64850afd9b346283d4165fd0fd"},
 ]
 pyqt6 = [
+    {file = "PyQt6-6.5.0-1-cp37-abi3-macosx_10_14_universal2.whl", hash = "sha256:b3f2bf611e7f09c25f5decb82fc27bbe63fcc498e63bf11d17e23916d716c805"},
+    {file = "PyQt6-6.5.0-1-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:6f3d232fe2abb02689d23a83f9629ccca6d57a36384688cd6411700ff5cf43f2"},
+    {file = "PyQt6-6.5.0-1-cp37-abi3-win_amd64.whl", hash = "sha256:952ba3b50c10f61289ea74db4c7a616170219959ac5300e0d9ec5427a27e95c7"},
     {file = "PyQt6-6.5.0-cp37-abi3-macosx_10_14_universal2.whl", hash = "sha256:e3c8289d9a509be897265981b77eb29e64ce29e9d221fdf52545c2c95e819c9b"},
     {file = "PyQt6-6.5.0-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:2b0d9628134811fbfc988d1757111ca8e25cb697f136fa54c969fb1a4d4a61d1"},
     {file = "PyQt6-6.5.0-cp37-abi3-win_amd64.whl", hash = "sha256:99ea0e68f548509b7ef97cded0feeaf3dca7d1fe719388569407326be3be38c2"},
@@ -664,6 +675,10 @@ pytest = [
 q2db = []
 q2gui = []
 q2report = []
+q2terminal = [
+    {file = "q2terminal-0.1.10-py3-none-any.whl", hash = "sha256:af8987b3cda81bfe651e4a44824d2e3fa78ba71cf1fcbc73da1768b8da4bf3d7"},
+    {file = "q2terminal-0.1.10.tar.gz", hash = "sha256:e8ac6d91f52a193a6ad93faaac9b228240142182daca76ddeb59216b67db226c"},
+]
 tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
