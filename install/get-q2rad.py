@@ -4,6 +4,8 @@ import urllib.request
 import subprocess
 from pathlib import Path
 import shutil
+import pkgutil
+
 
 RED = "\033[38;5;1m"
 GREEN = "\033[38;5;2m"
@@ -27,13 +29,15 @@ if not os.path.isdir("q2rad"):
     os.mkdir("q2rad")
 os.chdir("q2rad")
 
-try:
-    import pip
-except Exception as e:
-    print(e, YELLOW)
+if [x.name for x in pkgutil.iter_modules() if x.name == "pip"] == []:
     print("Installing pip...", GREEN)
-    gp = urllib.request.urlopen("https://bootstrap.pypa.io/get-pip.py").read()
-    exec(gp)
+    try:
+        gp = urllib.request.urlopen("https://bootstrap.pypa.io/get-pip.py").read()
+        exec(gp)
+    except Exception as e:
+        print(e, YELLOW)
+        print("Failed to install pip.", RED)
+        sys.exit(1)
 
 try:
     import pip  # noqa:F811
@@ -71,6 +75,7 @@ if os.path.isfile(activator):
     try:
         print("Starting q2rad...", GREEN)
         from q2rad.q2rad import main
+
         main()
     except Exception as e:
         print(e, YELLOW)
