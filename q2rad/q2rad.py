@@ -629,15 +629,16 @@ class Q2RadApp(Q2App):
         can_upgrade = False
         packages_list.insert(0, "pip")
         list_2_upgrade = []
+        w = Q2WaitShow(len(packages_list))
         for package in packages_list:
             self.process_events()
+            w.step()
             latest_version, current_version = self.get_package_versions(package)
             if latest_version != current_version and latest_version:
                 list_2_upgrade.append(f"<b>{package}</b>: {current_version} > {latest_version}")
                 if not can_upgrade:
                     can_upgrade = True
-            # if can_upgrade:
-            #     break
+        w.close()
         if can_upgrade:
             if (
                 q2AskYN(
