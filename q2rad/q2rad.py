@@ -445,7 +445,7 @@ class Q2RadApp(Q2App):
 
         w = Q2WaitShow(len(icons))
         errors = []
-        q2Mess
+        # q2Mess
         for x in icons:
             if x == "":
                 continue
