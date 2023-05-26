@@ -117,23 +117,26 @@ if os.path.isfile(activator):
         print("Starting q2rad...")
         py3bin = os.path.abspath(f"q2rad/{bin_folder}/{os.path.basename(sys.executable)}")
         code_string = '"from q2rad.q2rad import main;main()"'
-        if "win32" not in sys.platform:
-            code_string = code_string.replace('"', "")
 
         if "win32" in sys.platform:
             script_ext = "bat"
             start_prefix = "start "
+            shebang = ""
         elif "darwin" in sys.platform:
             script_ext = "command"
             start_prefix = "nohup "
+            shebang = "#!/bin/bash"
         else:
             script_ext = "sh"
             start_prefix = "nohup "
-        start_script = f'cd {os.path.abspath(".")}\n{start_prefix} {py3bin} -c {code_string} '
+            shebang = "#!/bin/bash"
+        start_script = f'{shebang}\ncd {os.path.abspath(".")}\n{start_prefix} {py3bin} -c {code_string} '
         open(f"../start-q2rad.{script_ext}", "w").write(start_script)
+
         if "win32" not in sys.platform:
             st = os.stat(f"../start-q2rad.{script_ext}")
             os.chmod(f"../start-q2rad.{script_ext}", st.st_mode | stat.S_IEXEC)
+            code_string = code_string.replace('"', "")
         os.execv(py3bin, [py3bin, "-c", code_string])
 else:
     print("Failed to create virtual enviroment.", RED)
