@@ -3,8 +3,8 @@ import os
 import urllib.request
 import subprocess
 from pathlib import Path
-import shutil
 import pkgutil
+import stat
 
 
 RED = "\033[38;5;1m"
@@ -54,17 +54,17 @@ except Exception as e:
     print("Installing virtualenv...", GREEN)
     try:
         subprocess.check_call(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "--upgrade",
-                    "--no-cache-dir",
-                    "virtualenv",
-                ],
-                shell=True if "win32" in sys.platform else False,
-            )    
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "--no-cache-dir",
+                "virtualenv",
+            ],
+            shell=True if "win32" in sys.platform else False,
+        )
     except Exception as e:
         print(e, YELLOW)
         print("Failed to install virtualenv.", GREEN)
@@ -117,9 +117,23 @@ if os.path.isfile(activator):
         print("Starting q2rad...")
         py3bin = os.path.abspath(f"q2rad/{bin_folder}/{os.path.basename(sys.executable)}")
         code_string = '"from q2rad.q2rad import main;main()"'
-        if 'win32' not in sys.platform:
+        if "win32" not in sys.platform:
             code_string = code_string.replace('"', "")
-        os.execv(py3bin, [py3bin, "-c", code_string])
 
+        if "win32" in sys.platform:
+            script_ext = "bat"
+            start_prefix = "start "
+        elif "darwin" in sys.platform:
+            script_ext = "command"
+            start_prefix = "nohup "
+        else:
+            script_ext = "sh"
+            start_prefix = "nohup "
+        start_script = f'cd {os.path.abspath(".")}\n{start_prefix} {py3bin} -c {code_string} '
+        open(f"../start-q2rad.{script_ext}", "w").write(start_script)
+        if "win32" not in sys.platform:
+            st = os.stat(f"../start-q2rad.{script_ext}")
+            os.chmod(f"../start-q2rad.{script_ext}", st.st_mode | stat.S_IEXEC)
+        os.execv(py3bin, [py3bin, "-c", code_string])
 else:
     print("Failed to create virtual enviroment.", RED)
