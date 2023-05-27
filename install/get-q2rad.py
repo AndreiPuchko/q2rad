@@ -7,11 +7,11 @@ import pkgutil
 import stat
 
 
-RED = "\033[38;5;1m"
-GREEN = "\033[38;5;2m"
-YELLOW = "\033[38;5;3m"
-RESET = "\033[0;0m"
-CLEAR = "\033[2J"
+RED = r"\033[38;5;1m"
+GREEN = r"\033[38;5;2m"
+YELLOW = r"\033[38;5;3m"
+RESET = r"\033[0;0m"
+CLEAR = r"\033[2J"
 
 print_ = print
 
