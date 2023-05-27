@@ -13,11 +13,17 @@ YELLOW = "\033[38;5;3m"
 RESET = "\033[0;0m"
 CLEAR = "\033[2J"
 
+
+if os.path.isfile("_tmp.py"):
+    os.remove("_tmp.py")
+
+
 print_ = print
 
 
 def print_out(text="", color=None, RESET=RESET, print_=print_):
-    print_("" if color is None else color, text, RESET)
+    print_(f'{"" if color is None else color}{text}')
+    print_(RESET)
 
 
 print = print_out
@@ -25,6 +31,7 @@ print = print_out
 if not os.path.isdir("q2rad"):
     os.mkdir("q2rad")
 os.chdir("q2rad")
+
 
 if [x.name for x in pkgutil.iter_modules() if x.name == "pip"] == []:
     print("Installing pip...", GREEN)
@@ -106,6 +113,7 @@ if os.path.isfile(activator):
                     "q2rad",
                 ],
                 shell=True if "win32" in sys.platform else False,
+                stdout=sys.stdout
             )
         except Exception as e:
             print(e)
