@@ -7,20 +7,17 @@ import pkgutil
 import stat
 
 
-RED = r"\033[38;5;1m"
-GREEN = r"\033[38;5;2m"
-YELLOW = r"\033[38;5;3m"
-RESET = r"\033[0;0m"
-CLEAR = r"\033[2J"
+RED = "\033[38;5;1m"
+GREEN = "\033[38;5;2m"
+YELLOW = "\033[38;5;3m"
+RESET = "\033[0;0m"
+CLEAR = "\033[2J"
 
 print_ = print
 
 
-def print_out(text="", color=None, RESET=RESET, pritn_=print_):
-    if color:
-        print_.write(color)
-    print_.write(str(text))
-    print_.write(RESET)
+def print_out(text="", color=None, RESET=RESET, print_=print_):
+    print_("" if color is None else color, text, RESET)
 
 
 print = print_out
@@ -115,7 +112,8 @@ if os.path.isfile(activator):
             print("Failed to install and run q2rad.", RED)
             sys.exit(0)
         print("Starting q2rad...")
-        py3bin = os.path.abspath(f"q2rad/{bin_folder}/{os.path.basename(sys.executable)}")
+        py3bin = os.path.abspath(f"q2rad/{bin_folder}/python")
+
         code_string = '"from q2rad.q2rad import main;main()"'
 
         if "win32" in sys.platform:
