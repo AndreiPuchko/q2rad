@@ -16,11 +16,11 @@ CLEAR = r"\033[2J"
 print_ = print
 
 
-def print_out(text="", color=None):
+def print_out(text="", color=None, RESET=RESET, pritn_=print_):
     if color:
-        print_(color)
-    print_(text)
-    print_(RESET)
+        print_.write(color)
+    print_.write(str(text))
+    print_.write(RESET)
 
 
 print = print_out
@@ -96,7 +96,7 @@ if os.path.isfile(activator):
         main()
     except Exception as e:
         print(e, YELLOW)
-        print_out("Installing q2rad...", GREEN)
+        print("Installing q2rad...", GREEN)
         try:
             subprocess.check_call(
                 [
