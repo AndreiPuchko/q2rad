@@ -7,11 +7,11 @@ import pkgutil
 import stat
 
 
-RED = "\x1b[38;5;1m"
-GREEN = "\x1b[38;5;2m"
-YELLOW = "\x1b[38;5;3m"
-RESET = "\x1b[0;0m"
-CLEAR = "\x1b[2J"
+RED = chr(27) + "[38;5;1m"
+GREEN = chr(27) + "[38;5;2m"
+YELLOW = chr(27) + "[38;5;3m"
+RESET = chr(27) + "[0;0m"
+CLEAR = chr(27) + "[2J"
 
 
 if os.path.isfile("_tmp.py"):
@@ -119,7 +119,7 @@ if os.path.isfile(activator):
             print(e)
             print("Failed to install and run q2rad.", RED)
             sys.exit(0)
-        print("Starting q2rad...")
+        print("Starting q2rad...", GREEN)
         py3bin = os.path.abspath(f"q2rad/{bin_folder}/python")
 
         code_string = '"from q2rad.q2rad import main;main()"'
