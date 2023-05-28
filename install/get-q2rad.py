@@ -142,7 +142,7 @@ if os.path.isfile(activator):
                 'cd "{os.path.abspath(".")}"\n'
                 f"{start_prefix} "
                 f"'{py3bin}'"
-                " -c {code_string} "
+                f" -c {code_string} "
             )
             open(f"../start-q2rad.{script_ext}", "w").write(start_script)
         except Exception as e:
