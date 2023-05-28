@@ -7,12 +7,16 @@
     q2report    (https://pypi.org/project/q2report)  
 
 ## [Read the docs](docs/index.md) 
-## Install & run
-**Python script - Linux, macOS**
+## Install & run - Python script
+**Linux, macOS**
 ```bash
 curl https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py | python3 -
 ```
-
+**Windows**
+```bash
+curl https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py  -o get-q2rad.py;py get-q2rad.py; del get-q2rad.py
+```
+## Install & run - Bash
 **Linux**
 ```bash
 sudo apt install python3-venv python3-pip -y &&\

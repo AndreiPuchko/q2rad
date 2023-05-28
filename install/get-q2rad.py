@@ -45,7 +45,7 @@ if [x.name for x in pkgutil.iter_modules() if x.name == "pip"] == []:
         sys.exit(1)
 
 try:
-    import pip  # noqa:F811
+    import pip  # noqa:F401
 except Exception as e:
     print(e, YELLOW)
     print("Failed to install pip.", RED)
@@ -113,7 +113,7 @@ if os.path.isfile(activator):
                     "q2rad",
                 ],
                 shell=True if "win32" in sys.platform else False,
-                stdout=sys.stdout
+                stdout=sys.stdout,
             )
         except Exception as e:
             print(e)
@@ -126,7 +126,7 @@ if os.path.isfile(activator):
 
         if "win32" in sys.platform:
             script_ext = "bat"
-            start_prefix = "start "
+            start_prefix = ""
             shebang = ""
         elif "darwin" in sys.platform:
             script_ext = "command"
@@ -136,8 +136,18 @@ if os.path.isfile(activator):
             script_ext = "sh"
             start_prefix = "nohup "
             shebang = "#!/bin/bash"
-        start_script = f'{shebang}\ncd {os.path.abspath(".")}\n{start_prefix} {py3bin} -c {code_string} '
-        open(f"../start-q2rad.{script_ext}", "w").write(start_script)
+        try:
+            start_script = (
+                f"{shebang}\n"
+                'cd "{os.path.abspath(".")}"\n'
+                f"{start_prefix} "
+                f"'{py3bin}'"
+                " -c {code_string} "
+            )
+            open(f"../start-q2rad.{script_ext}", "w").write(start_script)
+        except Exception as e:
+            print(f"Failed to create start shell script: {e}", RED)
+            print(start_script)
 
         if "win32" not in sys.platform:
             st = os.stat(f"../start-q2rad.{script_ext}")
