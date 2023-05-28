@@ -7,11 +7,11 @@ import pkgutil
 import stat
 
 
-RED = "\033[38;5;1m"
-GREEN = "\033[38;5;2m"
-YELLOW = "\033[38;5;3m"
-RESET = "\033[0;0m"
-CLEAR = "\033[2J"
+RED = "\x1b[38;5;1m"
+GREEN = "\x1b[38;5;2m"
+YELLOW = "\x1b[38;5;3m"
+RESET = "\x1b[0;0m"
+CLEAR = "\x1b[2J"
 
 
 if os.path.isfile("_tmp.py"):
@@ -22,7 +22,7 @@ print_ = print
 
 
 def print_out(text="", color=None, RESET=RESET, print_=print_):
-    print_(f'{"" if color is None else color}{text}')
+    print_(f'{"" if color is None else color}{text}', end="")
     print_(RESET)
 
 
