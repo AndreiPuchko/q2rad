@@ -139,7 +139,7 @@ if os.path.isfile(activator):
         try:
             start_script = (
                 f"{shebang}\n"
-                'cd "{os.path.abspath(".")}"\n'
+                f'cd "{os.path.abspath(".")}"\n'
                 f"{start_prefix} "
                 f"'{py3bin}'"
                 f" -c {code_string} "
