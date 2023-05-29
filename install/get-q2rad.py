@@ -141,7 +141,7 @@ if os.path.isfile(activator):
                 f"{shebang}\n"
                 f'cd "{os.path.abspath(".")}"\n'
                 f"{start_prefix} "
-                f'{py3bin}'
+                f"{py3bin}"
                 f" -c {code_string} "
             )
             open(f"../start-q2rad.{script_ext}", "w").write(start_script)
@@ -149,12 +149,14 @@ if os.path.isfile(activator):
             print(f"Failed to create start shell script: {e}", RED)
             print(start_script)
 
-        if "win32" not in sys.platform:
-            st = os.stat(f"../start-q2rad.{script_ext}")
-            os.chmod(f"../start-q2rad.{script_ext}", st.st_mode | stat.S_IEXEC)
-            code_string = code_string.replace('"', "")
         try:
-            os.execv(py3bin, [py3bin, "-c", code_string])
+            if "win32" not in sys.platform:
+                st = os.stat(f"../start-q2rad.{script_ext}")
+                os.chmod(f"../start-q2rad.{script_ext}", st.st_mode | stat.S_IEXEC)
+                code_string = code_string.replace('"', "")
+                os.execv(py3bin, [py3bin, "-c", code_string])
+            else:
+                subprocess.Popen(["powershell", f"&{py3bin}", "-c", code_string], start_new_session=True)
         except Exception as e:
             print(f"Failed to start: {e}", RED)
 else:
