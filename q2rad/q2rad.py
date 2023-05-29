@@ -551,7 +551,7 @@ class Q2RadApp(Q2App):
         q2Mess(mess)
         if upgraded:
             if "win32" in sys.platform:
-                subprocess.Popen(["powershell", sys.executable, "-m", "q2rad"], start_new_session=True)
+                subprocess.Popen([sys.executable, "-m", "q2rad"], start_new_session=True)
             else:
                 os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
             self.close()
