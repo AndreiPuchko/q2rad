@@ -550,13 +550,11 @@ class Q2RadApp(Q2App):
             mess = "Updates not found!<p>"
         q2Mess(mess)
         if upgraded:
-            os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
-            # if "win32" in sys.platform:
-            #     os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
-            # else:
-            #     os.execv(sys.argv[0], sys.argv)
-            # self.close()
-        pass
+            if "win32" in sys.platform:
+                subprocess.Popen(["powershell", sys.executable, "-m", "q2rad"], start_new_session=True)
+            else:
+                os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
+            self.close()
 
     def pip_install(self, package, latest_version):
         q2Wait(
