@@ -120,9 +120,10 @@ if os.path.isfile(activator):
             print("Failed to install and run q2rad.", RED)
             sys.exit(0)
         print("Starting q2rad...", GREEN)
-        py3bin = '"' + os.path.abspath(f"q2rad/{bin_folder}/python") + '"'
-
-        code_string = '"from q2rad.q2rad import main;main()"'
+        # py3bin = '"' + os.path.abspath(f"q2rad/{bin_folder}/python") + '"'
+        # code_string = '"from q2rad.q2rad import main;main()"'
+        py3bin = os.path.abspath(f"q2rad/{bin_folder}/python")
+        code_string = "from q2rad.q2rad import main;main()"
 
         if "win32" in sys.platform:
             script_ext = "bat"
@@ -140,9 +141,9 @@ if os.path.isfile(activator):
             start_script = (
                 f"{shebang}\n"
                 f'cd "{os.path.abspath(".")}"\n'
-                f"{start_prefix} "
-                f"{py3bin}"
-                f" -c {code_string} "
+                f"{start_prefix}"
+                f'"{py3bin}"'
+                f' -c "{code_string}"'
             )
             open(f"../start-q2rad.{script_ext}", "w").write(start_script)
         except Exception as e:
@@ -153,10 +154,11 @@ if os.path.isfile(activator):
             if "win32" not in sys.platform:
                 st = os.stat(f"../start-q2rad.{script_ext}")
                 os.chmod(f"../start-q2rad.{script_ext}", st.st_mode | stat.S_IEXEC)
-                code_string = code_string.replace('"', "")
                 os.execv(py3bin, [py3bin, "-c", code_string])
             else:
-                subprocess.Popen(["powershell", f"&{py3bin}", "-c", code_string], start_new_session=True)
+                subprocess.Popen(
+                    ["powershell", f'&"{py3bin}"', "-c", f'"{code_string}"'], start_new_session=True
+                )
         except Exception as e:
             print(f"Failed to start: {e}", RED)
 else:
