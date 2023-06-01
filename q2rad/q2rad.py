@@ -138,7 +138,7 @@ class Q2RadApp(Q2App):
             basepath = os.path.abspath(".")
             desktop_entry = [
                 "[Desktop Entry]\n"
-                "Name=q2RAD\n"
+                "Name=q2rad\n"
                 f"Exec={basepath}/q2rad/bin/q2rad\n"
                 f"Path={basepath}\n"
                 f"Icon={basepath}/assets/q2rad.ico\n"

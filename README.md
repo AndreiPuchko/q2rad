@@ -12,7 +12,9 @@
 
 **Windows**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/windows/q2radlauncher.exe
 
-**macOS**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/macos/q2radlauncher
+**macOS**: run from terminal or ```git clone``` it and build executable with ```build_executable.zsh```
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/macos/q2radlauncher
 ## Install & run - Python script
 *Linux!* - make sure you have pip, if not:
 
