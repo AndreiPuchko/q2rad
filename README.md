@@ -7,16 +7,26 @@
     q2report    (https://pypi.org/project/q2report)  
 
 ## [Read the docs](docs/index.md) 
+## Install & run - Launcher (https://github.com/AndreiPuchko/q2radlauncher)
+**Linux**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/linux/q2radlauncher
+
+**Windows**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/windows/q2radlauncher.exe
+
+**macOS**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/macos/q2radlauncher
 ## Install & run - Python script
+*Linux!* - make sure you have pip, if not:
+
+```sudo apt install python3-pip```
+
 **Linux, macOS**
 ```bash
-curl https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py | python3 -
+wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py -O - | python3 
 ```
 **Windows**
 ```bash
-curl https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py  -o get-q2rad.py;py get-q2rad.py; del get-q2rad.py
+wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py  -O - | py get-q2rad.py; del get-q2rad.py
 ```
-## Install & run - Bash
+## Install & run - terminal
 **Linux**
 ```bash
 sudo apt install python3-venv python3-pip -y &&\
@@ -28,39 +38,24 @@ sudo apt install python3-venv python3-pip -y &&\
     python3 -m pip install --upgrade q2rad && \
     q2rad
 ```
-**Windows**
+**Windows (Powershell)**
 ```bash
-mkdir q2rad &&^
-cd q2rad &&^
-py -m pip install --upgrade pip &&^
-py -m venv q2rad &&^
-call q2rad/scripts/activate &&^
-pip install --upgrade q2rad &&^
+mkdir q2rad ;`
+cd q2rad ;`
+py -m pip install --upgrade pip ;`
+py -m venv q2rad;q2rad/scripts/activate ;`
+py -m pip install --upgrade q2rad ;`
 q2rad
 ```
-**Mac**
+**macOS**
 ```bash
 mkdir -p q2rad && \
     cd q2rad && \
-    pip3 install --upgrade pip && \
+    python3 -m pip install --upgrade pip && \
     python3 -m venv q2rad && \
     source q2rad/bin/activate && \
-    pip3 -m pip install --upgrade pip && \
-    pip3 -m pip install --upgrade q2rad && \
+    python3 -m pip install --upgrade q2rad && \
     q2rad
-```
-**Docker**
-```bash
-curl -s https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/docker-x11/dockerfile > dockerfile && \
-    mkdir -p q2rad_storage/Desktop && \
-    chmod -R 777 q2rad_storage && \
-    sudo docker build -t q2rad . && \
-    sudo docker run -it \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
-        -v $(pwd)/q2rad_storage:/home/q2rad \
-        -e DISPLAY=$DISPLAY \
-        -u q2rad q2rad python3 -m q2rad
-
 ```
 ## Concept:
 Application as a database

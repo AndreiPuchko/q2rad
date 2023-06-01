@@ -120,8 +120,6 @@ if os.path.isfile(activator):
             print("Failed to install and run q2rad.", RED)
             sys.exit(0)
         print("Starting q2rad...", GREEN)
-        # py3bin = '"' + os.path.abspath(f"q2rad/{bin_folder}/python") + '"'
-        # code_string = '"from q2rad.q2rad import main;main()"'
         py3bin = os.path.abspath(f"q2rad/{bin_folder}/python")
         code_string = "from q2rad.q2rad import main;main()"
 
