@@ -14,11 +14,11 @@
 
 **macOS**: run from terminal or ```git clone https://github.com/AndreiPuchko/q2radlauncher``` and build executable with ```build_executable.zsh```
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/macos/q2radlauncher-installer.zip
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/macos/q2radlauncher
 ## Install & run - Python script
-*Linux!* - make sure you have pip, if not:
+*Linux!* - make sure you have pip and virtualenv, if not:
 
-```sudo apt install python3-pip```
+```sudo apt install python3-pip python3-virtualenv```
 
 **Linux, macOS**
 ```bash
