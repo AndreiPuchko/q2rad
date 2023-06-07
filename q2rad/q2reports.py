@@ -36,7 +36,6 @@ class Q2RadReport(Q2Report):
         self.load(content)
         self.data["const"] = q2app.q2_app.const
         self.waitbar = None
-        # self.data_sources_lenght = {}
         self.last_focus_widget = q2app.q2_app.focus_widget()
 
     def prepare_output_file(self, output_file):

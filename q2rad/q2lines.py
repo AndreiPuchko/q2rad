@@ -123,8 +123,8 @@ class Q2Lines(Q2Form):
                     datatype="char",
                     datalen=15,
                 )
-                self.add_control("datalen", _("Data lenght"), datatype="int")
-                self.add_control("datadec", _("Decimal lenght"), datatype="int")
+                self.add_control("datalen", _("Data length"), datatype="int")
+                self.add_control("datadec", _("Decimal length"), datatype="int")
                 self.add_control("/s")
                 self.add_control("/")
 
