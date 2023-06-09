@@ -1,5 +1,9 @@
 import sys
 import os
+import random
+import string
+import threading
+
 
 if __name__ == "__main__":
 
@@ -12,7 +16,7 @@ from q2rad import Q2Form
 from q2rad.q2raddb import q2cursor
 from q2gui.q2model import Q2Model
 from q2gui import q2app
-from subprocess import Popen, PIPE, STDOUT
+from q2gui.q2dialogs import q2working
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
@@ -115,3 +119,30 @@ class Q2Logger:
             logging.error(self.buffer)
         sys.stdout.flush()
         self.buffer = ""
+
+
+class Q2Tasker:
+    def __init__(self, title="Working..."):
+        self.rez = {}
+        self.threads = {}
+        self.title = title
+
+    def _worker(self, name):
+        self.rez[name] = self.threads[name]["worker"](*self.threads[name]["args"])
+
+    def add(self, worker, *args, name=""):
+        if name == "" or name in self.threads:
+            name = "".join(
+                random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(5)
+            )
+        self.threads[name] = {"worker": worker, "args": args}
+        self.threads[name]["thread"] = threading.Thread(target=self._worker, args=(name,))
+        self.threads[name]["thread"].start()
+
+    def wait(self):
+        def _wait(self=self):
+            for name in self.threads:
+                self.threads[name]["thread"].join()
+
+        q2working(_wait, self.title)
+        return self.rez

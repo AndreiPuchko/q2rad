@@ -18,7 +18,7 @@ from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
 from q2rad.q2raddb import q2cursor
 from q2gui import q2app
-from q2gui.q2dialogs import Q2WaitShow, q2Wait, q2WaitMax, q2WaitStep
+from q2gui.q2dialogs import Q2WaitShow, q2Wait, q2WaitMax, q2WaitStep, q2working
 import json
 import os
 import gettext
@@ -140,7 +140,7 @@ class Q2RadReport(Q2Report):
 
             return real_worker
 
-        q2Wait(worker(), "W o r k i n g")
+        q2working(worker(), "W o r k i n g")
 
         super().run(output_file, data=data)
 

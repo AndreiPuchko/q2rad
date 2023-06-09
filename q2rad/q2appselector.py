@@ -9,7 +9,7 @@ if __name__ == "__main__":
 from q2gui import q2app
 from q2gui.q2form import NEW, COPY
 from q2gui.q2model import Q2CursorModel
-from q2gui.q2dialogs import q2Mess, q2Wait
+from q2gui.q2dialogs import q2Mess, q2Wait, q2mess, q2working
 
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
@@ -291,12 +291,11 @@ class Q2AppSelect(Q2Form):
         response_app = open_url(demo_app_url)
         response_data = open_url(demo_data_url)
         if response_app and response_data:
+            self.close()
             AppManager.import_json_app(json.load(response_app))
-
             self.q2_app.open_selected_app()
             self.q2_app.migrate_db_data()
             AppManager.import_json_data(json.load(response_data))
-            self.close()
         else:
             q2Mess(_("Can't to load Demo App"))
 
@@ -308,6 +307,7 @@ class Q2AppSelect(Q2Form):
         q2_app.show_toolbar()
         q2_app.show_statusbar()
         q2_app.show_tabbar()
+        self.q2_app.process_events()
 
     def select_application(self):
         self.close()

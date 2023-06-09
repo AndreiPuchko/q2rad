@@ -14,6 +14,7 @@ from q2gui.q2dialogs import (  # noqa: F401
     q2AskYN,
     Q2WaitShow,
     q2Wait,
+    q2working,
     q2wait,
     q2_wait,
     q2_wait_show,
@@ -47,6 +48,7 @@ from q2rad.q2packages import Q2Packages
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
+from q2rad.q2utils import Q2Tasker
 
 
 import traceback
@@ -173,9 +175,11 @@ class Q2RadApp(Q2App):
         wait.step("Migrate data DB")
         self.migrate_db_data()
         wait.step("looking for updates")
+        self.process_events()
         self.update_app_packages()
         wait.step("Done!")
         wait.close()
+
         self.run_module("manifest")
         self.run_module("version")
         if self.app_title:
@@ -286,7 +290,7 @@ class Q2RadApp(Q2App):
 
         while True:
             try:
-                db = q2Wait(
+                db = q2working(
                     lambda: Q2Db(
                         database_name=database_name,
                         db_engine_name=db_engine_name,
@@ -309,7 +313,7 @@ class Q2RadApp(Q2App):
                 )
 
                 try:
-                    q2Wait(
+                    q2working(
                         lambda: Q2Db(
                             database_name=database_name,
                             db_engine_name=db_engine_name,
@@ -392,10 +396,28 @@ class Q2RadApp(Q2App):
         about.append("<b>q2RAD</b>")
         about.append("Versions:")
         about.append(f"<b>Python</b>: {sys.version}<p>")
-        w = Q2WaitShow(len(q2_modules))
+        # w = Q2WaitShow(len(q2_modules))
+        # for package in q2_modules:
+        #     w.step()
+        #     latest_version, current_version = self.get_package_versions(package)
+        #     if latest_version:
+        #         if current_version != latest_version:
+        #             latest_version_text = f"({latest_version })"
+        #         else:
+        #             latest_version_text = ""
+        #     else:
+        #         latest_version_text = _(" (Can't load packacke info)")
+
+        #     about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
+        # w.close()
+
+        task = Q2Tasker("Checking packages version")
         for package in q2_modules:
-            w.step()
-            latest_version, current_version = self.get_package_versions(package)
+            task.add(self.get_package_versions, package, name=package)
+        rez = task.wait()
+
+        for package in rez:
+            latest_version, current_version = rez[package]
             if latest_version:
                 if current_version != latest_version:
                     latest_version_text = f"({latest_version })"
@@ -405,7 +427,7 @@ class Q2RadApp(Q2App):
                 latest_version_text = _(" (Can't load packacke info)")
 
             about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
-        w.close()
+
         q2Mess("<br>".join(about))
 
     def asset_file_loader(self, name):
@@ -440,19 +462,31 @@ class Q2RadApp(Q2App):
             os.mkdir("assets")
         # first run
         # load icons
-        icons = [getattr(q2app, x) for x in dir(q2app) if x.endswith("ICON")]
+        icons = [getattr(q2app, x) for x in dir(q2app) if x.endswith("ICON") and getattr(q2app, x) != ""]
         icons.append("q2gui.ico")
 
-        w = Q2WaitShow(len(icons))
         errors = []
-        # q2Mess
+
+        tasker = Q2Tasker("Downloading assets...")
         for x in icons:
-            if x == "":
-                continue
-            w.step(x)
-            if self.asset_file_loader(x) is False:
+            tasker.add(self.asset_file_loader, x, name=x)
+        rez = tasker.wait()
+
+        for x in icons:
+            if rez[x] is False:
                 errors.append(x)
-        w.close()
+
+        # w = Q2WaitShow(len(icons))
+        # errors = []
+        # # q2Mess
+        # for x in icons:
+        #     if x == "":
+        #         continue
+        #     w.step(x)
+        #     if self.asset_file_loader(x) is False:
+        #         errors.append(x)
+        # w.close()
+
         if os.path.isfile("assets/q2gui.ico"):
             shutil.copyfile("assets/q2gui.ico", "assets/q2rad.ico")
 
@@ -504,9 +538,9 @@ class Q2RadApp(Q2App):
                 'oLink.IconLocation = cu & "\\assets\\q2rad.ico"\n'
                 "oLink.Save\n"
             )
-
-        if q2AskYN("Can I make desktop shortcut?") == 2:
-            self.make_desktop_shortcut()
+        if sys.platform != "darwin":
+            if q2AskYN("Should I make a desktop shortcut?") == 2:
+                self.make_desktop_shortcut()
         self.process_events()
 
     def get_package_versions(self, package):
@@ -557,7 +591,7 @@ class Q2RadApp(Q2App):
             self.close()
 
     def pip_install(self, package, latest_version):
-        q2Wait(
+        q2working(
             lambda: subprocess.check_call(
                 [
                     sys.executable.replace("w.exe", ".exe"),
@@ -574,7 +608,7 @@ class Q2RadApp(Q2App):
         )
 
     def pip_uninstall(self, package):
-        q2Wait(
+        q2working(
             lambda: subprocess.check_call(
                 [
                     sys.executable.replace("w.exe", ".exe"),
@@ -886,6 +920,7 @@ class Q2RadApp(Q2App):
                 "myapp": self,
                 "__name__": __name__,
             }
+            globals()["q2_app"] = self
             for x in args:
                 __locals_dict[x] = args[x]
 

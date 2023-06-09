@@ -349,7 +349,7 @@ class AppManager(Q2Form):
             if table not in db_tables:
                 continue
             wait_row = Q2WaitShow(len(data[table]))
-            db.cursor(f"delete from {table}")
+            db.cursor(f'delete from {table}')
             for row in data[table]:
                 wait_row.step()
                 if not db.raw_insert(table, row):
