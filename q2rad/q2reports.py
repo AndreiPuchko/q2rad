@@ -331,7 +331,8 @@ class Q2ReportReport(Q2Form):
                 """
 
         self.style_cell_style = f"""
-                background:{"palette(Dark)" if self.q2_app.q2style.color_mode == "dark" else "palette(Light)"};
+                background:
+                    {"palette(Dark)" if self.q2_app.q2style.color_mode == "dark" else "palette(Light)"};
                 text-align:center;
                 vertical-align:middle;
                 border-style:solid;
@@ -1878,7 +1879,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         selection = self.rows_sheet.get_selection()
         if len(selection) > 1:
             for cell_key in selection:
-                cell_key = "{0},{1}".format(cell_key[0],cell_key[1])
+                cell_key = "{0},{1}".format(cell_key[0], cell_key[1])
                 if cell_key != self.selection_first_cell:
                     self.ensure_cell(cell_key)
                     self.rows_data.cells[cell_key]["style"] = dict(

@@ -50,7 +50,6 @@ from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
 from q2rad.q2utils import Q2Tasker
 
-
 import traceback
 import gettext
 
@@ -64,7 +63,6 @@ import logging
 
 
 # TODO: excel custom format 2 report
-# TODO: qrid - hightlight current column
 
 
 q2_modules = ["q2rad", "q2gui", "q2db", "q2report", "q2terminal"]
@@ -658,30 +656,37 @@ class Q2RadApp(Q2App):
         self.check_packages_update(extra_packages)
 
     def check_packages_update(self, packages_list=q2_modules):
+        if len(packages_list) == 0:
+            return
         can_upgrade = False
-        packages_list.insert(0, "pip")
+        if packages_list == q2_modules:
+            packages_list.insert(0, "pip")
+        list_2_upgrade_message = []
         list_2_upgrade = []
-        w = Q2WaitShow(len(packages_list))
+
+        task = Q2Tasker("Checking packages version")
         for package in packages_list:
-            self.process_events()
-            w.step()
-            latest_version, current_version = self.get_package_versions(package)
+            task.add(self.get_package_versions, package, name=package)
+        rez = task.wait()
+
+        for package in rez:
+            latest_version, current_version = rez[package]
             if latest_version != current_version and latest_version:
-                list_2_upgrade.append(f"<b>{package}</b>: {current_version} > {latest_version}")
+                list_2_upgrade_message.append(f"<b>{package}</b>: {current_version} > {latest_version}")
+                list_2_upgrade.append(package)
                 if not can_upgrade:
                     can_upgrade = True
-        w.close()
         if can_upgrade:
             if (
                 q2AskYN(
                     "Updates for packages are avaiable!<p><p>"
-                    f"{',<br> '.join(list_2_upgrade)}<br><br>"
+                    f"{',<br> '.join(list_2_upgrade_message)}<br><br>"
                     "Do you want to proceed with update?<p><p>"
                     "The program will be restarted after the update!"
                 )
                 == 2
             ):
-                self.update_packages(packages_list)
+                self.update_packages(list_2_upgrade)
 
     def run_stylesettings(self):
         AppStyleSettings().run()
@@ -925,7 +930,6 @@ class Q2RadApp(Q2App):
                 __locals_dict[x] = args[x]
 
             code = self.code_compiler(script)
-            # print("code compiled", "\n" ,script)
             if code["code"]:
                 try:
                     exec(code["code"], globals(), __locals_dict)
