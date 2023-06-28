@@ -294,7 +294,7 @@ class Q2AppSelect(Q2Form):
             "database_data": ":memory:",
             "driver_logic": "Sqlite",
             "database_logic": ":memory:",
-            "dev_mode": "*",
+            "dev_mode": "",
         }
         self._select_application(row)
         self.q2_app.migrate_db_logic()
@@ -315,6 +315,7 @@ class Q2AppSelect(Q2Form):
 
     def _select_application(self, app_data={}):
         q2_app: Q2App = q2app.q2_app
+        q2_app.dev_mode = app_data.get("dev_mode")
         q2_app.selected_application = app_data
         q2_app.open_databases()
         q2_app.show_menubar()

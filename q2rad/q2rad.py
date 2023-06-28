@@ -13,6 +13,7 @@
 #    limitations under the License.
 
 import sys
+import os
 import re
 
 if __name__ == "__main__":
@@ -125,7 +126,8 @@ class Q2RadApp(Q2App):
 
         self.q2market_path = "../q2market"
 
-        self.dev_mode = os.path.isdir(self.q2market_path)
+        # self.dev_mode = os.path.isdir(self.q2market_path)
+        self.dev_mode = False
 
         self.q2market_url = "https://raw.githubusercontent.com/AndreiPuchko/q2market/main/"
 
@@ -380,7 +382,8 @@ class Q2RadApp(Q2App):
 
         self.create_form_menu()
 
-        self.dev_mode = self.selected_application.get("dev_mode") or os.path.isdir(self.q2market_path)
+        self.dev_mode = self.selected_application.get("dev_mode") or os.path.isdir(self.q2market_path) or os.path.isfile(".dev")
+        # self.dev_mode = False
 
         if self.dev_mode:
             self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
@@ -976,7 +979,7 @@ class Q2RadApp(Q2App):
 
 def main():
     app = Q2RadApp("q2RAD")
-    app.dev_mode = 1
+    # app.dev_mode = 1
     app.run()
 
 

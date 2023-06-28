@@ -204,7 +204,6 @@ class AppManager(Q2Form):
                 self.add_control("/")
             self.add_control("/")
 
-        # if self.q2_app.dev_mode:
         self.cancel_button = 1
 
     def reload_assets(self):
