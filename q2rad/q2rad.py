@@ -98,12 +98,55 @@ def get_report(report_name):
         return None
 
 
-def run_module(module_name):
+def run_form(form_name):
+    return q2app.q2_app.run_form(form_name)
+
+
+def run_module1(module_name):
     return q2app.q2_app.run_module(module_name)
 
 
-def run_form(form_name):
-    return q2app.q2_app.run_form(form_name)
+def run_module(module_name=None, globals=globals(), locals=locals(), script="", import_only=False):
+    if module_name is not None:
+        script = q2app.q2_app.db_logic.get("modules", f"name = '{module_name}'", "script")
+    if not script:
+        return
+    code = q2app.q2_app.code_compiler(script)
+
+    if import_only:
+        __name__ = ""
+    else:
+        __name__ = "__main__"
+
+    class ReturnEvent(Exception):
+        pass
+
+    locals.update(
+        {
+            "RETURN": None,
+            "ReturnEvent": ReturnEvent,
+            "self": q2app.q2_app,
+            "q2_app": q2app.q2_app,
+            "myapp": q2app.q2_app,
+            "__name__": "__name__",
+        }
+    )
+    try:
+        exec(code["code"], globals, locals)
+    except ReturnEvent:
+        pass
+    except Exception:
+        trace = q2app.q2_app.code_error()
+        vars = "<br>".join(
+            [
+                f"<b>{x}</b>:{str(locals[x])[:100]}"
+                for x in locals
+                if x not in ("RETURN", "ReturnEvent", "mem", "self", "q2_app")
+            ]
+        )
+
+        q2Mess(f"""Runtime error:<br><br>{trace}<br><br>{vars}""")
+    return locals["RETURN"]
 
 
 class Q2RadApp(Q2App):
@@ -382,7 +425,11 @@ class Q2RadApp(Q2App):
 
         self.create_form_menu()
 
-        self.dev_mode = self.selected_application.get("dev_mode") or os.path.isdir(self.q2market_path) or os.path.isfile(".dev")
+        self.dev_mode = (
+            self.selected_application.get("dev_mode")
+            or os.path.isdir(self.q2market_path)
+            or os.path.isfile(".dev")
+        )
         # self.dev_mode = False
 
         if self.dev_mode:
@@ -943,38 +990,15 @@ class Q2RadApp(Q2App):
                 "myapp": self,
                 "__name__": __name__,
             }
-            globals()["q2_app"] = self
             for x in args:
                 __locals_dict[x] = args[x]
-
-            code = self.code_compiler(script)
-            if code["code"]:
-                try:
-                    exec(code["code"], globals(), __locals_dict)
-                except ReturnEvent:
-                    pass
-                except Exception:
-                    trace = self.code_error()
-                    vars = "<br>".join(
-                        [
-                            f"<b>{x}</b>:{__locals_dict[x]}"
-                            for x in __locals_dict
-                            if x not in ("RETURN", "ReturnEvent", "mem", "self", "q2_app")
-                        ]
-                    )
-                    q2Mess(f"""Runtime error:<br><br>{trace}<br><br>{vars}""")
-            else:
-                q2Mess(code["error"])
-
-            return __locals_dict["RETURN"]
+            globals()["q2_app"] = self
+            return run_module(script=script, locals=__locals_dict)
 
         return real_runner
 
     def run_module(self, name=""):
-        script = self.db_logic.get("modules", f"name = '{name}'", "script")
-        if script:
-            ret = self.code_runner(script)()
-            return ret
+        return run_module(name)
 
 
 def main():
