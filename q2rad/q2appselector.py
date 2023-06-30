@@ -45,7 +45,7 @@ _ = gettext.gettext
 
 
 class Q2AppSelect(Q2Form):
-    def __init__(self):
+    def __init__(self, title=""):
         super().__init__(_("Select application"))
         self.selected_application = {}
         self.no_view_action = True

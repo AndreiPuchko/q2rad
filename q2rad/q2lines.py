@@ -68,7 +68,7 @@ HAS_PIC = "radio;" "combo;" "list;"
 
 
 class Q2Lines(Q2Form):
-    def __init__(self):
+    def __init__(self, title=""):
         super().__init__("Lines")
         self.no_view_action = True
 

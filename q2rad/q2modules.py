@@ -34,7 +34,7 @@ _ = gettext.gettext
 
 
 class Q2Modules(Q2Form):
-    def __init__(self):
+    def __init__(self, title=""):
         super().__init__("Modules")
         self.no_view_action = True
 

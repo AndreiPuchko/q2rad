@@ -32,7 +32,7 @@ _ = gettext.gettext
 
 
 class Q2Packages(Q2Form):
-    def __init__(self):
+    def __init__(self, title=""):
         super().__init__("Packages")
         self.no_view_action = True
 

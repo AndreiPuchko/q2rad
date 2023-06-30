@@ -40,8 +40,8 @@ _ = gettext.gettext
 
 
 class Q2Forms(Q2Form):
-    def __init__(self):
-        super().__init__("Forms")
+    def __init__(self, title="Forms"):
+        super().__init__(title)
         self.no_view_action = True
 
     def on_init(self):
@@ -118,6 +118,13 @@ class Q2Forms(Q2Form):
             self.add_control(
                 "cancel_button",
                 _("Add Cancel button"),
+                datatype="char",
+                datalen=1,
+                control="check",
+            )
+            self.add_control(
+                "view_action",
+                _("Add view actions"),
                 datatype="char",
                 datalen=1,
                 control="check",

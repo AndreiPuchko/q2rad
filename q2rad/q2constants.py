@@ -32,7 +32,7 @@ _ = gettext.gettext
 
 
 class Q2Constants(Q2Form):
-    def __init__(self):
+    def __init__(self, title=""):
         super().__init__("Constants")
         self.no_view_action = True
 

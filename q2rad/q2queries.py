@@ -37,7 +37,7 @@ re_find_param = re.compile(r":\b\w+\b")
 
 
 class Q2Queries(Q2Form):
-    def __init__(self):
+    def __init__(self, title=""):
         super().__init__("Queries")
         self.no_view_action = True
 

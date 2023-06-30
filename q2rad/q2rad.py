@@ -51,9 +51,6 @@ from q2rad.q2appmanager import AppManager
 from q2rad.q2stylesettings import AppStyleSettings
 from q2rad.q2utils import set_logging
 
-
-# from random import randint
-
 from q2rad.q2appselector import Q2AppSelect
 from q2rad.q2modules import Q2Modules
 from q2rad.q2forms import Q2Forms
@@ -68,8 +65,6 @@ from q2rad.q2utils import Q2Tasker
 import traceback
 import gettext
 
-# import urllib.request
-import os
 import json
 import subprocess
 import shutil
@@ -128,7 +123,7 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
             "self": q2app.q2_app,
             "q2_app": q2app.q2_app,
             "myapp": q2app.q2_app,
-            "__name__": "__name__",
+            "__name__": __name__,
         }
     )
     try:
@@ -852,7 +847,7 @@ class Q2RadApp(Q2App):
         cu: Q2Cursor = q2cursor(sql, self.db_logic)
 
         form = Q2Form(form_dic["title"])
-        form.no_view_action = 1
+        form.no_view_action = False if form_dic["view_action"] else True
         form.ok_button = form_dic["ok_button"]
         form.cancel_button = form_dic["cancel_button"]
 
@@ -973,8 +968,8 @@ class Q2RadApp(Q2App):
 
     def code_runner(self, script, form=None, __name__="__main__"):
         _form = form
-        # to provide return ability for exec
 
+        # to provide return ability for exec
         def real_runner(**args):
             # make exec stop on return
             class ReturnEvent(Exception):
