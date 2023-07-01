@@ -15,6 +15,7 @@
 import sys
 import os
 import re
+import threading
 
 if __name__ == "__main__":
 
@@ -93,8 +94,8 @@ def get_report(report_name):
         return None
 
 
-def run_form(form_name):
-    return q2app.q2_app.run_form(form_name)
+def run_form(form_name, order="", where=""):
+    return q2app.q2_app.run_form(form_name, order=order, where=where)
 
 
 def run_module1(module_name):
@@ -139,8 +140,15 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
                 if x not in ("RETURN", "ReturnEvent", "mem", "self", "q2_app")
             ]
         )
-
-        q2Mess(f"""Runtime error:<br><br>{trace}<br><br>{vars}""")
+        if threading.current_thread() is threading.main_thread():
+            q2Mess(
+                f"""Runtime error:<br><br>{trace}<br><br>{vars}""".replace("\n", "<br>").replace(
+                    " ", "&nbsp;"
+                )
+            )
+        else:
+            print(f"""Runtime error:\n{trace}\n\n{vars}""")
+            print("-" * 25)
     return locals["RETURN"]
 
 
@@ -804,10 +812,16 @@ class Q2RadApp(Q2App):
     def run_packages(self):
         Q2Packages().run()
 
-    def run_form(self, name):
-        self.get_form(name).run()
+    def run_form(self, name, order="", where=""):
+        form = q2working(lambda: self.get_form(name, where=where, order=order), "Loading form...")
+        form.run()
 
-    def get_form(self, name):
+    def get_form(
+        self,
+        name,
+        order="",
+        where="",
+    ):
         if not name:
             return
         form_dic = self.db_logic.get("forms", f"name ='{name}'")
@@ -879,83 +893,78 @@ class Q2RadApp(Q2App):
             x["when"] = self.code_runner(x["_when"], form)
             form.add_control(**x)
 
-        # add actions
+        # add datasource
         if form_dic["form_table"]:
-            form_cursor: Q2Cursor = self.db_data.table(table_name=form_dic["form_table"])
+            print(1)
+            form_cursor: Q2Cursor = self.db_data.table(
+                table_name=form_dic["form_table"],
+                order=order if order else form_dic["form_table_sort"],
+                where=where,
+            )
             form_model = Q2CursorModel(form_cursor)
-            form_model.set_order(form_dic["form_table_sort"]).refresh()
             form.set_model(form_model)
-            sql = f"select * from actions where name = '{name}' order by seq"
-            cu = q2cursor(sql, self.db_logic)
-            for x in cu.records():
-                if x["action_mode"] == "1":
-                    form.add_action("/crud")
-                elif x["action_mode"] == "3":
-                    form.add_action("-")
+        # add actions
+        sql = f"select * from actions where name = '{name}' order by seq"
+        cu = q2cursor(sql, self.db_logic)
+        for x in cu.records():
+            if x["action_mode"] == "1":
+                form.add_action("/crud")
+            elif x["action_mode"] == "3":
+                form.add_action("-")
+            else:
+                if x["child_form"] and x["child_where"]:
+                    child_form_name = x["child_form"]
+
+                    def get_action_form(child_form_name):
+                        def worker():
+                            return self.get_form(child_form_name)
+
+                        return worker
+
+                    form.add_action(
+                        x["action_text"],
+                        self.code_runner(x["action_worker"]) if x["action_worker"] else None,
+                        child_form=get_action_form(child_form_name),
+                        child_where=x["child_where"],
+                        hotkey=x["action_key"],
+                        child_noshow=x["child_noshow"],
+                        child_copy_mode=x["child_copy_mode"],
+                        eof_disabled=1,
+                    )
                 else:
-                    if x["child_form"] and x["child_where"]:
-                        child_form_name = x["child_form"]
-
-                        def get_action_form(child_form_name):
-                            def worker():
-                                return self.get_form(child_form_name)
-
-                            return worker
-
-                        form.add_action(
-                            x["action_text"],
-                            self.code_runner(x["action_worker"]) if x["action_worker"] else None,
-                            child_form=get_action_form(child_form_name),
-                            child_where=x["child_where"],
-                            hotkey=x["action_key"],
-                            child_noshow=x["child_noshow"],
-                            child_copy_mode=x["child_copy_mode"],
-                            eof_disabled=1,
-                        )
-                    else:
-                        form.add_action(
-                            x["action_text"],
-                            self.code_runner(x["action_worker"], form=form) if x["action_worker"] else None,
-                            hotkey=x["action_key"],
-                            child_noshow=x["child_noshow"],
-                            child_copy_mode=x["child_copy_mode"],
-                            eof_disabled=x["eof_disabled"],
-                        )
+                    form.add_action(
+                        x["action_text"],
+                        self.code_runner(x["action_worker"], form=form) if x["action_worker"] else None,
+                        hotkey=x["action_key"],
+                        child_noshow=x["child_noshow"],
+                        child_copy_mode=x["child_copy_mode"],
+                        eof_disabled=x["eof_disabled"],
+                    )
 
         return form
 
     def code_error(self):
-        return traceback.format_exc().replace("\n", "<br>").replace(" ", "&nbsp;")
+        return traceback.format_exc()
 
     def code_compiler(self, script):
-        if "return" in script:
-
-            def count_indent_spaces(line):
-                spaces_count = 0
-                for x in line:
-                    if x == " ":
-                        spaces_count += 1
-                    else:
-                        break
-                return spaces_count
-
-            def_offset_list = []
+        if "return" in script or "?" in script:
             nsl = []
+            in_def = False
             for x in script.split("\n"):
-                if "def" in x:
-                    def_offset_list.append(count_indent_spaces(x))
-                elif def_offset_list:
-                    if count_indent_spaces(x) <= def_offset_list[-1]:
-                        def_offset_list.pop()
-                elif re.match(r".*return\W*.*", x):
-                    if "return " in x:
-                        if x.strip() == "return":
-                            x = x.replace("return", "raise ReturnEvent")
-                        else:
-                            x = x.replace("return", "RETURN = ") + "; raise ReturnEvent"
+                if re.findall(r"^def|^class", x):
+                    in_def = True
+                elif not re.findall(r"^\s+", x):
+                    in_def = False
+                # if in_def is False and re.match(r"^\s+return\W*.*", x):
+                if in_def is False and re.findall(r"^\s*return\W*.*|;\s*return\W*.*", x):
+                    if x.strip() == "return":
+                        x = x.replace("return", "raise ReturnEvent")
+                    else:
+                        x = x.replace("return", "RETURN = ") + "; raise ReturnEvent"
+                if re.findall("^\s*\?\W*.*", x):
+                    x = x.split("?")[0] + "print(" + "".join(x.split("?")[1:]) + ")"
                 nsl.append(x)
             script = "\n".join(nsl)
-
         try:
             code = compile(script, "'<worker>'", "exec")
             return {"code": code, "error": ""}

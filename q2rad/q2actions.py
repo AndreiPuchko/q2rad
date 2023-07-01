@@ -63,7 +63,7 @@ class Q2Actions(Q2Form):
         )
         self.add_control("action_text", _("Action text"))
         self.add_control("/")
-        if self.add_control("/t", _("Main")):
+        if self.add_control("/t", _("Main"), tag="tab"):
             if self.add_control("/f"):
                 self.add_control("seq", _("Sequence number"), datatype="int")
 
@@ -176,4 +176,6 @@ class Q2Actions(Q2Form):
 
     def before_form_show(self):
         self.action_mode_valid()
+        if self.s.action_worker != "":
+            self.w.tab.set_tab(_("Action Script"))
         # self.next_sequense()
