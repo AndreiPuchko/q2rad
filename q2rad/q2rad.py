@@ -895,7 +895,6 @@ class Q2RadApp(Q2App):
 
         # add datasource
         if form_dic["form_table"]:
-            print(1)
             form_cursor: Q2Cursor = self.db_data.table(
                 table_name=form_dic["form_table"],
                 order=order if order else form_dic["form_table_sort"],

@@ -23,7 +23,10 @@ if __name__ == "__main__":
 from q2gui.q2model import Q2CursorModel
 from q2rad.q2raddb import Q2Cursor, insert
 from q2gui.q2dialogs import q2AskYN
-from q2rad.q2utils import choice_table, choice_column, choice_form
+from q2rad.q2utils import choice_table, choice_column, choice_form, Q2_save_and_run
+from q2gui.q2app import Q2Actions
+from q2gui.q2dialogs import q2mess
+
 
 from q2rad import Q2Form
 
@@ -67,7 +70,7 @@ WIDGETS = ("line", "text", "code", "button", "check", "radio", "combo", "list", 
 HAS_PIC = "radio;" "combo;" "list;"
 
 
-class Q2Lines(Q2Form):
+class Q2Lines(Q2Form, Q2_save_and_run):
     def __init__(self, title=""):
         super().__init__("Lines")
         self.no_view_action = True
@@ -214,6 +217,7 @@ class Q2Lines(Q2Form):
                     self.add_control("/")
 
                 self.add_control("/")
+
             self.add_control("/s")
 
         self.add_control("/t", _("Comment"))
@@ -242,6 +246,8 @@ class Q2Lines(Q2Form):
             nogrid="*",
             datatype="longtext",
         )
+        self.add_control("/")
+        self._add_save_and_run()
 
     def filler(self):
         if self.model.row_count() > 0:

@@ -30,7 +30,7 @@ from q2gui import q2app
 
 from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
-from q2rad.q2utils import choice_table, choice_column
+from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run
 
 from q2rad import Q2Form
 
@@ -39,7 +39,7 @@ import gettext
 _ = gettext.gettext
 
 
-class Q2Forms(Q2Form):
+class Q2Forms(Q2Form, Q2_save_and_run):
     def __init__(self, title="Forms"):
         super().__init__(title)
         self.no_view_action = True
@@ -250,6 +250,8 @@ class Q2Forms(Q2Form):
                 nogrid="*",
                 control="code",
             )
+        self.add_control("/")
+        self._add_save_and_run()
 
     def select_data_storage_table(self):
         choice = choice_table()

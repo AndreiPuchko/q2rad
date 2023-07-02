@@ -23,7 +23,7 @@ if __name__ == "__main__":
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2rad.q2raddb import q2cursor
-from q2rad.q2utils import choice_form, choice_column
+from q2rad.q2utils import choice_form, choice_column, Q2_save_and_run
 from q2gui import q2app
 from q2rad import Q2Form
 
@@ -32,7 +32,7 @@ import gettext
 _ = gettext.gettext
 
 
-class Q2Actions(Q2Form):
+class Q2Actions(Q2Form, Q2_save_and_run):
     def __init__(self, title=""):
         super().__init__("Actions")
         self.no_view_action = True
@@ -136,6 +136,8 @@ class Q2Actions(Q2Form):
         )
         self.add_control("/t", _("Comment"))
         self.add_control("comment", gridlabel=_("Comments"), datatype="longtext", control="text")
+        self.add_control("/")
+        self._add_save_and_run()
 
     def form_runner(self):
         self.prev_form.run_action("Run")

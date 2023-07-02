@@ -31,6 +31,8 @@ from q2rad.q2raddb import q2cursor
 from q2gui.q2model import Q2Model
 from q2gui import q2app
 from q2gui.q2dialogs import q2working
+from q2gui.q2app import Q2Actions
+
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
@@ -160,3 +162,33 @@ class Q2Tasker:
 
         q2working(_wait, self.title)
         return self.rez
+
+
+class Q2_save_and_run:
+    def __init__(self) -> None:
+        self.dev_actions = Q2Actions()
+
+    def _add_save_and_run(self: Q2Form, save_only=False):
+        self.dev_actions.show_main_button = False
+        self.dev_actions.show_actions = False
+        self.dev_actions.add_action("Save", worker=self._save, hotkey="F2")
+        if save_only is False:
+            self.dev_actions.add_action("Save and run", worker=self._save_and_run, hotkey="F4")
+
+        self.add_control(
+            "save_and_run_actions", "", actions=self.dev_actions, control="toolbar", nogrid=1, migrate=0
+        )
+
+    def _save(self):
+        if self.crud_mode == "EDIT":
+            self.crud_save(close_form=False)
+
+    def _save_and_run(self):
+        if self.crud_mode == "EDIT":
+            self._save()
+            self.run_action("Run")
+
+    def _save_and_run_disable(self):
+        if self.crud_mode != "EDIT":
+            self.dev_actions.set_disabled("Save and run")
+            self.dev_actions.set_disabled("Save")

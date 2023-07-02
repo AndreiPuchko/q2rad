@@ -31,6 +31,7 @@ from q2report.q2report import Q2Report
 from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
 from q2rad.q2raddb import q2cursor
+from q2rad.q2utils import Q2_save_and_run
 from q2gui import q2app
 from q2gui.q2dialogs import Q2WaitShow, q2Wait, q2WaitMax, q2WaitStep, q2working
 import json
@@ -159,7 +160,7 @@ class Q2RadReport(Q2Report):
         super().run(output_file, data=data)
 
 
-class Q2Reports(Q2Form):
+class Q2Reports(Q2Form, Q2_save_and_run):
     def __init__(self):
         super().__init__("Reports")
         self.no_view_action = True
@@ -180,6 +181,7 @@ class Q2Reports(Q2Form):
             noform=1,
         )
         self.add_control("comment", _("Comment"), datatype="text", noform=1)
+        self._add_save_and_run(save_only=True)
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="reports")
         model = Q2CursorModel(cursor)

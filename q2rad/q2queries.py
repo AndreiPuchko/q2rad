@@ -26,6 +26,7 @@ from q2gui.q2model import Q2CursorModel, Q2Model
 from q2gui.q2widget import Q2Widget
 from q2gui.q2app import Q2Actions
 from q2rad.q2raddb import q2cursor
+from q2rad.q2utils import Q2_save_and_run
 from q2gui.q2utils import set_dict_default
 import json
 import gettext
@@ -36,7 +37,7 @@ _ = gettext.gettext
 re_find_param = re.compile(r":\b\w+\b")
 
 
-class Q2Queries(Q2Form):
+class Q2Queries(Q2Form, Q2_save_and_run):
     def __init__(self, title=""):
         super().__init__("Queries")
         self.no_view_action = True
@@ -69,6 +70,8 @@ class Q2Queries(Q2Form):
             # readonly=1,
         )
         self.add_control("comment", _("Comment"), datatype="longtext", noform=1)
+        self._add_save_and_run(save_only=True)
+
 
     def before_form_show(self):
         self.maximized = True

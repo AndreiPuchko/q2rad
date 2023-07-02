@@ -24,6 +24,7 @@ from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2dialogs import q2AskYN
 from q2rad import Q2Form
+from q2rad.q2utils import Q2_save_and_run
 from q2gui.q2utils import num
 
 import gettext
@@ -33,16 +34,17 @@ from q2gui.q2app import Q2Actions
 _ = gettext.gettext
 
 
-class Q2Modules(Q2Form):
+class Q2Modules(Q2Form, Q2_save_and_run):
     def __init__(self, title=""):
         super().__init__("Modules")
         self.no_view_action = True
 
     def on_init(self):
         self.editor_actions = Q2Actions()
-        self.editor_actions.add_action("Save and run", self.editor_script_runner, hotkey="F4")
-        self.editor_actions.add_action("Just save", self.editor_just_save, hotkey="F2")
-        self.editor_actions.add_action("Just run", self.editor_script_runner, hotkey="Ctrl+R")
+        # self.editor_actions.add_action("Save and run", self.editor_script_runner, hotkey="F4")
+        # self.editor_actions.add_action("Just save", self.editor_just_save, hotkey="F2")
+        # self.editor_actions.add_action("Just run", self.editor_script_runner, hotkey="Ctrl+R")
+        
         self.add_control(
             "name",
             _("Name"),
@@ -58,7 +60,7 @@ class Q2Modules(Q2Form):
             gridlabel=_("Module"),
             control="code",
             nogrid=1,
-            actions=self.editor_actions,
+            # actions=self.editor_actions,
         )
         self.add_control("/t", "Comment")
         self.add_control("comment", _("Comment"), control="text")
@@ -71,6 +73,9 @@ class Q2Modules(Q2Form):
         self.set_model(model)
         self.add_action("/crud")
         self.add_action("Run", self.script_runner, hotkey="F4", eof_disabled=1)
+        self.add_control("/")
+        self._add_save_and_run()
+        self.dev_actions.add_action("Just run", self.editor_just_run, hotkey="F5")
 
     def name_valid(self):
         if self.s.name == "manifest":
@@ -102,13 +107,14 @@ class Q2Modules(Q2Form):
             ):
                 return False
         self.s.last_line = self.w.script.current_line()
-        return super().before_crud_save()
+        # return super().before_crud_save()
 
     def before_form_show(self):
         self.maximized = True
-        if self.crud_mode != "EDIT":
-            self.editor_actions.set_disabled("Save and run")
-            self.editor_actions.set_disabled("Just save")
+        self._save_and_run_disable()
+        # if self.crud_mode != "EDIT":
+        #     self.editor_actions.set_disabled("Save and run")
+        #     self.editor_actions.set_disabled("Just save")
         if num(self.s.last_line):
             self.w.script.goto_line(num(self.s.last_line))
 
@@ -119,12 +125,12 @@ class Q2Modules(Q2Form):
     def script_runner(self):
         self.q2_app.code_runner(self.r.script)()
 
-    def editor_script_runner(self):
-        self.editor_just_save()
-        self.editor_just_run()
+    # def editor_script_runner(self):
+    #     self.editor_just_save()
+    #     self.editor_just_run()
 
-    def editor_just_save(self):
-        self.crud_save(close_form=False)
+    # def editor_just_save(self):
+    #     self.crud_save(close_form=False)
 
     def editor_just_run(self):
         self.q2_app.code_runner(self.s.script)()
