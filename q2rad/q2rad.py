@@ -109,47 +109,56 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
         return
     code = q2app.q2_app.code_compiler(script)
 
-    if import_only:
-        __name__ = ""
-    else:
-        __name__ = "__main__"
-
-    class ReturnEvent(Exception):
-        pass
-
-    locals.update(
-        {
-            "RETURN": None,
-            "ReturnEvent": ReturnEvent,
-            "self": q2app.q2_app,
-            "q2_app": q2app.q2_app,
-            "myapp": q2app.q2_app,
-            "__name__": __name__,
-        }
-    )
-    try:
-        exec(code["code"], globals, locals)
-    except ReturnEvent:
-        pass
-    except Exception:
-        trace = q2app.q2_app.code_error()
-        vars = "<br>".join(
-            [
-                f"<b>{x}</b>:{str(locals[x])[:100]}"
-                for x in locals
-                if x not in ("RETURN", "ReturnEvent", "mem", "self", "q2_app")
-            ]
-        )
+    if code["code"] is False:
+        trace = code["error"]
         if threading.current_thread() is threading.main_thread():
-            q2Mess(
-                f"""Runtime error:<br><br>{trace}<br><br>{vars}""".replace("\n", "<br>").replace(
-                    " ", "&nbsp;"
-                )
-            )
+            q2Mess(f"""Runtime error:<br><br>{trace}<br>""".replace("\n", "<br>").replace(" ", "&nbsp;"))
         else:
-            print(f"""Runtime error:\n{trace}\n\n{vars}""")
+            print(f"""Runtime error:\n{trace}""")
             print("-" * 25)
-    return locals["RETURN"]
+        return
+    else:
+        if import_only:
+            __name__ = ""
+        else:
+            __name__ = "__main__"
+
+        class ReturnEvent(Exception):
+            pass
+
+        locals.update(
+            {
+                "RETURN": None,
+                "ReturnEvent": ReturnEvent,
+                "self": q2app.q2_app,
+                "q2_app": q2app.q2_app,
+                "myapp": q2app.q2_app,
+                "__name__": __name__,
+            }
+        )
+        try:
+            exec(code["code"], globals, locals)
+        except ReturnEvent:
+            pass
+        except Exception:
+            trace = q2app.q2_app.code_error()
+            vars = "<br>".join(
+                [
+                    f"<b>{x}</b>:{str(locals[x])[:100]}"
+                    for x in locals
+                    if x not in ("RETURN", "ReturnEvent", "mem", "self", "q2_app")
+                ]
+            )
+            if threading.current_thread() is threading.main_thread():
+                q2Mess(
+                    f"""Runtime error:<br><br>{trace}<br><br>{vars}""".replace("\n", "<br>").replace(
+                        " ", "&nbsp;"
+                    )
+                )
+            else:
+                print(f"""Runtime error:\n{trace}\n\n{vars}""")
+                print("-" * 25)
+        return locals["RETURN"]
 
 
 class Q2RadApp(Q2App):
