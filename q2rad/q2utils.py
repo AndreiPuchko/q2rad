@@ -27,11 +27,12 @@ if __name__ == "__main__":
     main()
 
 from q2rad import Q2Form
-from q2rad.q2raddb import q2cursor
+from q2rad.q2raddb import q2cursor, num
 from q2gui.q2model import Q2Model
 from q2gui import q2app
 from q2gui.q2dialogs import q2working
 from q2gui.q2app import Q2Actions
+from q2gui.q2app import Q2Controls
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -192,3 +193,102 @@ class Q2_save_and_run:
         if self.crud_mode != "EDIT":
             self.dev_actions.set_disabled("Save and run")
             self.dev_actions.set_disabled("Save")
+
+
+class auto_filter:
+    def __init__(self, table, mem):
+        self.table = table
+        self.mem = mem
+        self.fico = []
+        self.mem.ok_button = True
+        self.mem.cancel_button = True
+        self.mem.add_ok_cancel_buttons()
+
+        self.auto_filter()
+
+    def auto_filter(self):
+        cu = q2cursor(
+            f"""
+                select *
+                from lines
+                where name  = '{self.table}' 
+                    and migrate<>''
+                    and (label <>'' or gridlabel <> '')
+                order by seq
+            """,
+            self.mem.q2_app.db_logic,
+        )
+        self.mem.controls.add_control("/f")
+        for col in cu.records():
+            col = Q2Controls.validate(col)
+            self.fico.append(cu.r.column)
+
+            if col["datatype"] in ["date"] or col.get("num"):
+                self.mem.controls.add_control("/h", cu.r.label, check=1)
+                col["label"] = "from"
+                co = col["column"]
+                col["column"] = co + "1"
+                self.mem.controls.add_control(**col)
+                col["label"] = "to"
+                col["column"] = co + "2"
+                self.mem.controls.add_control(**col)
+                self.mem.controls.add_control("/s")
+                self.mem.controls.add_control("/")
+            else:
+                col["label"] = cu.r.label
+                col["check"] = 1
+                self.mem.controls.add_control(**col)
+        self.mem.valid = self.valid
+
+    def valid(self):
+        where = []
+        for x in self.fico:
+            where.append(self.prepare_where(x))
+        where_string = " and ".join([x for x in where if x])
+        q2app.q2_app.run_form("sales", where=where_string)
+        return False
+
+    def prepare_where(self, column=None, control1=None, control2=None):
+        mem_widgets = self.mem.widgets().keys()
+        if control1 is None:
+            if column in mem_widgets:
+                control1 = column
+            elif column + "1" in mem_widgets:
+                control1 = column + "1"
+        if control1 not in mem_widgets:
+            return ""
+
+        if not self.mem.w.__getattr__(control1).is_checked():
+            return ""
+
+        date_control = self.mem.controls.c.__getattr__(control1)["datatype"] == "date"
+        num_control = self.mem.controls.c.__getattr__(control1).get("num")
+        control1_value = self.mem.s.__getattr__(control1)
+        if control2 is None:
+            if control1.endswith("1"):
+                control2 = control1[:-1] + "2"
+                control2_value = self.mem.s.__getattr__(control2)
+            else:
+                control2_value = None
+        if date_control:
+            if control1_value == "0000-00-00":
+                control1_value = ""
+            if control2_value == "0000-00-00":
+                control2_value = ""
+        elif num_control:
+            control1_value = num(control1_value)
+            if control2_value:
+                control2_value = num(control2_value)
+
+        if (control1_value and control2_value is None) or control1_value == control2_value:
+            if date_control or num_control:
+                return f"{column} = '{control1_value}'"
+            else:
+                return f"{column} like '%{control1_value}%'"
+        elif (control1_value and not control2_value) or (control1_value > control2_value):
+            return f"{column} >= '{control1_value}'"
+        elif not control1_value and control2_value:
+            return f"{column} <= '{control2_value}'"
+        elif control1_value and control2_value:
+            return f"{column} >= '{control1_value}' and {column}<='{control2_value}'"
+        return ""

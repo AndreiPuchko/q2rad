@@ -41,10 +41,6 @@ class Q2Modules(Q2Form, Q2_save_and_run):
 
     def on_init(self):
         self.editor_actions = Q2Actions()
-        # self.editor_actions.add_action("Save and run", self.editor_script_runner, hotkey="F4")
-        # self.editor_actions.add_action("Just save", self.editor_just_save, hotkey="F2")
-        # self.editor_actions.add_action("Just run", self.editor_script_runner, hotkey="Ctrl+R")
-        
         self.add_control(
             "name",
             _("Name"),
@@ -60,20 +56,18 @@ class Q2Modules(Q2Form, Q2_save_and_run):
             gridlabel=_("Module"),
             control="code",
             nogrid=1,
-            # actions=self.editor_actions,
         )
         self.add_control("/t", "Comment")
         self.add_control("comment", _("Comment"), control="text")
 
         self.add_control("last_line", "Last line", datatype="int", noform=1, migrate=1)
+        self.add_control("/")
 
-        cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="modules")
+        cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="modules", order="name")
         model = Q2CursorModel(cursor)
-        model.set_order("name").refresh()
         self.set_model(model)
         self.add_action("/crud")
         self.add_action("Run", self.script_runner, hotkey="F4", eof_disabled=1)
-        self.add_control("/")
         self._add_save_and_run()
         self.dev_actions.add_action("Just run", self.editor_just_run, hotkey="F5")
 
@@ -112,9 +106,6 @@ class Q2Modules(Q2Form, Q2_save_and_run):
     def before_form_show(self):
         self.maximized = True
         self._save_and_run_disable()
-        # if self.crud_mode != "EDIT":
-        #     self.editor_actions.set_disabled("Save and run")
-        #     self.editor_actions.set_disabled("Just save")
         if num(self.s.last_line):
             self.w.script.goto_line(num(self.s.last_line))
 
@@ -124,13 +115,6 @@ class Q2Modules(Q2Form, Q2_save_and_run):
 
     def script_runner(self):
         self.q2_app.code_runner(self.r.script)()
-
-    # def editor_script_runner(self):
-    #     self.editor_just_save()
-    #     self.editor_just_run()
-
-    # def editor_just_save(self):
-    #     self.crud_save(close_form=False)
 
     def editor_just_run(self):
         self.q2_app.code_runner(self.s.script)()

@@ -62,6 +62,7 @@ from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
 from q2rad.q2utils import Q2Tasker
+from q2rad.q2utils import auto_filter
 
 import traceback
 import gettext
@@ -969,7 +970,7 @@ class Q2RadApp(Q2App):
                         x = x.replace("return", "raise ReturnEvent")
                     else:
                         x = x.replace("return", "RETURN = ") + "; raise ReturnEvent"
-                if re.findall("^\s*\?\W*.*", x):
+                if re.findall(r"^\s*\?\W*.*", x):
                     x = x.split("?")[0] + "print(" + "".join(x.split("?")[1:]) + ")"
                 nsl.append(x)
             script = "\n".join(nsl)
