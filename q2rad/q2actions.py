@@ -143,18 +143,20 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         self.prev_form.run_action("Run")
 
     def action_mode_valid(self):
-        for x in self.widgets():
+        for x in [x for x in self.widgets()]:
             if x.startswith("_"):
                 continue
             elif x.startswith("/"):
                 continue
             elif not hasattr(self.widgets()[x], "set_disabled"):
                 continue
-            elif x in ("action_mode", "ordnum", "comment", "seq"):
+            elif x in ("action_mode", "ordnum", "comment", "seq", "name", "action_text", "crud_buttons"):
                 continue
             else:
                 self.widgets()[x].set_disabled(self.s.action_mode != "2")
-        self.w.name.set_enabled(True)
+
+        # self.w.name.set_enabled(True)
+        # self.w.action_mode.set_enabled(True)
 
     def select_child_form(self):
         choice = choice_form()
@@ -180,4 +182,3 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         self.action_mode_valid()
         if self.s.action_worker != "":
             self.w.tab.set_tab(_("Action Script"))
-        # self.next_sequense()

@@ -49,7 +49,6 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         self.db = q2app.q2_app.db_logic
         cursor: Q2Cursor = self.db.table(table_name="forms", order="seq")
         model = Q2CursorModel(cursor)
-        model.set_order("seq").refresh()
         self.set_model(model)
 
         self.add_action("/crud")
@@ -243,6 +242,13 @@ class Q2Forms(Q2Form, Q2_save_and_run):
                 nogrid="*",
                 control="code",
             )
+        if self.add_control("/t", _("Refresh")):
+            self.add_control(
+                "form_refresh",
+                label=_(""),
+                nogrid="*",
+                control="code",
+            )
         if self.add_control("/t", _("After close")):
             self.add_control(
                 "after_form_closed",
@@ -271,9 +277,6 @@ class Q2Forms(Q2Form, Q2_save_and_run):
     def form_runner(self):
         name = self.r.name
         self.q2_app.run_form(name)
-
-    # def before_form_show(self):
-    #     self.next_sequense()
 
     def before_crud_save(self):
         if self.s.name == "":

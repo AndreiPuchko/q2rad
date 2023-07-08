@@ -87,6 +87,8 @@ _logger = logging.getLogger(__name__)
 
 
 def get_report(report_name):
+    if report_name == "":
+        return Q2RadReport()
     content = q2app.q2_app.db_logic.get("reports", f"name='{report_name}'", "content")
     if content:
         return Q2RadReport(content)
@@ -246,9 +248,9 @@ class Q2RadApp(Q2App):
         self.migrate_db_data()
         wait.step("looking for updates")
         self.process_events()
-        self.update_app_packages()
         wait.step("Done!")
         wait.close()
+        self.update_app_packages()
 
         self.run_module("manifest")
         self.run_module("version")
@@ -876,6 +878,8 @@ class Q2RadApp(Q2App):
         form.cancel_button = form_dic["cancel_button"]
 
         form.valid = self.code_runner(form_dic["form_valid"], form)
+        form.form_refresh = self.code_runner(form_dic["form_refresh"], form)
+
         form.after_form_closed = self.code_runner(form_dic["after_form_closed"], form)
 
         form.before_form_build = self.code_runner(form_dic["before_form_build"], form)
@@ -957,23 +961,33 @@ class Q2RadApp(Q2App):
 
     def code_compiler(self, script):
         if "return" in script or "?" in script:
-            nsl = []
+            # modify script for
+            new_script_lines = []
             in_def = False
             for x in script.split("\n"):
+                # when in_def is True  - do not modify return
                 if re.findall(r"^def|^class", x):
                     in_def = True
                 elif not re.findall(r"^\s+", x):
                     in_def = False
-                # if in_def is False and re.match(r"^\s+return\W*.*", x):
+                # return
                 if in_def is False and re.findall(r"^\s*return\W*.*|;\s*return\W*.*", x):
                     if x.strip() == "return":
                         x = x.replace("return", "raise ReturnEvent")
                     else:
                         x = x.replace("return", "RETURN = ") + "; raise ReturnEvent"
+                # print
                 if re.findall(r"^\s*\?\W*.*", x):
+                    # lets print it
                     x = x.split("?")[0] + "print(" + "".join(x.split("?")[1:]) + ")"
-                nsl.append(x)
-            script = "\n".join(nsl)
+                # import
+                if re.findall(r"^\s*import\W*.*", x):
+                    module = x.split("import")[1].strip()
+                    if self.db_logic.get("modules", f"name='{module}'", "name"):
+                        x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
+
+                new_script_lines.append(x)
+            script = "\n".join(new_script_lines)
         try:
             code = compile(script, "'<worker>'", "exec")
             return {"code": code, "error": ""}

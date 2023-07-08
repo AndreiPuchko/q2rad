@@ -211,7 +211,7 @@ class auto_filter:
             f"""
                 select *
                 from lines
-                where name  = '{self.table}' 
+                where name  = '{self.table}'
                     and migrate<>''
                     and (label <>'' or gridlabel <> '')
                 order by seq

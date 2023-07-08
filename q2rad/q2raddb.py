@@ -80,6 +80,13 @@ class q2cursor(Q2Cursor):
             q2_db = q2app.q2_app.db_data
         super().__init__(q2_db, sql)
 
+    def q2form(self):
+        form = Q2Form(self.sql)
+        for x in self.record(0):
+            form.add_control(x, x, datalen=250)
+        form.set_model(Q2CursorModel(self))
+        return form
+
     def browse(self):
         if self.row_count() <= 0:
             q2Mess(
@@ -91,11 +98,7 @@ class q2cursor(Q2Cursor):
                     """
             )
         else:
-            form = Q2Form(self.sql)
-            for x in self.record(0):
-                form.add_control(x, x, datalen=250)
-            form.set_model(Q2CursorModel(self))
-            form.run()
+            self.q2form().run()
         return self
 
 

@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     main()
 
-from q2gui.q2dialogs import q2AskYN
+from q2gui.q2dialogs import q2AskYN, q2mess
 from q2gui.q2widget import Q2Widget
 
 from q2gui.q2app import Q2Actions
@@ -118,15 +118,22 @@ class Q2RadReport(Q2Report):
 
     def data_start(self):
         super().data_start()
-        self.waitbar = Q2WaitShow(self.data_cursors[self.current_data_set_name].row_count())
+        print(self.data_sets)
+        if self.current_data_set_name in self.data_cursors:
+            self.waitbar = Q2WaitShow(self.data_cursors[self.current_data_set_name].row_count())
+        elif self.current_data_set_name in self.data_sets:
+            self.waitbar = Q2WaitShow(len(self.data_sets[self.current_data_set_name]))
 
     def data_step(self):
         super().data_step()
-        self.waitbar.step()
+        if self.waitbar:
+            self.waitbar.step()
 
     def data_stop(self):
         super().data_stop()
-        self.waitbar.close()
+        if self.waitbar:
+            self.waitbar.close()
+            self.waitbar = None
         self.last_focus_widget.set_focus()
         q2app.q2_app.process_events()
 
@@ -140,10 +147,10 @@ class Q2RadReport(Q2Report):
 
         def worker():
             def real_worker():
-                q2WaitMax(len(self.report_content["queries"]))
-                for x in self.report_content["queries"]:
+                q2WaitMax(len(self.report_content.get("queries", {})))
+                for x in self.report_content.get("queries", {}):
                     q2WaitStep()
-                    sql = self.report_content["queries"][x]
+                    sql = self.report_content.get("queries", {})[x]
                     sql_params = re_find_param.findall(sql)
                     for p in sql_params:
                         value = self.params.get(p[1:], "")

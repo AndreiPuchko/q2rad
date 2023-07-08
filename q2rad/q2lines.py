@@ -54,7 +54,7 @@ SQL_DATATYPES = (
 )
 HAS_DATADEC = ("dec", "numeric", "num")
 HAS_DATALEN = ("char", "varchar") + HAS_DATADEC
-WIDGETS = ("line", "text", "code", "button", "check", "radio", "combo", "list", "spin", "image")
+WIDGETS = ("line", "text", "code", "button", "check", "radio", "combo", "list", "spin", "image", "widget")
 # "date;"
 # "frame;"
 # "grid;"
