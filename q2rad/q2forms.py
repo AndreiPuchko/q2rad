@@ -161,7 +161,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         self.add_control("comment", gridlabel=_("Comments"), datatype="longtext")
 
         if self.add_control("/t", _("Build")):
-            self.add_control("/vs")
+            self.add_control("/vs", tag="build")
             self.add_control("/v")
             self.add_control(
                 "before_form_build",

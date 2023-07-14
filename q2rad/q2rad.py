@@ -86,7 +86,7 @@ set_logging()
 _logger = logging.getLogger(__name__)
 
 
-def get_report(report_name):
+def get_report(report_name=""):
     if report_name == "":
         return Q2RadReport()
     content = q2app.q2_app.db_logic.get("reports", f"name='{report_name}'", "content")
@@ -101,24 +101,19 @@ def run_form(form_name, order="", where=""):
     return q2app.q2_app.run_form(form_name, order=order, where=where)
 
 
-def run_module1(module_name):
-    return q2app.q2_app.run_module(module_name)
-
-
 def run_module(module_name=None, globals=globals(), locals=locals(), script="", import_only=False):
     if module_name is not None:
         script = q2app.q2_app.db_logic.get("modules", f"name = '{module_name}'", "script")
     if not script:
         return
     code = q2app.q2_app.code_compiler(script)
-
     if code["code"] is False:
-        trace = code["error"]
+        msg = code["error"]
         if threading.current_thread() is threading.main_thread():
-            q2Mess(f"""Runtime error:<br><br>{trace}<br>""".replace("\n", "<br>").replace(" ", "&nbsp;"))
-        else:
-            print(f"""Runtime error:\n{trace}""")
-            print("-" * 25)
+            q2Mess(f"{msg}".replace("\n", "<br>").replace(" ", "&nbsp;"))
+        print(f"{msg}")
+        print("-" * 25)
+        logging.error(msg)
         return
     else:
         if import_only:
@@ -144,24 +139,57 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
         except ReturnEvent:
             pass
         except Exception:
-            trace = q2app.q2_app.code_error()
-            vars = "<br>".join(
-                [
-                    f"<b>{x}</b>:{str(locals[x])[:100]}"
-                    for x in locals
-                    if x not in ("RETURN", "ReturnEvent", "mem", "self", "q2_app")
-                ]
-            )
-            if threading.current_thread() is threading.main_thread():
-                q2Mess(
-                    f"""Runtime error:<br><br>{trace}<br><br>{vars}""".replace("\n", "<br>").replace(
-                        " ", "&nbsp;"
-                    )
-                )
-            else:
-                print(f"""Runtime error:\n{trace}\n\n{vars}""")
-                print("-" * 25)
+            explain_error()
         return locals["RETURN"]
+
+
+def explain_error(tb=None, errtype=None):
+    error = {}
+    stack = []
+    if tb is None:
+        tb = sys.exc_info()[2]
+        errtype = sys.exc_info()[1]
+        while tb.tb_next:
+            stack.append([tb.tb_frame.f_lineno, tb.tb_frame.f_code.co_filename])
+            tb = tb.tb_next
+    line_no = tb.tb_frame.f_lineno
+    script = tb.tb_frame.f_code.co_filename[1:-1].split("\n")
+    errline = script[line_no - 1]
+    script[line_no - 1] = "******" + script[line_no - 1]
+
+    error["errtype"] = errtype
+    error["lineno"] = tb.tb_frame.f_lineno
+    error["errline"] = errline
+    
+    error["script"] = "\n".join(script)
+    error["locals"] = dict(tb.tb_frame.f_locals)
+    stack.reverse()
+    error["stack"] = stack
+
+    msg = []
+    msg.append("Runtime error:")
+    msg.append(str(error["errtype"]))
+    msg.append(f"Line:{error['lineno']}:{errline}")
+    msg.append("Code:")
+    msg.append("-" * 25)
+    msg.append(error["script"])
+    msg.append("-" * 25)
+    msg.append("Local variables:")
+    for x in error["locals"]:
+        if x in ("RETURN", "ReturnEvent", "mem", "self", "q2_app", "form", "myapp", "__name__"):
+            continue
+        value = str(error["locals"][x])[:100]
+        msg.append(f"{x}:{value}")
+    msg.append("-" * 25)
+    msg = "\n".join(msg)
+
+    print("-" * 25)
+    print(f"{msg}")
+    print("-" * 25)
+    logging.error(msg)
+    if threading.current_thread() is threading.main_thread():
+        q2Mess(f"""{msg}""".replace("\n", "<br>").replace(" ", "&nbsp;").replace("\t", "&nbsp;" * 4))
+    return msg
 
 
 class Q2RadApp(Q2App):
@@ -198,6 +226,11 @@ class Q2RadApp(Q2App):
         self.set_icon("assets/q2rad.ico")
 
         self.const = const
+
+        sys.excepthook = self.handle_error
+
+    def handle_error(self, exc_type, exc_value, exc_traceback):
+        explain_error(exc_traceback, exc_value)
 
     def clear_app_info(self):
         self.app_url = None
@@ -473,20 +506,6 @@ class Q2RadApp(Q2App):
         about.append("<b>q2RAD</b>")
         about.append("Versions:")
         about.append(f"<b>Python</b>: {sys.version}<p>")
-        # w = Q2WaitShow(len(q2_modules))
-        # for package in q2_modules:
-        #     w.step()
-        #     latest_version, current_version = self.get_package_versions(package)
-        #     if latest_version:
-        #         if current_version != latest_version:
-        #             latest_version_text = f"({latest_version })"
-        #         else:
-        #             latest_version_text = ""
-        #     else:
-        #         latest_version_text = _(" (Can't load packacke info)")
-
-        #     about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
-        # w.close()
 
         task = Q2Tasker("Checking packages version")
         for package in q2_modules:
@@ -552,17 +571,6 @@ class Q2RadApp(Q2App):
         for x in icons:
             if rez[x] is False:
                 errors.append(x)
-
-        # w = Q2WaitShow(len(icons))
-        # errors = []
-        # # q2Mess
-        # for x in icons:
-        #     if x == "":
-        #         continue
-        #     w.step(x)
-        #     if self.asset_file_loader(x) is False:
-        #         errors.append(x)
-        # w.close()
 
         if os.path.isfile("assets/q2gui.ico"):
             shutil.copyfile("assets/q2gui.ico", "assets/q2rad.ico")
@@ -956,11 +964,8 @@ class Q2RadApp(Q2App):
 
         return form
 
-    def code_error(self):
-        return traceback.format_exc()
-
     def code_compiler(self, script):
-        if "return" in script or "?" in script:
+        if "return" in script or "?" in script or "import" in script:
             # modify script for
             new_script_lines = []
             in_def = False
@@ -989,13 +994,23 @@ class Q2RadApp(Q2App):
                 new_script_lines.append(x)
             script = "\n".join(new_script_lines)
         try:
-            code = compile(script, "'<worker>'", "exec")
+            code = compile(script, f"<{script}>", "exec")
             return {"code": code, "error": ""}
         except Exception:
-            trace = self.code_error()
+            error = sys.exc_info()[1]
+            msg = []
+            msg.append("Compile error:")
+            msg.append(error.msg)
+            msg.append(f"Line:{error.lineno}:{error.text}")
+            msg.append("Code:")
+            msg.append("-" * 25)
+            msg.append(error.filename[1:-1])
+            msg.append("-" * 25)            
+            msg = "\n".join(msg)
+
             return {
                 "code": False,
-                "error": f"""Compile error:<br><br>{trace}""",
+                "error": msg,
             }
 
     def code_runner(self, script, form=None, __name__="__main__"):

@@ -94,7 +94,7 @@ class Q2Modules(Q2Form, Q2_save_and_run):
                         Error explanation:
                         <br>%s
                         """
-                        % code["error"]
+                        % (code["error"].replace("\n", "<br>").replace(" ", "&nbsp;"))
                     )
                 )
                 != 2
