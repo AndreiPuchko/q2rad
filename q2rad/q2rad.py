@@ -64,7 +64,6 @@ from q2rad.q2reports import Q2Reports, Q2RadReport
 from q2rad.q2utils import Q2Tasker
 from q2rad.q2utils import auto_filter
 
-import traceback
 import gettext
 
 import json
@@ -113,7 +112,7 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
             q2Mess(f"{msg}".replace("\n", "<br>").replace(" ", "&nbsp;"))
         print(f"{msg}")
         print("-" * 25)
-        logging.error(msg)
+        _logger.error(msg)
         return
     else:
         if import_only:
@@ -155,7 +154,8 @@ def explain_error(tb=None, errtype=None):
     line_no = tb.tb_frame.f_lineno
     script = tb.tb_frame.f_code.co_filename[1:-1].split("\n")
     errline = script[line_no - 1]
-    script[line_no - 1] = "******" + script[line_no - 1]
+    err_char = "█"
+    script[line_no - 1] = f"{err_char*10}\n{err_char*2}" + script[line_no - 1] + f"\n{err_char*10}"
 
     error["errtype"] = errtype
     error["lineno"] = tb.tb_frame.f_lineno
@@ -186,7 +186,7 @@ def explain_error(tb=None, errtype=None):
     print("-" * 25)
     print(f"{msg}")
     print("-" * 25)
-    logging.error(msg)
+    _logger.error(msg)
     if threading.current_thread() is threading.main_thread():
         q2Mess(f"""{msg}""".replace("\n", "<br>").replace(" ", "&nbsp;").replace("\t", "&nbsp;" * 4))
     return msg
@@ -1007,7 +1007,7 @@ class Q2RadApp(Q2App):
             msg.append(error.filename[1:-1])
             msg.append("-" * 25)            
             msg = "\n".join(msg)
-
+            _logger.error(msg)
             return {
                 "code": False,
                 "error": msg,

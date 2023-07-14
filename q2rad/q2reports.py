@@ -118,7 +118,6 @@ class Q2RadReport(Q2Report):
 
     def data_start(self):
         super().data_start()
-        print(self.data_sets)
         if self.current_data_set_name in self.data_cursors:
             self.waitbar = Q2WaitShow(self.data_cursors[self.current_data_set_name].row_count())
         elif self.current_data_set_name in self.data_sets:

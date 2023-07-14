@@ -108,34 +108,12 @@ def choice_form():
 def set_logging(log_folder="log"):
     if not os.path.isdir(log_folder):
         os.mkdir(log_folder)
-    handler = TimedRotatingFileHandler(f"{log_folder}/q2.log", when="midnight", interval=1, backupCount=5)
+    handler = TimedRotatingFileHandler(
+        f"{log_folder}/q2.log", when="midnight", interval=1, backupCount=5, encoding="utf-8"
+    )
     formatter = logging.Formatter("%(asctime)s-%(name)s: %(levelname)s: %(message)s")
     handler.setFormatter(formatter)
     logging.basicConfig(handlers=[handler])
-
-
-class Q2Logger:
-    def __init__(self, log_folder="log"):
-        # self.sys_stderr = sys.stderr
-        self.buffer = ""
-        if not os.path.isdir(log_folder):
-            os.mkdir(log_folder)
-        handler = TimedRotatingFileHandler(f"{log_folder}/q2.log", when="midnight", interval=1, backupCount=5)
-        formatter = logging.Formatter("%(asctime)s-%(name)s: %(levelname)s: %(message)s")
-        handler.setFormatter(formatter)
-        logging.basicConfig(handlers=[handler])
-        # sys.stderr = self
-
-    def write(self, message):
-        if message:
-            self.buffer += message
-        sys.stdout.write(message)
-
-    def flush(self):
-        if self.buffer.strip():
-            logging.error(self.buffer)
-        sys.stdout.flush()
-        self.buffer = ""
 
 
 class Q2Tasker:
