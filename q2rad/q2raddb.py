@@ -26,6 +26,7 @@ from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import int_, num
 from q2gui import q2app
 from q2gui.q2dialogs import q2Mess, Q2WaitShow
+import html
 
 from q2rad import Q2Form
 from q2gui.q2form import NEW, COPY
@@ -91,7 +92,7 @@ class q2cursor(Q2Cursor):
         if self.row_count() <= 0:
             q2Mess(
                 f"""Query<br>
-                        <b>{self.sql}</b><br>
+                        <b>{html.escape(self.sql)}</b><br>
                         returned no records,<br>
                         <font color=red>
                         {self.last_sql_error()}

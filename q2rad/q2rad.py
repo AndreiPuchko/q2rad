@@ -160,7 +160,7 @@ def explain_error(tb=None, errtype=None):
     error["errtype"] = errtype
     error["lineno"] = tb.tb_frame.f_lineno
     error["errline"] = errline
-    
+
     error["script"] = "\n".join(script)
     error["locals"] = dict(tb.tb_frame.f_locals)
     stack.reverse()
@@ -332,8 +332,6 @@ class Q2RadApp(Q2App):
             self.db_logic,
         )
         for column in cu.records():
-            # column['table'] = column['_table']
-            # del column['_table']
             data_schema.add(**column)
         for form in (Q2Constants(),):
             for x in form.get_table_schema():
@@ -416,7 +414,6 @@ class Q2RadApp(Q2App):
                 root_user, root_password = self.get_db_admin_credential(
                     database_name, db_engine_name, host, port, Q2Db.get_default_admin_name(db_engine_name)
                 )
-
                 try:
                     q2working(
                         lambda: Q2Db(
@@ -1005,7 +1002,7 @@ class Q2RadApp(Q2App):
             msg.append("Code:")
             msg.append("-" * 25)
             msg.append(error.filename[1:-1])
-            msg.append("-" * 25)            
+            msg.append("-" * 25)
             msg = "\n".join(msg)
             _logger.error(msg)
             return {

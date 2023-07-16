@@ -188,7 +188,7 @@ class auto_filter:
         cu = q2cursor(
             f"""
                 select *
-                from lines
+                from `lines`
                 where name  = '{self.table}'
                     and migrate<>''
                     and (label <>'' or gridlabel <> '')

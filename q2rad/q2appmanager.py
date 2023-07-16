@@ -334,6 +334,7 @@ class AppManager(Q2Form):
                 wait_row.step()
                 if not db.insert(table, row):
                     errors.append(db.last_sql_error)
+                    errors.append(db.last_record)
                     # print(db.last_sql_error)
             wait_row.close()
         wait_table.close()

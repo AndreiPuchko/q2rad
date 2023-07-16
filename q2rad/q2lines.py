@@ -100,7 +100,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             # nogrid=1,
             # noform=1,
         )
-        self.add_control("column", _("Column name"))
+        self.add_control("column", _("Column name"), datalen=50)
         self.add_control("/")
         if self.add_control("/t", _("Main")):
             self.add_control("/f")
