@@ -31,7 +31,7 @@ wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad
 ```
 **Windows**
 ```bash
-wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py  -O - | py get-q2rad.py; del get-q2rad.py
+wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py  -O get-q2rad.py | py get-q2rad.py; del get-q2rad.py
 ```
 ## Install & run - terminal
 **Linux**
