@@ -45,7 +45,7 @@ _ = gettext.gettext
 def q2choice(records=[], title="Make your choice", column_title="Column"):
     setta = Q2Form(title)
     column = list(records[0].keys())[0]
-    setta.add_control(column, column_title)
+    setta.add_control(column, column_title, datalen=300)
     setta.no_view_action = 1
     model = Q2Model()
     # model.set_records(

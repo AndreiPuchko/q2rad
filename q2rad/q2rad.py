@@ -411,9 +411,13 @@ class Q2RadApp(Q2App):
                 return db
             first_pass += 1
             if db is None:
-                root_user, root_password = self.get_db_admin_credential(
+                credential = self.get_db_admin_credential(
                     database_name, db_engine_name, host, port, Q2Db.get_default_admin_name(db_engine_name)
                 )
+                if credential is None:
+                    return
+                else:
+                    root_user, root_password = credential
                 try:
                     q2working(
                         lambda: Q2Db(
@@ -454,6 +458,7 @@ class Q2RadApp(Q2App):
             )
         self.last_root_password = ""
         if self.db_data is None or self.db_logic is None:
+            self.selected_application = {}
             q2Mess(_("Can not open database"))
             self.open_application()
 
