@@ -54,11 +54,12 @@ class Q2Modules(Q2Form, Q2_save_and_run):
         self.add_control(
             "script",
             gridlabel=_("Module"),
+            datatype="longtext",
             control="code",
             nogrid=1,
         )
         self.add_control("/t", "Comment")
-        self.add_control("comment", _("Comment"), control="text")
+        self.add_control("comment", _("Comment"), control="text", dattype="text")
 
         self.add_control("last_line", "Last line", datatype="int", noform=1, migrate=1)
         self.add_control("/")

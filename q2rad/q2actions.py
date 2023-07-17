@@ -58,8 +58,8 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             to_table="forms",
             to_column="name",
             related="name",
-            # nogrid=1,
-            # noform=1,
+            datatype="char",
+            datalen=100
         )
         self.add_control("action_text", _("Action text"))
         self.add_control("/")
@@ -135,7 +135,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             nogrid="*",
         )
         self.add_control("/t", _("Comment"))
-        self.add_control("comment", gridlabel=_("Comments"), datatype="longtext", control="text")
+        self.add_control("comment", gridlabel=_("Comments"), datatype="longtext", control="longtext")
         self.add_control("/")
         self._add_save_and_run()
 

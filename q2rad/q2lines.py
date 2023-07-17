@@ -97,8 +97,8 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             to_table="forms",
             to_column="name",
             related="name",
-            # nogrid=1,
-            # noform=1,
+            datatype="char",
+            datalen=100
         )
         self.add_control("column", _("Column name"), datalen=50)
         self.add_control("/")
@@ -108,11 +108,11 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             self.add_control("gridlabel", _("Grid label"))
             if self.add_control("/h"):
                 self.add_control("seq", _("Sequence number"), datatype="int")
-                self.add_control("nogrid", _("No grid"), control="check")
-                self.add_control("noform", _("No form"), control="check")
-                self.add_control("check", _("Has checkbox"), control="check")
-                self.add_control("disabled", _("Disabled"), control="check")
-                self.add_control("readonly", _("Readonly"), control="check")
+                self.add_control("nogrid", _("No grid"), control="check", datalen=1)
+                self.add_control("noform", _("No form"), control="check", datalen=1)
+                self.add_control("check", _("Has checkbox"), control="check", datalen=1)
+                self.add_control("disabled", _("Disabled"), control="check", datalen=1)
+                self.add_control("readonly", _("Readonly"), control="check", datalen=1)
                 self.add_control("/s")
                 self.add_control("/")
             if self.add_control("/h", _("Control type")):
@@ -152,17 +152,23 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                     _("Migrate"),
                     control="check",
                     valid=self.database_valid,
+                    datatype="char",
+                    datalen=1,
                 )
                 self.add_control(
                     "pk",
                     _("Primary key"),
                     control="check",
+                    datatype="char",
+                    datalen=1,
                     valid=self.database_valid,
                 )
                 self.add_control(
                     "ai",
                     _("Autoincrement"),
                     control="check",
+                    datatype="char",
+                    datalen=1,
                     valid=self.database_valid,
                 )
                 self.add_control("/s")

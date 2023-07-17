@@ -140,7 +140,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
                     datalen=3,
                     valid=self.select_data_storage_table,
                 )
-                self.add_control("form_table", gridlabel=_("Table"))
+                self.add_control("form_table", gridlabel=_("Table"), datalen=63)
                 self.add_control("/")
             if self.add_control("/h", _("Sort by")):
                 self.add_control(

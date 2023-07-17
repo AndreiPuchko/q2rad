@@ -90,7 +90,7 @@ class AppManager(Q2Form):
                     "Database type",
                     data=app_data["driver_logic"],
                     disabled=1,
-                    datalen=len(app_data["driver_logic"].strip()),
+                    datalen=len(app_data["driver_logic"].strip()) + 5,
                 )
                 self.add_control(
                     "dtl",
@@ -143,7 +143,16 @@ class AppManager(Q2Form):
                             datalen=10,
                             valid=self.import_app,
                         )
+                        if self.q2_app.app_url:
+                            self.add_control(
+                                "load_q2market_app",
+                                "From q2Market",
+                                control="button",
+                                datalen=10,
+                                valid=self.import_q2market,
+                            )
                         self.add_control("/")
+
                     self.add_control("/")
 
             self.add_control("/")
@@ -155,7 +164,7 @@ class AppManager(Q2Form):
                     "Database type",
                     data=app_data["driver_data"],
                     disabled=1,
-                    datalen=len(app_data["driver_data"].strip()),
+                    datalen=len(app_data["driver_data"].strip()) + 5,
                 )
                 self.add_control(
                     "dtd",
@@ -305,6 +314,9 @@ class AppManager(Q2Form):
             if rez:
                 json.dump(rez, open(file, "w"), indent=1)
 
+    def import_q2market(self):
+        self.q2_app.check_app_update(force_update=True)
+
     def import_app(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
@@ -329,13 +341,21 @@ class AppManager(Q2Form):
             if table not in db_tables:
                 continue
             wait_row = Q2WaitShow(len(data[table]))
-            db.cursor(f'delete from {table} where name not like "\_%"')
+            if table != "packages":
+                db.cursor(f'delete from `{table}` where name not like "\_%"')
+            if db.last_sql_error:
+                print(db.last_sql_error)
             for row in data[table]:
                 wait_row.step()
+                if table == "packages":
+                    if (
+                        get("packages", "package_name='%s'" % row["package_name"], "package_name", db)
+                        == row["package_name"]
+                    ):
+                        continue
                 if not db.insert(table, row):
                     errors.append(db.last_sql_error)
                     errors.append(db.last_record)
-                    # print(db.last_sql_error)
             wait_row.close()
         wait_table.close()
         if errors:
@@ -363,7 +383,7 @@ class AppManager(Q2Form):
             if table not in db_tables:
                 continue
             wait_row = Q2WaitShow(len(data[table]))
-            db.cursor(f'delete from {table}')
+            db.cursor(f"delete from {table}")
             for row in data[table]:
                 wait_row.step()
                 if not db.raw_insert(table, row):

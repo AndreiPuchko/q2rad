@@ -80,6 +80,8 @@ class q2cursor(Q2Cursor):
         if q2_db is None:
             q2_db = q2app.q2_app.db_data
         super().__init__(q2_db, sql)
+        if q2_db.last_sql_error:
+            print(q2_db.last_sql_error)
 
     def q2form(self):
         form = Q2Form(self.sql)

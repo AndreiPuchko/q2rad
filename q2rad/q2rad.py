@@ -71,6 +71,7 @@ import subprocess
 import shutil
 import pkgutil
 import logging
+import traceback
 
 
 # TODO: excel custom format 2 report
@@ -153,15 +154,19 @@ def explain_error(tb=None, errtype=None):
             tb = tb.tb_next
     line_no = tb.tb_frame.f_lineno
     script = tb.tb_frame.f_code.co_filename[1:-1].split("\n")
-    errline = script[line_no - 1]
     err_char = "█"
-    script[line_no - 1] = f"{err_char*10}\n{err_char*2}" + script[line_no - 1] + f"\n{err_char*10}"
+    if line_no - 1 < len(script):
+        errline = script[line_no - 1]
+        script[line_no - 1] = f"{err_char*10}\n{err_char*2}" + script[line_no - 1] + f"\n{err_char*10}"
+        error["script"] = "\n".join(script)
+    else:
+        errline = traceback.format_tb(tb)[-1]
+        error["script"] = ""
 
     error["errtype"] = errtype
     error["lineno"] = tb.tb_frame.f_lineno
     error["errline"] = errline
 
-    error["script"] = "\n".join(script)
     error["locals"] = dict(tb.tb_frame.f_locals)
     stack.reverse()
     error["stack"] = stack
@@ -710,15 +715,19 @@ class Q2RadApp(Q2App):
             _("Uninstalling package %s...") % package,
         )
 
-    def check_app_update(self):
+    def check_app_update(self, force_update=False):
         # self.update_app_packages()
 
-        if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version:
-            market_version = read_url(self.app_url + ".version")  # noqa F405
-            if market_version and market_version.decode("utf-8") != self.app_version:
+        if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version or force_update:
+            market_version = read_url(self.app_url + ".version").decode("utf-8")  # noqa F405
+            if force_update or market_version and market_version != self.app_version:
+                if force_update:
+                    update_detected = f"You are about to rewrite current App <b>{self.app_title}</b>!"
+                else:
+                    update_detected = f"Update for App <b>{self.app_title}</b> detected!"
                 if (
                     q2AskYN(
-                        f"Update for App <b>{self.app_title}</b> detected!"
+                        f"{update_detected}"
                         f"<p>Current version <b>{self.app_version}</b>"
                         f"<p>New version <b>{market_version}</b>"
                         "<p>Download and install?"
