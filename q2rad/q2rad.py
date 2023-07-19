@@ -633,8 +633,6 @@ class Q2RadApp(Q2App):
         self.process_events()
 
     def get_package_versions(self, package):
-        import time
-        time.sleep(1)
         response = open_url(f"https://pypi.python.org/pypi/{package}/json")  # noqa F405
         if response:
             latest_version = json.load(response)["info"]["version"]
