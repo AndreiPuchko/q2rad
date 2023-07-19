@@ -514,10 +514,7 @@ class Q2RadApp(Q2App):
         about.append("Versions:")
         about.append(f"<b>Python</b>: {sys.version}<p>")
 
-        task = Q2Tasker("Checking packages version")
-        for package in q2_modules:
-            task.add(self.get_package_versions, package, name=package)
-        rez = task.wait()
+        rez = self.get_packages_verion(q2_modules)
 
         for package in rez:
             latest_version, current_version = rez[package]
@@ -636,12 +633,13 @@ class Q2RadApp(Q2App):
         self.process_events()
 
     def get_package_versions(self, package):
+        import time
+        time.sleep(1)
         response = open_url(f"https://pypi.python.org/pypi/{package}/json")  # noqa F405
         if response:
             latest_version = json.load(response)["info"]["version"]
         else:
             latest_version = None
-        # current_version = sys.modules[package].__version__ if package in sys.modules else ""
         installed_packages = [x.name for x in pkgutil.iter_modules()]
         if package in installed_packages:
             current_version = self.code_runner(f"from {package} import __version__ as tmpv;return tmpv")()
@@ -762,10 +760,7 @@ class Q2RadApp(Q2App):
         list_2_upgrade_message = []
         list_2_upgrade = []
 
-        task = Q2Tasker("Checking packages version")
-        for package in packages_list:
-            task.add(self.get_package_versions, package, name=package)
-        rez = task.wait()
+        rez = self.get_packages_verion(packages_list)
 
         for package in rez:
             latest_version, current_version = rez[package]
@@ -785,6 +780,13 @@ class Q2RadApp(Q2App):
                 == 2
             ):
                 self.update_packages(list_2_upgrade)
+
+    def get_packages_verion(self, packages_list):
+        task = Q2Tasker("Checking packages version")
+        for package in packages_list:
+            task.add(self.get_package_versions, package, name=package)
+        rez = task.wait()
+        return rez
 
     def run_stylesettings(self):
         AppStyleSettings().run()

@@ -46,15 +46,24 @@ class AppStyleSettings(Q2Form):
             data=2,
         )
 
+        self.add_control("/h")
         self.add_control(
             "font_size",
             "Font size",
             datalen=6,
             datatype="int",
             control="spin",
-            valid=self.style_valid,
             data=self.q2_app.q2style.font_size,
         )
+        self.add_control(
+            "apply",
+            "Apply",
+            datalen=10,
+            datatype="int",
+            control="button",
+            valid=self.style_valid,
+        )
+        self.add_control("/")
 
         self.ok_button = 1
         self.cancel_button = 1
@@ -71,6 +80,7 @@ class AppStyleSettings(Q2Form):
         return color_mode
 
     def valid(self):
+        self.style_valid()
         color_mode = self.get_color_mode()
         self.q2_app.q2style.font_size = int_(self.s.font_size)
         self.q2_app.settings.set("Style Settings", "color_mode", color_mode)
