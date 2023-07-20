@@ -17,23 +17,36 @@ sudo apt install python3-pip python3-virtualenv
 ```
 
 ## Install & run - Launcher (https://github.com/AndreiPuchko/q2radlauncher)
-**Linux**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/linux/q2radlauncher
-
 **Windows**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/windows/q2radlauncher.exe
+
+**Linux**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/linux/q2radlauncher
 
 **macOS**: run from terminal or ```git clone https://github.com/AndreiPuchko/q2radlauncher``` and build executable with ```build_executable.zsh```
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/macos/q2radlauncher
 ## Install & run - Python script
-**Linux, macOS**
-```bash
-wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py -O - | python3 
-```
 **Windows**
 ```bash
 wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py  -O get-q2rad.py | py get-q2rad.py; del get-q2rad.py
 ```
+**Linux**
+```bash
+wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py -O - | python3 
+```
+**macOS**
+```bash
+curl https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py | python3 
+```
 ## Install & run - terminal
+**Windows (Powershell)**
+```bash
+mkdir q2rad ;`
+cd q2rad ;`
+py -m pip install --upgrade pip ;`
+py -m venv q2rad;q2rad/scripts/activate ;`
+py -m pip install --upgrade q2rad ;`
+q2rad
+```
 **Linux**
 ```bash
 sudo apt install python3-venv python3-pip -y &&\
@@ -44,15 +57,6 @@ sudo apt install python3-venv python3-pip -y &&\
     source q2rad/bin/activate && \
     python3 -m pip install --upgrade q2rad && \
     q2rad
-```
-**Windows (Powershell)**
-```bash
-mkdir q2rad ;`
-cd q2rad ;`
-py -m pip install --upgrade pip ;`
-py -m venv q2rad;q2rad/scripts/activate ;`
-py -m pip install --upgrade q2rad ;`
-q2rad
 ```
 **macOS**
 ```bash

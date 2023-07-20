@@ -57,15 +57,16 @@ class AppStyleSettings(Q2Form):
             datatype="int",
             control="spin",
             data=self.q2_app.q2style.font_size,
-        )
-        self.add_control(
-            "apply",
-            "Apply",
-            datalen=10,
-            datatype="int",
-            control="button",
             valid=self.style_valid,
         )
+        # self.add_control(
+        #     "apply",
+        #     "Apply",
+        #     datalen=10,
+        #     datatype="int",
+        #     control="button",
+        #     valid=self.style_valid,
+        # )
         self.add_control("/")
 
         self.ok_button = 1
