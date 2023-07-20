@@ -108,7 +108,7 @@ start_app_dst = Path(f"./Start q2rad.{'exe' if 'win32' in sys.platform else ''}"
 if os.path.isfile(activator):
     exec(open(activator).read(), {"__file__": activator})
     try:
-        print("Starting q2rad...", GREEN)
+        print("Starting q2rad..", GREEN)
         from q2rad.q2rad import main
 
         main()
