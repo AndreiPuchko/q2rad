@@ -49,33 +49,31 @@ class AppStyleSettings(Q2Form):
             ),
         )
 
-        self.add_control("/h")
+        self.add_control("/h", "Font size")
+        self.add_control("minus", "-", datalen=1, datatype="int", control="button", valid=self._font_minus)
+
         self.add_control(
             "font_size",
-            "Font size",
+            "",
             datalen=6,
             datatype="int",
-            control="spin",
+            control="line",
             data=self.q2_app.q2style.font_size,
             valid=self.style_valid,
         )
-        # self.add_control(
-        #     "apply",
-        #     "Apply",
-        #     datalen=10,
-        #     datatype="int",
-        #     control="button",
-        #     valid=self.style_valid,
-        # )
+        self.add_control("plus", "+", datalen=1, datatype="int", control="button", valid=self._font_plus)
         self.add_control("/")
 
         self.ok_button = 1
         self.cancel_button = 1
 
-    # def after_form_show(self):
-    #     self.s.color_mode = self.color_modes.get(
-    #         self.q2_app.q2style.color_mode, self.q2_app.q2style.get_system_color_mode()
-    #     )
+    def _font_plus(self):
+        self.s.font_size = int_(self.s.font_size) + 1
+        self.style_valid()
+
+    def _font_minus(self):
+        self.s.font_size = int_(self.s.font_size) - 1
+        self.style_valid()
 
     def get_color_mode(self):
         color_mode = self.s.color_mode.lower()
@@ -93,6 +91,9 @@ class AppStyleSettings(Q2Form):
 
     def style_valid(self):
         self.q2_app.q2style.font_size = int_(self.s.font_size)
+        if self.q2_app.q2style.font_size < 8:
+            self.s.font_size = 8
+            self.style_valid()
         self.q2_app.set_color_mode(self.get_color_mode())
         self.q2_app.set_color_mode(self.get_color_mode())
 

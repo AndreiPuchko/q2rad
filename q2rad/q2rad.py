@@ -51,7 +51,7 @@ from q2rad.q2raddb import q2cursor
 from q2rad.q2appmanager import AppManager
 from q2rad.q2stylesettings import AppStyleSettings
 from q2rad.q2utils import set_logging
-
+from q2terminal.q2terminal import Q2Terminal
 from q2rad.q2appselector import Q2AppSelect
 from q2rad.q2modules import Q2Modules
 from q2rad.q2forms import Q2Forms
@@ -673,6 +673,27 @@ class Q2RadApp(Q2App):
         q2Mess(mess)
         if upgraded:
             self.restart()
+
+    def update_from_git(self, package=""):
+        if os.path.isfile("poetry.lock"):
+            q2mess("poetry.lock presents - update from git is impossible!")
+            return
+
+        def callback(data):
+            print(data)
+
+        trm = Q2Terminal(callback=callback)
+        executable = sys.executable.replace("w.exe", ".exe")
+        for x in q2_modules:
+            if not x.startswith("q2"):
+                continue
+            if package and x != package:
+                continue
+            trm.run(
+                f"{executable} -m pip install  --upgrade --force-reinstall " 
+                f" git+https://github.com/AndreiPuchko/{x}.git"
+            )
+        print("Done")
 
     def restart(self):
         if "win32" in sys.platform:
