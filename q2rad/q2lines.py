@@ -115,6 +115,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 self.add_control("readonly", _("Readonly"), control="check", datalen=1)
                 self.add_control("/s")
                 self.add_control("/")
+            self.add_control("tag", _("Tag"), datatype="char", datalen=100)
             if self.add_control("/h", _("Control type")):
 
                 self.add_control(

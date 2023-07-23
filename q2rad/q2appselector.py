@@ -202,17 +202,32 @@ class Q2AppSelect(Q2Form):
             eof_disabled=1,
         )
 
+        self.add_action(
+            _("Autoload"),
+            self.set_autoload,
+            icon="💚",
+            mess="Toggle autoload mark",
+            eof_disabled=1,
+            tag="#4dd0e1"
+        )
+
         self.add_action(_("Demo"), self.run_demo)
 
         self.before_form_show = self.before_form_show
         self.before_crud_save = self.before_crud_save
 
-        cursor: Q2Cursor = self.db.table(table_name="applications")
+        cursor: Q2Cursor = self.db.table(table_name="applications", order="ordnum")
         model = Q2CursorModel(cursor)
-        model.set_order("ordnum").refresh()
         self.set_model(model)
 
         self.actions.add_action("/crud")
+
+    def set_autoload(self):
+        clean_this = self.r.autoselect
+        self.db.cursor("update applications set autoselect='' ")
+        if not clean_this:
+            self.db.cursor("update applications set autoselect='*' where uid=%s" % self.r.uid)
+        self.refresh(soft=True)
 
     def openSqliteDataFile(self):
         fname = self.q2_app.get_save_file_dialoq(

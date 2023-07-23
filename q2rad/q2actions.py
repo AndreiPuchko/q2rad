@@ -78,6 +78,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
                 self.add_control("action_mess", _("Action message"), datatype="char", datalen=100)
                 self.add_control("action_icon", _("Action icon"), datatype="char", datalen=100)
                 self.add_control("action_key", _("Hot key"), datatype="char", datalen=10)
+                self.add_control("tag", _("Tag"), datatype="char", datalen=100)
                 self.add_control(
                     "eof_disabled",
                     _("Disabled for empty grid"),

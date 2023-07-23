@@ -25,7 +25,7 @@ from q2db.cursor import Q2Cursor
 
 from q2gui.q2model import Q2CursorModel
 
-from q2gui.q2dialogs import q2Mess
+from q2gui.q2dialogs import q2mess
 from q2gui import q2app
 
 from q2rad.q2lines import Q2Lines
@@ -280,6 +280,6 @@ class Q2Forms(Q2Form, Q2_save_and_run):
 
     def before_crud_save(self):
         if self.s.name == "":
-            q2Mess(_("Give me some NAME!!!"))
+            q2mess(_("Give me some NAME!!!"))
             self.w.name.set_focus()
             return False
