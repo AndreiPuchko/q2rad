@@ -50,7 +50,7 @@ class AppStyleSettings(Q2Form):
         )
 
         self.add_control("/h", "Font size")
-        self.add_control("minus", "-", datalen=1, datatype="int", control="button", valid=self._font_minus)
+        self.add_control("minus", "-", datatype="int", control="button", valid=self._font_minus)
 
         self.add_control(
             "font_size",
@@ -61,7 +61,8 @@ class AppStyleSettings(Q2Form):
             data=self.q2_app.q2style.font_size,
             valid=self.style_valid,
         )
-        self.add_control("plus", "+", datalen=1, datatype="int", control="button", valid=self._font_plus)
+        self.add_control("plus", "+", datatype="int", control="button", valid=self._font_plus)
+        self.add_control("/s")
         self.add_control("/")
 
         self.ok_button = 1

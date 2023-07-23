@@ -646,7 +646,7 @@ class Q2RadApp(Q2App):
 
         return latest_version, current_version
 
-    def update_packages(self, packages_list=q2_modules):
+    def update_packages(self, packages_list=q2_modules, force=False):
         upgraded = []
         w = Q2WaitShow(len(packages_list))
         for package in packages_list:
@@ -654,7 +654,7 @@ class Q2RadApp(Q2App):
                 break
             latest_version, current_version = self.get_package_versions(package)
             self.process_events()
-            if latest_version != current_version and latest_version:
+            if force or latest_version != current_version and latest_version:
                 try:
                     self.pip_install(package, latest_version)
                 except Exception:
@@ -690,7 +690,7 @@ class Q2RadApp(Q2App):
             if package and x != package:
                 continue
             trm.run(
-                f"{executable} -m pip install  --upgrade --force-reinstall " 
+                f"{executable} -m pip install  --upgrade --force-reinstall "
                 f" git+https://github.com/AndreiPuchko/{x}.git"
             )
         print("Done")

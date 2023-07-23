@@ -23,7 +23,7 @@ if __name__ == "__main__":
 from q2db.db import Q2Db
 from q2gui.q2utils import num
 from q2gui import q2app
-from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow
+from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow, q2ask
 
 from q2rad import Q2Form
 from q2terminal.q2terminal import Q2Terminal
@@ -44,11 +44,29 @@ class AppManager(Q2Form):
         if self.add_control("/h", "Platform"):
             self.add_control(
                 "upgrade",
-                "Update",
+                "Check updates",
                 control="button",
                 datalen=10,
                 valid=q2app.q2_app.update_packages,
             )
+
+            self.add_control("/s")
+
+            self.add_control(
+                "reinstall_",
+                "Reinstall",
+                control="button",
+                valid=self.update_from_git,
+            )
+
+            self.add_control(
+                "reinstall_git",
+                "Reinstall from github",
+                control="button",
+                valid=self.update_from_git,
+            )
+
+            self.add_control("/s")
 
             self.add_control(
                 "reload_assets",
@@ -123,7 +141,7 @@ class AppManager(Q2Form):
                             "save_app",
                             "As JSON file",
                             control="button",
-                            datalen=13,
+                            # datalen=13,
                             valid=self.export_app,
                         )
                         if os.path.isdir(self.q2_app.q2market_path):
@@ -131,24 +149,28 @@ class AppManager(Q2Form):
                                 "save_app_2_market",
                                 "Export to q2Market",
                                 control="button",
-                                datalen=14,
+                                # datalen=14,
                                 valid=self.export_q2market,
                             )
                         self.add_control("/")
+
+                    self.add_control("/s")
+
                     if self.add_control("/h", "Import"):
                         self.add_control(
                             "load_app",
                             "From JSON file",
                             control="button",
-                            datalen=10,
+                            # datalen=10,
                             valid=self.import_app,
                         )
+
                         if self.q2_app.app_url:
                             self.add_control(
                                 "load_q2market_app",
                                 "From q2Market",
                                 control="button",
-                                datalen=10,
+                                # datalen=10,
                                 valid=self.import_q2market,
                             )
                         self.add_control("/")
@@ -201,6 +223,7 @@ class AppManager(Q2Form):
                         valid=self.export_data,
                     )
                     self.add_control("/")
+                self.add_control("/s")
                 if self.add_control("/h", "Import"):
                     self.add_control(
                         "load_app",
@@ -214,6 +237,14 @@ class AppManager(Q2Form):
             self.add_control("/")
 
         self.cancel_button = 1
+
+    def reinstall(self):
+        if q2ask("You are about to reinstall platform packages?") == 2:
+            q2app.q2_app.update_packages(force=True)
+
+    def update_from_git(self):
+        if q2ask("You are about to reinstall platform packages from github.com! Are you sure?") == 2:
+            q2app.q2_app.update_from_git()
 
     def reload_assets(self):
         q2app.q2_app.load_assets(True)
@@ -285,7 +316,7 @@ class AppManager(Q2Form):
         db: Q2Db = q2app.q2_app.db_logic
         rez = {}
         for x in db.get_tables():
-            if x.startswith("log_"):
+            if x.startswith("log_") or x == "sqlite_sequence":
                 continue
             rez[x] = []
             for row in db.table(x).records():
@@ -305,7 +336,7 @@ class AppManager(Q2Form):
             db: Q2Db = q2app.q2_app.db_data
             rez = {}
             for x in db.get_tables():
-                if x.startswith("log_"):
+                if x.startswith("log_") or x == "sqlite_sequence":
                     continue
                 rez[x] = []
                 for row in db.table(x).records():
