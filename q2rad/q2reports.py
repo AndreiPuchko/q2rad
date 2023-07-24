@@ -27,7 +27,7 @@ from q2gui.q2app import Q2Actions
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import dotdict, set_dict_default, num, int_
-from q2report.q2report import Q2Report
+from q2report.q2report import Q2Report, Q2Report_rows
 from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
 from q2rad.q2raddb import q2cursor
@@ -46,12 +46,46 @@ _ = gettext.gettext
 
 
 class Q2RadReport(Q2Report):
-    def __init__(self, content=""):
+    def __init__(self, content="", style={}):
         super().__init__()
         self.load(content)
+        if style:
+            self.set_style(style)
         self.data["const"] = q2app.q2_app.const
         self.waitbar = None
         self.last_focus_widget = q2app.q2_app.focus_widget()
+
+    @staticmethod
+    def new_rows(
+        rows=None,
+        heights=[0],
+        style={},
+        role="free",
+        data_source=[],
+        groupby="",
+        table_groups=[],
+        print_when=None,
+        print_after=None,
+        new_page_before=False,
+        new_page_after=False,
+        table_header=None,
+        table_footer=None,
+    ):
+        return Q2Report_rows(
+            rows=rows,
+            heights=heights,
+            style=style,
+            role=role,
+            data_source=data_source,
+            groupby=groupby,
+            table_groups=table_groups,
+            print_when=print_when,
+            print_after=print_after,
+            new_page_before=new_page_before,
+            new_page_after=new_page_after,
+            table_header=table_header,
+            table_footer=table_footer,
+        )
 
     def prepare_output_file(self, output_file):
         rez_name = ""
@@ -126,7 +160,7 @@ class Q2RadReport(Q2Report):
     def data_step(self):
         super().data_step()
         if self.waitbar:
-            self.waitbar.step()
+            return self.waitbar.step(100)
 
     def data_stop(self):
         super().data_stop()

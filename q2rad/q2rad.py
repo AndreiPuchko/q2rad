@@ -86,9 +86,9 @@ set_logging()
 _logger = logging.getLogger(__name__)
 
 
-def get_report(report_name=""):
+def get_report(report_name="", style={}):
     if report_name == "":
-        return Q2RadReport()
+        return Q2RadReport(style=style)
     content = q2app.q2_app.db_logic.get("reports", f"name='{report_name}'", "content")
     if content:
         return Q2RadReport(content)

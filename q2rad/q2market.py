@@ -47,9 +47,7 @@ class Q2Market(Q2Form):
         self.add_control("app_url", _("Path"), datatype="char", datalen=100)
 
         q2market_catalogue_url = f"{self.q2_app.q2market_url}/q2market.json"
-        print(q2market_catalogue_url)
-        dd = read_url(q2market_catalogue_url).decode("utf-8")
-        data = json.loads(dd)
+        data = json.loads(read_url(q2market_catalogue_url).decode("utf-8"))
         rez = []
         for x in data:
             rec = data[x]
