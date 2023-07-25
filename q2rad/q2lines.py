@@ -253,6 +253,13 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         )
         self.add_control("/")
         self._add_save_and_run()
+        self._add_save_and_run_visible()
+
+    def before_form_build(self):
+        if self._save_and_run_control is None:
+            self._save_and_run_control = self.controls.get("save_and_run_actions_visible")
+            self.controls.delete("save_and_run_actions_visible")
+        self.system_controls.insert(2, self._save_and_run_control)
 
     def filler(self):
         if self.model.row_count() > 0:

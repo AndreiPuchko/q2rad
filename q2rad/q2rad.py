@@ -538,7 +538,7 @@ class Q2RadApp(Q2App):
         asset_url = f"{self.assets_url}/{name}"
         try:
             asset_content = read_url(asset_url)  # noqa F405
-            if asset_content is None:
+            if not asset_content:
                 return False
         except Exception:
             print(f"Error reading {asset_url}")

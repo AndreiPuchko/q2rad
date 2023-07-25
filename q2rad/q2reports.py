@@ -222,6 +222,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         )
         self.add_control("comment", _("Comment"), datatype="text", noform=1)
         self._add_save_and_run(save_only=True)
+        self._add_save_and_run_visible(save_only=True)
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="reports")
         model = Q2CursorModel(cursor)
@@ -231,6 +232,12 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         self.add_action("Run", self.run_report, hotkey="F4", eof_disabled=1)
         self.add_action("-")
         self.add_action("JSON", self.edit_json, eof_disabled=1)
+
+    def before_form_build(self):
+        if self._save_and_run_control is None:
+            self._save_and_run_control = self.controls.get("save_and_run_actions_visible")
+            self.controls.delete("save_and_run_actions_visible")
+        self.system_controls.insert(2, self._save_and_run_control)
 
     def run_report(self):
         rep = Q2RadReport(self.r.content)

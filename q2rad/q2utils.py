@@ -147,6 +147,9 @@ class Q2Tasker:
 class Q2_save_and_run:
     def __init__(self) -> None:
         self.dev_actions = Q2Actions()
+        self.dev_actions_visible = Q2Actions()
+        self._save_and_run_control = None
+
 
     def _add_save_and_run(self: Q2Form, save_only=False):
         self.dev_actions.show_main_button = False
@@ -156,7 +159,27 @@ class Q2_save_and_run:
             self.dev_actions.add_action("Save and run", worker=self._save_and_run, hotkey="F4")
 
         self.add_control(
-            "save_and_run_actions", "", actions=self.dev_actions, control="toolbar", nogrid=1, migrate=0
+            "save_and_run_actions",
+            "",
+            actions=self.dev_actions,
+            control="toolbar",
+            nogrid=1,
+            migrate=0,
+        )
+
+    def _add_save_and_run_visible(self: Q2Form, save_only=False):
+        self.dev_actions_visible.show_main_button = False
+        self.dev_actions_visible.add_action("Save", worker=self._save, hotkey="F2")
+        if save_only is False:
+            self.dev_actions_visible.add_action("Save and run", worker=self._save_and_run, hotkey="F4")
+
+        self.add_control(
+            "save_and_run_actions_visible",
+            "",
+            actions=self.dev_actions_visible,
+            control="toolbar",
+            nogrid=1,
+            migrate=0,
         )
 
     def _save(self):

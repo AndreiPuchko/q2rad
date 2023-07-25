@@ -71,7 +71,13 @@ class Q2Queries(Q2Form, Q2_save_and_run):
         )
         self.add_control("comment", _("Comment"), datatype="longtext", noform=1)
         self._add_save_and_run(save_only=True)
+        self._add_save_and_run_visible(save_only=True)
 
+    def before_form_build(self):
+        if self._save_and_run_control is None:
+            self._save_and_run_control = self.controls.get("save_and_run_actions_visible")
+            self.controls.delete("save_and_run_actions_visible")
+        self.system_controls.insert(2, self._save_and_run_control)
 
     def before_form_show(self):
         self.maximized = True

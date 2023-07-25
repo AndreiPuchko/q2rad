@@ -70,7 +70,15 @@ class Q2Modules(Q2Form, Q2_save_and_run):
         self.add_action("/crud")
         self.add_action("Run", self.script_runner, hotkey="F4", eof_disabled=1)
         self._add_save_and_run()
+        self._add_save_and_run_visible()
         self.dev_actions.add_action("Just run", self.editor_just_run, hotkey="F5")
+        self.dev_actions_visible.add_action("Just run", self.editor_just_run, hotkey="F5")
+
+    def before_form_build(self):
+        if self._save_and_run_control is None:
+            self._save_and_run_control = self.controls.get("save_and_run_actions_visible")
+            self.controls.delete("save_and_run_actions_visible")
+        self.system_controls.insert(2, self._save_and_run_control)
 
     def name_valid(self):
         if self.s.name == "manifest":
@@ -101,7 +109,7 @@ class Q2Modules(Q2Form, Q2_save_and_run):
                 != 2
             ):
                 return False
-        self.s.last_line = self.w.script.current_line()
+        self.s.last_line = self.w.script.current_line()+1
         # return super().before_crud_save()
 
     def before_form_show(self):
