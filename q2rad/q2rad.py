@@ -689,16 +689,16 @@ class Q2RadApp(Q2App):
         trm = Q2Terminal(callback=callback)
         executable = sys.executable.replace("w.exe", ".exe")
         w = Q2WaitShow(len(q2_modules))
-        for x in q2_modules:
+        for package in q2_modules:
             if w.step(package):
                 break
-            if not x.startswith("q2"):
+            if not package.startswith("q2"):
                 continue
-            if package and x != package:
+            if package and package != package:
                 continue
             trm.run(
-                f"{executable} -m pip install  --upgrade --force-reinstall "
-                f" git+https://github.com/AndreiPuchko/{x}.git"
+                f"{executable} -m pip install  --upgrade --force-reinstall --no-deps"
+                f" git+https://github.com/AndreiPuchko/{package}.git"
             )
         w.close()
         print("Done")
@@ -719,6 +719,8 @@ class Q2RadApp(Q2App):
                     "pip",
                     "install",
                     "--upgrade",
+                    "--force-reinstall",
+                    "--no-deps",
                     "--no-cache-dir",
                     f"{package}=={latest_version}",
                 ],
