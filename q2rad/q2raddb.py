@@ -72,7 +72,7 @@ def read_url(url, waitbar=False, chunk_size=10000000):
         else:
             return urlop.read()
     else:
-        return None
+        return b""
 
 
 class q2cursor(Q2Cursor):

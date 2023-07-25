@@ -56,7 +56,7 @@ class AppManager(Q2Form):
                 "reinstall_",
                 "Reinstall",
                 control="button",
-                valid=self.update_from_git,
+                valid=self.reinstall,
             )
 
             self.add_control(

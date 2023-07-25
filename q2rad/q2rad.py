@@ -688,7 +688,10 @@ class Q2RadApp(Q2App):
 
         trm = Q2Terminal(callback=callback)
         executable = sys.executable.replace("w.exe", ".exe")
+        w = Q2WaitShow(len(q2_modules))
         for x in q2_modules:
+            if w.step(package):
+                break
             if not x.startswith("q2"):
                 continue
             if package and x != package:
@@ -697,6 +700,7 @@ class Q2RadApp(Q2App):
                 f"{executable} -m pip install  --upgrade --force-reinstall "
                 f" git+https://github.com/AndreiPuchko/{x}.git"
             )
+        w.close()
         print("Done")
 
     def restart(self):
@@ -767,18 +771,9 @@ class Q2RadApp(Q2App):
                     self.open_selected_app()
 
     def update_app_packages(self):
-        # if os.path.isdir(".vscode"):
-        #     # because of falls when running under VSCODE
-        #     return
-
         extra_packages = [
             x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()
         ]
-        # installed_packages = [x.name for x in pkgutil.iter_modules()]
-
-        # for x in extra_packages:
-        #     if x in installed_packages:
-        #         __import__(x)
         self.check_packages_update(extra_packages)
 
     def check_packages_update(self, packages_list=q2_modules):
