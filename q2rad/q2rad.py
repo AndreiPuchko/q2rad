@@ -700,6 +700,8 @@ class Q2RadApp(Q2App):
                 f"{executable} -m pip install  --upgrade --force-reinstall --no-deps"
                 f" git+https://github.com/AndreiPuchko/{package}.git"
             )
+            if trm.exit_code != 0:
+                q2mess(f"Error occured while updateing <b>{package}</b>! See output for details.")
         w.close()
         print("Done")
 
