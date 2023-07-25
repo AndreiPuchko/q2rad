@@ -668,7 +668,10 @@ class Q2RadApp(Q2App):
                         pass
 
                 latest_version, new_current_version = self.get_package_versions(package)
-                upgraded.append(f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>")
+                if latest_version:
+                    upgraded.append(f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>")
+                else:
+                    upgraded.append(f"Error occured while updating package <b>{package}</b>!")
         w.close()
         if upgraded:
             mess = ("Upgrading complete!<p>" "The program will be restarted!" "<p><p>") + "<p>".join(upgraded)
@@ -703,7 +706,8 @@ class Q2RadApp(Q2App):
             if trm.exit_code != 0:
                 q2mess(f"Error occured while updateing <b>{package}</b>! See output for details.")
         w.close()
-        print("Done")
+        q2Mess("Finished!<p>The program will be restarted!")
+        self.restart()
 
     def restart(self):
         if "win32" in sys.platform:
