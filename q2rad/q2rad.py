@@ -153,15 +153,19 @@ def explain_error(tb=None, errtype=None):
             stack.append([tb.tb_frame.f_lineno, tb.tb_frame.f_code.co_filename])
             tb = tb.tb_next
     line_no = tb.tb_frame.f_lineno
-    script = tb.tb_frame.f_code.co_filename[1:-1].split("\n")
     err_char = "█"
-    if line_no - 1 < len(script):
-        errline = script[line_no - 1]
-        script[line_no - 1] = f"{err_char*10}\n{err_char*2}" + script[line_no - 1] + f"\n{err_char*10}"
-        error["script"] = "\n".join(script)
+    if tb.tb_frame.f_code.co_filename.startswith("<"):
+        script = tb.tb_frame.f_code.co_filename[1:-1].split("\n")
+        if line_no - 1 < len(script):
+            errline = script[line_no - 1]
+            script[line_no - 1] = f"{err_char*10}\n{err_char*2}" + script[line_no - 1] + f"\n{err_char*10}"
+            error["script"] = "\n".join(script)
+        else:
+            errline = traceback.format_tb(tb)[-1]
+            error["script"] = ""
     else:
-        errline = traceback.format_tb(tb)[-1]
-        error["script"] = ""
+        errline = ""
+        error["script"] = "<br>".join(traceback.format_tb(tb))
 
     error["errtype"] = errtype
     error["lineno"] = tb.tb_frame.f_lineno
@@ -524,7 +528,7 @@ class Q2RadApp(Q2App):
                 else:
                     latest_version_text = ""
             else:
-                latest_version_text = _(" (Can't load packacke info)")
+                latest_version_text = _(" (Can't load package info)")
 
             about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
 
@@ -739,7 +743,11 @@ class Q2RadApp(Q2App):
         # self.update_app_packages()
 
         if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version or force_update:
-            market_version = read_url(self.app_url + ".version").decode("utf-8")  # noqa F405
+            try:
+                market_version = read_url(self.app_url + ".version").decode("utf-8")  # noqa F405
+            except Exception as e:  # noqa F841
+                self.show_statusbar_mess("An error occurred while checking for updates")
+                return
             if force_update or market_version and market_version != self.app_version:
                 if force_update:
                     update_detected = f"You are about to rewrite current App <b>{self.app_title}</b>!"
