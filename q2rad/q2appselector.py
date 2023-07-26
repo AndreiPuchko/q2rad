@@ -12,13 +12,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-if __name__ == "__main__":
-    import sys
-
-    sys.path.insert(0, ".")
-    from q2rad.q2rad import main
-
-    main()
 
 from q2gui import q2app
 from q2gui.q2form import NEW, COPY

@@ -12,13 +12,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-if __name__ == "__main__":
-    import sys
-
-    sys.path.insert(0, ".")
-    from q2rad.q2rad import main
-
-    main()
 
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
@@ -59,7 +52,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             to_column="name",
             related="name",
             datatype="char",
-            datalen=100
+            datalen=100,
         )
         self.add_control("action_text", _("Action text"))
         self.add_control("/")
