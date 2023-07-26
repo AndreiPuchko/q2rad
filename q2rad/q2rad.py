@@ -726,7 +726,6 @@ class Q2RadApp(Q2App):
                     "install",
                     "--upgrade",
                     "--force-reinstall",
-                    "--no-deps" if package in q2_modules else "",
                     "--no-cache-dir",
                     f"{package}=={latest_version}",
                 ],
