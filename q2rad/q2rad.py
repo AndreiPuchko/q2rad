@@ -838,6 +838,7 @@ class Q2RadApp(Q2App):
                 , toolbar
                 , menu_text
                 , menu_before
+                , menu_icon
                 , menu_tiptext
                 , menu_separator
                 , name
@@ -861,6 +862,7 @@ class Q2RadApp(Q2App):
                 worker=menu_worker(x["name"]),
                 toolbar=x["toolbar"],
                 before=x["menu_before"],
+                icon=x["menu_icon"]
             )
 
     def run_forms(self):

@@ -80,6 +80,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
             self.add_control("menu_path", _("Menu bar path"), datatype="char", datalen=100)
             self.add_control("menu_text", _("Menu text"), datatype="char", datalen=100)
             self.add_control("menu_before", _("Before path"), datatype="char", datalen=100)
+            self.add_control("menu_icon", _("Icon file name or char"), datatype="char", datalen=100)
             self.add_control("menu_tiptext", _("Tip text"), datatype="char", datalen=100)
             if self.add_control("/h"):
                 self.add_control(
