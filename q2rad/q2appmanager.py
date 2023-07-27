@@ -233,7 +233,8 @@ class AppManager(Q2Form):
 
     def reinstall(self):
         if q2ask("You are about to reinstall platform packages?") == 2:
-            q2app.q2_app.update_packages(force=True)
+            # q2app.q2_app.update_packages(force=True)
+            q2app.q2_app.update_from_git(source="")
 
     def update_from_git(self):
         if q2ask("You are about to reinstall platform packages from github.com! Are you sure?") == 2:

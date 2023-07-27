@@ -681,7 +681,7 @@ class Q2RadApp(Q2App):
         if upgraded:
             self.restart()
 
-    def update_from_git(self, package=""):
+    def update_from_git(self, package="", source="git"):
         if os.path.isfile("poetry.lock"):
             q2mess("poetry.lock presents - update from git is impossible!")
             return
@@ -692,6 +692,11 @@ class Q2RadApp(Q2App):
         trm = Q2Terminal(callback=callback)
         executable = sys.executable.replace("w.exe", ".exe")
         w = Q2WaitShow(len(q2_modules))
+        _source_suffix = ""
+        _source_postfix = ""
+        if source == "git":
+            _source_suffix = "git+https://github.com/AndreiPuchko/"
+            _source_postfix = ".git"
         for package in q2_modules:
             if w.step(package):
                 break
@@ -701,7 +706,7 @@ class Q2RadApp(Q2App):
                 continue
             trm.run(
                 f"{executable} -m pip install  --upgrade --force-reinstall --no-deps"
-                f" git+https://github.com/AndreiPuchko/{package}.git"
+                f" {_source_suffix}{package}{_source_postfix}"
             )
             if trm.exit_code != 0:
                 q2mess(f"Error occured while updateing <b>{package}</b>! See output for details.")
@@ -725,7 +730,6 @@ class Q2RadApp(Q2App):
                     "pip",
                     "install",
                     "--upgrade",
-                    "--force-reinstall",
                     "--no-cache-dir",
                     f"{package}=={latest_version}",
                 ],
