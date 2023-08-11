@@ -45,7 +45,7 @@ import datetime
 
 def open_url(url):
     try:
-        response = urllib.request.urlopen(url)
+        response = urllib.request.urlopen(url, timeout=5)
     except SocketError:
         response = None
     return response

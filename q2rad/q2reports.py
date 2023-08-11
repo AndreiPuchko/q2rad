@@ -26,7 +26,7 @@ from q2rad.q2queries import Q2QueryEdit
 from q2rad.q2raddb import q2cursor
 from q2rad.q2utils import Q2_save_and_run
 from q2gui import q2app
-from q2gui.q2dialogs import Q2WaitShow, q2Wait, q2WaitMax, q2WaitStep, q2working
+from q2gui.q2dialogs import Q2WaitShow, q2WaitMax, q2WaitStep, q2working
 import json
 import os
 import gettext
