@@ -54,7 +54,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             datatype="char",
             datalen=100,
         )
-        self.add_control("action_text", _("Action text"))
+        self.add_control("action_text", _("Action text"), datatype="char", datalen=100)
         self.add_control("/")
         if self.add_control("/t", _("Main"), tag="tab"):
             if self.add_control("/f"):

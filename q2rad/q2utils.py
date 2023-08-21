@@ -150,7 +150,6 @@ class Q2_save_and_run:
         self.dev_actions_visible = Q2Actions()
         self._save_and_run_control = None
 
-
     def _add_save_and_run(self: Q2Form, save_only=False):
         self.dev_actions.show_main_button = False
         self.dev_actions.show_actions = False
@@ -198,10 +197,10 @@ class Q2_save_and_run:
 
 
 class auto_filter:
-    def __init__(self, table, mem):
-        self.table = table
+    def __init__(self, form_name, mem):
+        self.form_name = form_name
         self.mem = mem
-        self.fico = []
+        self.filter_columns = []
         self.mem.ok_button = True
         self.mem.cancel_button = True
         self.mem.add_ok_cancel_buttons()
@@ -213,9 +212,10 @@ class auto_filter:
             f"""
                 select *
                 from `lines`
-                where name  = '{self.table}'
+                where name  = '{self.form_name}'
                     and migrate<>''
                     and (label <>'' or gridlabel <> '')
+                    and noform = ''
                 order by seq
             """,
             self.mem.q2_app.db_logic,
@@ -223,9 +223,9 @@ class auto_filter:
         self.mem.controls.add_control("/f")
         for col in cu.records():
             col = Q2Controls.validate(col)
-            self.fico.append(cu.r.column)
+            self.filter_columns.append(cu.r.column)
 
-            if col["datatype"] in ["date"] or col.get("num"):
+            if col["datatype"] in ["date"] or (col.get("num") and col.get("to_form", "") == ""):
                 self.mem.controls.add_control("/h", cu.r.label, check=1)
                 col["label"] = "from"
                 co = col["column"]
@@ -239,15 +239,18 @@ class auto_filter:
             else:
                 col["label"] = cu.r.label
                 col["check"] = 1
+                if col.get("to_form"):
+                    col["to_form"] = self.mem.q2_app.get_form(col["to_form"])
+
                 self.mem.controls.add_control(**col)
         self.mem.valid = self.valid
 
     def valid(self):
         where = []
-        for x in self.fico:
+        for x in self.filter_columns:
             where.append(self.prepare_where(x))
         where_string = " and ".join([x for x in where if x])
-        q2app.q2_app.run_form("sales", where=where_string)
+        q2app.q2_app.run_form(self.form_name, where=where_string)
         return False
 
     def prepare_where(self, column=None, control1=None, control2=None):
@@ -282,12 +285,12 @@ class auto_filter:
             if control2_value:
                 control2_value = num(control2_value)
 
-        if (control1_value and control2_value is None) or control1_value == control2_value:
+        if (control2_value is None) or control1_value == control2_value:
             if date_control or num_control:
                 return f"{column} = '{control1_value}'"
             else:
                 return f"{column} like '%{control1_value}%'"
-        elif (control1_value and not control2_value) or (control1_value > control2_value):
+        elif (control1_value and not control2_value) or (control2_value and control1_value > control2_value):
             return f"{column} >= '{control1_value}'"
         elif not control1_value and control2_value:
             return f"{column} <= '{control2_value}'"
@@ -340,9 +343,10 @@ def grid_print(mem):
         columns[x]["cwidth"] = "%s%%" % round(columns[x]["width"] / total_width * 100, 2)
 
     for x in sorted(columns.keys()):
+        meta_pos = columns[x]["pos"]
         report.add_column(width=columns[x]["cwidth"])
         header_rows.set_cell(0, x, "%s" % columns[x]["name"])
-        if mem.model.meta[x].get("num") and not mem.model.meta[x].get("relation"):
+        if mem.model.meta[meta_pos].get("num") and not mem.model.meta[meta_pos].get("relation"):
             format = "N"
         else:
             format = ""
@@ -352,8 +356,8 @@ def grid_print(mem):
         detail_rows.set_cell(
             0,
             x,
-            "{form.grid_data(_n_n_n_, %s, True)}" % columns[x]["pos"],
-            style=report.make_style(alignment=mem.model.alignments[x]),
+            "{form.grid_data(_n_n_n_, %s, True)}" % meta_pos,
+            style=report.make_style(alignment=mem.model.alignments[meta_pos]),
             format=format,
         )
 

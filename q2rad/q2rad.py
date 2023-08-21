@@ -456,6 +456,7 @@ class Q2RadApp(Q2App):
             user="q2user",
             password="q2password",
         )
+        self.db = self.db_data
         if self.db_data:
             self.db_logic = self._open_database(
                 database_name=self.selected_application.get("database_logic", ""),
@@ -518,7 +519,7 @@ class Q2RadApp(Q2App):
         about.append("Versions:")
         about.append(f"<b>Python</b>: {sys.version}<p>")
 
-        rez = self.get_packages_verion(q2_modules)
+        rez = self.get_packages_version(q2_modules)
 
         for package in rez:
             latest_version, current_version = rez[package]
@@ -796,7 +797,7 @@ class Q2RadApp(Q2App):
         list_2_upgrade_message = []
         list_2_upgrade = []
 
-        rez = self.get_packages_verion(packages_list)
+        rez = self.get_packages_version(packages_list)
 
         for package in rez:
             latest_version, current_version = rez[package]
@@ -817,7 +818,7 @@ class Q2RadApp(Q2App):
             ):
                 self.update_packages(list_2_upgrade)
 
-    def get_packages_verion(self, packages_list):
+    def get_packages_version(self, packages_list):
         task = Q2Tasker("Checking packages version")
         for package in packages_list:
             task.add(self.get_package_versions, package, name=package)
