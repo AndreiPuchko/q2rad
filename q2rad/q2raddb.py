@@ -14,11 +14,6 @@
 
 import sys
 
-if __name__ == "__main__":
-    sys.path.insert(0, ".")
-    from q2rad.q2rad import main
-
-    main()
 
 from q2db.cursor import Q2Cursor
 from q2db.db import Q2Db

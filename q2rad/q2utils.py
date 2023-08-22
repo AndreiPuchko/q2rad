@@ -12,21 +12,13 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-import sys
 import os
 import random
 import string
 import threading
 
 
-if __name__ == "__main__":
-
-    sys.path.insert(0, ".")
-    from q2rad.q2rad import main
-
-    main()
-
-from q2rad import Q2Form
+from q2rad import Q2Form as _Q2Form
 from q2rad.q2raddb import q2cursor, num
 from q2gui.q2model import Q2Model
 from q2gui import q2app
@@ -41,6 +33,92 @@ from logging.handlers import TimedRotatingFileHandler
 import gettext
 
 _ = gettext.gettext
+
+
+class Q2Form(_Q2Form):
+    def add_control(
+        self,
+        column="",
+        label="",
+        gridlabel="",
+        control="",
+        pic="",
+        data="",
+        datatype="char",
+        datalen=0,
+        datadec=0,
+        pk="",
+        ai="",
+        migrate="*",
+        actions=[],
+        alignment=-1,
+        to_table="",
+        to_column="",
+        to_form=None,
+        related="",
+        db=None,
+        mask="",
+        opts="",
+        when=None,
+        show=None,
+        valid=None,
+        dblclick=None,
+        readonly=None,
+        disabled=None,
+        check=None,
+        noform=None,
+        nogrid=None,
+        widget=None,
+        margins=None,
+        stretch=0,
+        mess="",
+        tag="",
+        eat_enter=None,
+        hotkey="",
+        **args,
+    ):
+        if isinstance(to_form, str) and to_form !="":
+            to_form = q2app.q2_app.get_form(to_form)
+        return super().add_control(
+            column,
+            label,
+            gridlabel,
+            control,
+            pic,
+            data,
+            datatype,
+            datalen,
+            datadec,
+            pk,
+            ai,
+            migrate,
+            actions,
+            alignment,
+            to_table,
+            to_column,
+            to_form,
+            related,
+            db,
+            mask,
+            opts,
+            when,
+            show,
+            valid,
+            dblclick,
+            readonly,
+            disabled,
+            check,
+            noform,
+            nogrid,
+            widget,
+            margins,
+            stretch,
+            mess,
+            tag,
+            eat_enter,
+            hotkey,
+            **args,
+        )
 
 
 def q2choice(records=[], title="Make your choice", column_title="Column"):
@@ -220,29 +298,27 @@ class auto_filter:
             """,
             self.mem.q2_app.db_logic,
         )
-        self.mem.controls.add_control("/f")
+        self.mem.add_control("/f")
         for col in cu.records():
             col = Q2Controls.validate(col)
             self.filter_columns.append(cu.r.column)
 
             if col["datatype"] in ["date"] or (col.get("num") and col.get("to_form", "") == ""):
-                self.mem.controls.add_control("/h", cu.r.label, check=1)
+                self.mem.add_control("/h", cu.r.label, check=1)
                 col["label"] = "from"
                 co = col["column"]
                 col["column"] = co + "1"
-                self.mem.controls.add_control(**col)
+                self.mem.add_control(**col)
                 col["label"] = "to"
                 col["column"] = co + "2"
-                self.mem.controls.add_control(**col)
-                self.mem.controls.add_control("/s")
-                self.mem.controls.add_control("/")
+                self.mem.add_control(**col)
+                self.mem.add_control("/s")
+                self.mem.add_control("/")
             else:
                 col["label"] = cu.r.label
                 col["check"] = 1
-                if col.get("to_form"):
-                    col["to_form"] = self.mem.q2_app.get_form(col["to_form"])
 
-                self.mem.controls.add_control(**col)
+                self.mem.add_control(**col)
         self.mem.valid = self.valid
 
     def valid(self):

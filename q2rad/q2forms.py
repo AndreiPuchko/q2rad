@@ -13,7 +13,6 @@
 #    limitations under the License.
 
 
-
 from q2db.cursor import Q2Cursor
 
 from q2gui.q2model import Q2CursorModel

@@ -22,7 +22,7 @@ if __name__ == "__main__":
     sys.path.insert(0, ".")
 
 
-from q2rad import Q2App, Q2Form
+from q2rad import Q2App
 from q2gui.q2dialogs import (  # noqa: F401
     q2Mess,
     q2_mess,
@@ -42,15 +42,14 @@ from q2gui.q2dialogs import (  # noqa: F401
 from q2gui.q2model import Q2CursorModel
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
-from q2rad.q2actions import Q2Actions
 from q2db.cursor import Q2Cursor
+from q2rad.q2actions import Q2Actions
 from q2rad.q2raddb import *  # noqa:F403
 
 from q2gui import q2app
 from q2rad.q2raddb import q2cursor
 from q2rad.q2appmanager import AppManager
 from q2rad.q2stylesettings import AppStyleSettings
-from q2rad.q2utils import set_logging
 from q2terminal.q2terminal import Q2Terminal
 from q2rad.q2appselector import Q2AppSelect
 from q2rad.q2modules import Q2Modules
@@ -61,8 +60,7 @@ from q2rad.q2packages import Q2Packages
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
-from q2rad.q2utils import Q2Tasker
-from q2rad.q2utils import auto_filter
+from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging  # noqa F401
 
 import gettext
 
@@ -670,7 +668,9 @@ class Q2RadApp(Q2App):
 
                 latest_version, new_current_version = self.get_package_versions(package)
                 if latest_version:
-                    upgraded.append(f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>")
+                    upgraded.append(
+                        f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>"
+                    )
                 else:
                     upgraded.append(f"Error occured while updating package <b>{package}</b>!")
         w.close()
@@ -866,7 +866,7 @@ class Q2RadApp(Q2App):
                 worker=menu_worker(x["name"]),
                 toolbar=x["toolbar"],
                 before=x["menu_before"],
-                icon=x["menu_icon"]
+                icon=x["menu_icon"],
             )
 
     def run_forms(self):
@@ -959,8 +959,6 @@ class Q2RadApp(Q2App):
 
         # add controls
         for x in cu.records():
-            if x.get("to_form"):
-                x["to_form"] = self.get_form(x["to_form"])
             x["valid"] = self.code_runner(x["valid"], form)
             if x.get("_show"):
                 x["show"] = self.code_runner(x["_show"], form)
