@@ -19,7 +19,7 @@ from q2gui.q2dialogs import q2AskYN
 from q2rad.q2utils import choice_table, choice_column, choice_form, Q2_save_and_run
 
 
-from q2rad import Q2Form
+from q2rad.q2utils import Q2Form
 
 from q2gui import q2app
 

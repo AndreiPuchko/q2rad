@@ -32,6 +32,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 import gettext
 
+
 _ = gettext.gettext
 
 
@@ -77,7 +78,7 @@ class Q2Form(_Q2Form):
         hotkey="",
         **args,
     ):
-        if isinstance(to_form, str) and to_form !="":
+        if isinstance(to_form, str) and to_form != "":
             to_form = q2app.q2_app.get_form(to_form)
         return super().add_control(
             column,
@@ -119,6 +120,73 @@ class Q2Form(_Q2Form):
             hotkey,
             **args,
         )
+
+    def grid_print(self):
+        from q2rad.q2rad import get_report
+
+        report = get_report(style=get_report().make_style(font_size=q2app.q2_app.q2style.font_size))
+
+        report.data_sets["cursor"] = [{"_n_n_n_": x} for x in range(self.model.row_count())]
+
+        detail_rows = report.new_rows()
+        detail_rows.rows["role"] = "table"
+        detail_rows.rows["data_source"] = "cursor"
+
+        header_rows = report.new_rows(
+            style=report.make_style(text_align="center", font_weight="bold", vertical_align="middle")
+        )
+
+        columns = self.grid_form.get_controls_list("q2grid")[0].get_columns_settings()
+
+        for pos, x in enumerate(columns):
+            columns[pos]["pos"] = pos
+
+        columns = {int(x["data"].split(",")[0]): x for x in columns}
+        total_width = 0
+
+        for x in sorted(columns.keys()):
+            columns[x]["width"] = int_(columns[x]["data"].split(",")[1])
+            columns[x]["cwidth"] = "0"
+            total_width += columns[x]["width"]
+
+        page_width = round(total_width / (q2app.q2_app.dpi() / 2.54), 2) + 3
+
+        if page_width < 26:
+            page_height = 297 / 210 * page_width
+        else:
+            page_height = 210 / 297 * page_width
+
+        report.add_page(page_width=page_width, page_height=page_height)
+
+        for x in list(columns.keys()):
+            columns[x]["cwidth"] = "%s%%" % round(columns[x]["width"] / total_width * 100, 2)
+
+        for x in sorted(columns.keys()):
+            meta_pos = columns[x]["pos"]
+            report.add_column(width=columns[x]["cwidth"])
+            header_rows.set_cell(0, x, "%s" % columns[x]["name"])
+            if self.model.meta[meta_pos].get("num") and not self.model.meta[meta_pos].get("relation"):
+                format = "N"
+            else:
+                format = ""
+            # elif mem.model.meta[x].get("datatype") == "date":
+            #     format = "D"
+            # else:
+            detail_rows.set_cell(
+                0,
+                x,
+                "{form.grid_data(_n_n_n_, %s, True)}" % meta_pos,
+                style=report.make_style(alignment=self.model.alignments[meta_pos]),
+                format=format,
+            )
+
+        report.set_data(self, "form")
+
+        detail_rows.set_table_header(header_rows)
+
+        report.add_rows(rows=detail_rows)
+
+        report.run()
 
 
 def q2choice(records=[], title="Make your choice", column_title="Column"):
@@ -373,74 +441,3 @@ class auto_filter:
         elif control1_value and control2_value:
             return f"{column} >= '{control1_value}' and {column}<='{control2_value}'"
         return ""
-
-
-from q2rad.q2rad import get_report
-
-
-def grid_print(mem):
-    self = q2app.q2_app
-    form = mem
-    report = get_report(style=get_report().make_style(font_size=self.q2style.font_size))
-
-    report.data_sets["cursor"] = [{"_n_n_n_": x} for x in range(mem.model.row_count())]
-
-    detail_rows = report.new_rows()
-    detail_rows.rows["role"] = "table"
-    detail_rows.rows["data_source"] = "cursor"
-
-    header_rows = report.new_rows(
-        style=report.make_style(text_align="center", font_weight="bold", vertical_align="middle")
-    )
-
-    columns = mem.grid_form.get_controls_list("q2grid")[0].get_columns_settings()
-
-    for pos, x in enumerate(columns):
-        columns[pos]["pos"] = pos
-
-    columns = {int(x["data"].split(",")[0]): x for x in columns}
-    total_width = 0
-
-    for x in sorted(columns.keys()):
-        columns[x]["width"] = int_(columns[x]["data"].split(",")[1])
-        columns[x]["cwidth"] = "0"
-        total_width += columns[x]["width"]
-
-    page_width = round(total_width / (self.dpi() / 2.54), 2) + 3
-
-    if page_width < 26:
-        page_height = 297 / 210 * page_width
-    else:
-        page_height = 210 / 297 * page_width
-
-    report.add_page(page_width=page_width, page_height=page_height)
-
-    for x in list(columns.keys()):
-        columns[x]["cwidth"] = "%s%%" % round(columns[x]["width"] / total_width * 100, 2)
-
-    for x in sorted(columns.keys()):
-        meta_pos = columns[x]["pos"]
-        report.add_column(width=columns[x]["cwidth"])
-        header_rows.set_cell(0, x, "%s" % columns[x]["name"])
-        if mem.model.meta[meta_pos].get("num") and not mem.model.meta[meta_pos].get("relation"):
-            format = "N"
-        else:
-            format = ""
-        # elif mem.model.meta[x].get("datatype") == "date":
-        #     format = "D"
-        # else:
-        detail_rows.set_cell(
-            0,
-            x,
-            "{form.grid_data(_n_n_n_, %s, True)}" % meta_pos,
-            style=report.make_style(alignment=mem.model.alignments[meta_pos]),
-            format=format,
-        )
-
-    report.set_data(form, "form")
-
-    detail_rows.set_table_header(header_rows)
-
-    report.add_rows(rows=detail_rows)
-
-    report.run()

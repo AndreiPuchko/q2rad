@@ -15,7 +15,7 @@
 
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
-from q2rad import Q2Form
+from q2rad.q2utils import Q2Form
 from q2gui.q2app import Q2Actions
 from q2gui import q2app
 import gettext

@@ -24,7 +24,7 @@ from q2gui.q2utils import set_dict_default
 import json
 import gettext
 import re
-from q2rad import Q2Form
+from q2rad.q2utils import Q2Form
 
 _ = gettext.gettext
 re_find_param = re.compile(r":\b\w+\b")

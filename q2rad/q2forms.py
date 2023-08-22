@@ -24,7 +24,7 @@ from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
 from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run
 
-from q2rad import Q2Form
+from q2rad.q2utils import Q2Form
 
 import gettext
 
