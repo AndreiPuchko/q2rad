@@ -269,11 +269,24 @@ class Q2RadApp(Q2App):
             self.check_packages_update()
         self.open_application(autoload_enabled=True)
 
+    def subwindow_count_changed(self):
+        if super().subwindow_count_changed() == 0:
+            self.enable_menu("File|Open")
+        else:
+            self.disable_menu("File|Open")
+
+    def on_new_tab(self):
+        if self.db_logic is not None:
+            run_module("on_new_tab")
+
     def open_application(self, autoload_enabled=False):
+        self.selected_application = {}
+        self.set_title("Open Application")
         Q2AppSelect().run(autoload_enabled)
         if self.selected_application != {}:
             self.open_selected_app(True)
             self.check_app_update()
+            self.on_new_tab()
             # self.update_app_packages()
         else:
             self.close()
@@ -309,6 +322,7 @@ class Q2RadApp(Q2App):
                     self.db_logic.table("reports").row_count(),
                     self.db_logic.table("modules").row_count(),
                     self.db_logic.table("queries").row_count(),
+                    self.db_logic.table("packages").row_count(),
                 ]
             )
             <= 0
