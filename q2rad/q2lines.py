@@ -96,7 +96,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         if self.add_control("/t", _("Main")):
             self.add_control("/f")
             self.add_control("label", _("Form label"), datatype="char", datalen=100)
-            self.add_control("gridlabel", _("Grid label"))
+            self.add_control("gridlabel", _("Grid label"), datatype="char", datalen=100)
             if self.add_control("/h"):
                 self.add_control("seq", _("Sequence number"), datatype="int")
                 self.add_control("nogrid", _("No grid"), control="check", datalen=1)
@@ -106,9 +106,11 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 self.add_control("readonly", _("Readonly"), control="check", datalen=1)
                 self.add_control("/s")
                 self.add_control("/")
-            self.add_control("tag", _("Tag"), datatype="char", datalen=100)
+            if self.add_control("/h"):
+                self.add_control("stretch", _("Stretch factor"), datatype="int")
+                self.add_control("tag", _("Tag"), datatype="char", datalen=100)
+                self.add_control("/")
             if self.add_control("/h", _("Control type")):
-
                 self.add_control(
                     "control",
                     gridlabel=_("Control type"),

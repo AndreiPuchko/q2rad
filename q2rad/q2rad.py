@@ -924,6 +924,7 @@ class Q2RadApp(Q2App):
                 , noform
                 , `check`
                 , control
+                , stretch
                 , pic
                 , datatype
                 , datalen
