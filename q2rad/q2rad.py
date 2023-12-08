@@ -18,7 +18,6 @@ import re
 import threading
 
 if __name__ == "__main__":
-
     sys.path.insert(0, ".")
 
 
@@ -201,11 +200,11 @@ def explain_error(tb=None, errtype=None):
 
 class Q2RadApp(Q2App):
     def __init__(self, title=""):
-
         _logger.warning("About to start")
         super().__init__(title)
         self.settings_title = "q2RAD"
         self.style_file = "q2rad.qss"
+        self.frozen = getattr(sys, "frozen", False)
         self.db = None
 
         self.db_data = None
@@ -497,11 +496,10 @@ class Q2RadApp(Q2App):
 
         self.create_form_menu()
 
-        self.dev_mode = (
-            self.selected_application.get("dev_mode")
-            or os.path.isdir(self.q2market_path)
-            or os.path.isfile(".dev")
-        )
+        if self.frozen:
+            self.dev_mode = False
+
+        self.dev_mode = self.selected_application.get("dev_mode") or os.path.isdir(self.q2market_path) or os.path.isfile(".dev")
         # self.dev_mode = False
 
         if self.dev_mode:
@@ -510,6 +508,9 @@ class Q2RadApp(Q2App):
             self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
             self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
             self.add_menu("Dev|Packages", self.run_packages, toolbar=self.dev_mode)
+            if not self.frozen:
+                self.add_menu("Dev|-")
+                self.add_menu("Dev|Make binary", self.make_binary)
         self.build_menu()
         # self.show_toolbar(False)
         pass
@@ -605,48 +606,44 @@ class Q2RadApp(Q2App):
         if os.path.isfile("poetry.lock"):
             return
 
-        # create update_q2rad.sh
-        self.write_restore_file(
-            "update_q2rad",
-            ("" if "win32" in sys.platform else "#!/bin/bash\n")
-            + ("q2rad\\scripts\\activate " if "win32" in sys.platform else "source q2rad/bin/activate")
-            + "&& pip install --upgrade --force-reinstall q2gui"
-            + "&& pip install --upgrade --force-reinstall q2db"
-            + "&& pip install --upgrade --force-reinstall q2report"
-            + "&& pip install --upgrade --force-reinstall q2terminal"
-            + "&& pip install --upgrade --force-reinstall q2rad",
-        )
-
-        # create run_q2rad
-        self.write_restore_file(
-            "run_q2rad",
-            ("" if "win32" in sys.platform else "#!/bin/bash\n")
-            + (
-                "start q2rad\\scripts\\pythonw.exe -m q2rad"
-                if "win32" in sys.platform
-                else "q2rad/bin/q2rad\n"
-            ),
-        )
-        if "win32" in sys.platform:
-            open("run_q2rad.vbs", "w").write(
-                'WScript.CreateObject("WScript.Shell").Run '
-                '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
+        if not self.frozen:
+            # create update_q2rad.sh
+            self.write_restore_file(
+                "update_q2rad",
+                ("" if "win32" in sys.platform else "#!/bin/bash\n")
+                + ("q2rad\\scripts\\activate " if "win32" in sys.platform else "source q2rad/bin/activate")
+                + "&& pip install --upgrade --force-reinstall q2gui"
+                + "&& pip install --upgrade --force-reinstall q2db"
+                + "&& pip install --upgrade --force-reinstall q2report"
+                + "&& pip install --upgrade --force-reinstall q2terminal"
+                + "&& pip install --upgrade --force-reinstall q2rad",
             )
 
-            open("make_shortcut.vbs", "w").write(
-                'Set oWS = WScript.CreateObject("WScript.Shell")\n'
-                'Set oLink = oWS.CreateShortcut(oWS.SpecialFolders("Desktop") & "\\q2RAD.lnk")\n'
-                'cu = WScript.CreateObject("Scripting.FileSystemObject").'
-                "GetParentFolderName(WScript.ScriptFullName)\n"
-                'oLink.TargetPath = cu & "\\run_q2rad.vbs"\n'
-                'oLink.WorkingDirectory = cu & ""\n'
-                'oLink.Description = "q2RAD"\n'
-                'oLink.IconLocation = cu & "\\assets\\q2rad.ico"\n'
-                "oLink.Save\n"
+            # create run_q2rad
+            self.write_restore_file(
+                "run_q2rad",
+                ("" if "win32" in sys.platform else "#!/bin/bash\n")
+                + ("start q2rad\\scripts\\pythonw.exe -m q2rad" if "win32" in sys.platform else "q2rad/bin/q2rad\n"),
             )
-        if sys.platform != "darwin":
-            if q2AskYN("Should I make a desktop shortcut?") == 2:
-                self.make_desktop_shortcut()
+            if "win32" in sys.platform:
+                open("run_q2rad.vbs", "w").write(
+                    'WScript.CreateObject("WScript.Shell").Run ' '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
+                )
+
+                open("make_shortcut.vbs", "w").write(
+                    'Set oWS = WScript.CreateObject("WScript.Shell")\n'
+                    'Set oLink = oWS.CreateShortcut(oWS.SpecialFolders("Desktop") & "\\q2RAD.lnk")\n'
+                    'cu = WScript.CreateObject("Scripting.FileSystemObject").'
+                    "GetParentFolderName(WScript.ScriptFullName)\n"
+                    'oLink.TargetPath = cu & "\\run_q2rad.vbs"\n'
+                    'oLink.WorkingDirectory = cu & ""\n'
+                    'oLink.Description = "q2RAD"\n'
+                    'oLink.IconLocation = cu & "\\assets\\q2rad.ico"\n'
+                    "oLink.Save\n"
+                )
+            if sys.platform != "darwin":
+                if q2AskYN("Should I make a desktop shortcut?") == 2:
+                    self.make_desktop_shortcut()
         self.process_events()
 
     def get_package_versions(self, package):
@@ -664,6 +661,8 @@ class Q2RadApp(Q2App):
         return latest_version, current_version
 
     def update_packages(self, packages_list=q2_modules, force=False):
+        if self.frozen:
+            return
         upgraded = []
         w = Q2WaitShow(len(packages_list))
         for package in packages_list:
@@ -682,9 +681,7 @@ class Q2RadApp(Q2App):
 
                 latest_version, new_current_version = self.get_package_versions(package)
                 if latest_version:
-                    upgraded.append(
-                        f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>"
-                    )
+                    upgraded.append(f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>")
                 else:
                     upgraded.append(f"Error occured while updating package <b>{package}</b>!")
         w.close()
@@ -697,6 +694,8 @@ class Q2RadApp(Q2App):
             self.restart()
 
     def update_from_git(self, package="", source="git"):
+        if self.frozen:
+            return
         if os.path.isfile("poetry.lock"):
             q2mess("poetry.lock presents - update from git is impossible!")
             return
@@ -719,10 +718,7 @@ class Q2RadApp(Q2App):
                 continue
             if package and package != package:
                 continue
-            trm.run(
-                f"{executable} -m pip install  --upgrade --force-reinstall --no-deps"
-                f" {_source_suffix}{package}{_source_postfix}"
-            )
+            trm.run(f"{executable} -m pip install  --upgrade --force-reinstall --no-deps" f" {_source_suffix}{package}{_source_postfix}")
             if trm.exit_code != 0:
                 q2mess(f"Error occured while updateing <b>{package}</b>! See output for details.")
         w.close()
@@ -737,6 +733,8 @@ class Q2RadApp(Q2App):
         self.close()
 
     def pip_install(self, package, latest_version):
+        if self.frozen:
+            return
         q2working(
             lambda: subprocess.check_call(
                 [
@@ -754,6 +752,8 @@ class Q2RadApp(Q2App):
         )
 
     def pip_uninstall(self, package):
+        if self.frozen:
+            return
         q2working(
             lambda: subprocess.check_call(
                 [
@@ -771,6 +771,8 @@ class Q2RadApp(Q2App):
 
     def check_app_update(self, force_update=False):
         # self.update_app_packages()
+        if self.frozen:
+            return
 
         if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version or force_update:
             try:
@@ -797,12 +799,14 @@ class Q2RadApp(Q2App):
                     self.open_selected_app()
 
     def update_app_packages(self):
-        extra_packages = [
-            x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()
-        ]
+        if self.frozen:
+            return
+        extra_packages = [x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()]
         self.check_packages_update(extra_packages)
 
     def check_packages_update(self, packages_list=q2_modules):
+        if self.frozen:
+            return
         if len(packages_list) == 0:
             return
         can_upgrade = False
@@ -897,6 +901,49 @@ class Q2RadApp(Q2App):
 
     def run_packages(self):
         Q2Packages().run()
+
+    def make_binary(self):
+        folder = "make"
+        if q2ask("Are you about to start buidlign binary executabele file of Q2RAD!<br>Are You Sure?") != 2:
+            return
+
+        if not os.path.isdir(folder):
+            os.mkdir(folder)
+        if not os.path.isdir(folder):
+            return
+
+        main = "from q2rad.q2rad import Q2RadApp;app = Q2RadApp();app.run()"
+        open(f"{folder}/main.py", "w").write(main)
+
+        trm = Q2Terminal(callback=print)
+        pynstaller_executable = os.path.dirname(sys.executable) + "/pyinstaller"
+
+        if not os.path.isfile("poetry.lock"):
+            trm.run(f"{pynstaller_executable} -v")
+            if trm.exit_code != 0:
+                pip_executable = os.path.dirname(sys.executable) + "/pip"
+                trm.run(f"{pip_executable} install pyinstaller")
+                if trm.exit_code != 0:
+                    q2mess("Pyinstaller not installed!")
+                    return
+
+        packages = " ".join(
+            [
+                f" --collect-all {x['name']}"
+                for x in q2cursor("select package_name as name from packages where 'pyinstaller'<>package_name ", self.db_logic).records()
+            ]
+        )
+        trm.run(f"cd {folder}")
+        w = q2wait()
+        # trm.run(f"pyinstaller --onefile --noconsole {packages} main.py")
+        trm.run(f"{pynstaller_executable} -y --noconsole {packages} main.py")
+        w.close()
+
+        if trm.exit_code != 0:
+            q2mess("Error occured while making binary! See output for details.")
+        else:
+            q2mess(f"Success! You binary is located in <b>{os.path.abspath(folder)}</b>")
+        trm.close()
 
     def run_form(self, name, order="", where=""):
         form = q2working(lambda: self.get_form(name, where=where, order=order), "Loading form...")

@@ -35,31 +35,32 @@ class AppManager(Q2Form):
         app_data = q2app.q2_app.selected_application
         self.add_control("/")
         if self.add_control("/h", "Platform"):
-            self.add_control(
-                "upgrade",
-                "Check updates",
-                control="button",
-                datalen=10,
-                valid=q2app.q2_app.update_packages,
-            )
+            if not q2app.q2_app.frozen:
+                self.add_control(
+                    "upgrade",
+                    "Check updates",
+                    control="button",
+                    datalen=10,
+                    valid=q2app.q2_app.update_packages,
+                )
 
-            self.add_control("/s")
+                self.add_control("/s")
 
-            self.add_control(
-                "reinstall_",
-                "Reinstall",
-                control="button",
-                valid=self.reinstall,
-            )
+                self.add_control(
+                    "reinstall_",
+                    "Reinstall",
+                    control="button",
+                    valid=self.reinstall,
+                )
 
-            self.add_control(
-                "reinstall_git",
-                "Reinstall from GitHub",
-                control="button",
-                valid=self.update_from_git,
-            )
+                self.add_control(
+                    "reinstall_git",
+                    "Reinstall from GitHub",
+                    control="button",
+                    valid=self.update_from_git,
+                )
 
-            self.add_control("/s")
+                self.add_control("/s")
 
             self.add_control(
                 "reload_assets",
