@@ -13,10 +13,11 @@
 #    limitations under the License.
 
 import os
+import sys
 import random
 import string
 import threading
-
+import subprocess
 
 from q2rad import Q2Form as _Q2Form
 from q2rad.q2raddb import q2cursor, num
@@ -261,6 +262,15 @@ def set_logging(log_folder="log"):
     formatter = logging.Formatter("%(asctime)s-%(name)s: %(levelname)s: %(message)s")
     handler.setFormatter(formatter)
     logging.basicConfig(handlers=[handler])
+
+
+def open_folder(folder):
+    if "win32" in sys.platform:
+        os.startfile(folder)
+    elif "darwin" in sys.platform:
+        subprocess.Popen(["open", folder])
+    else:
+        subprocess.Popen(["xdg-open", folder])
 
 
 class Q2Tasker:

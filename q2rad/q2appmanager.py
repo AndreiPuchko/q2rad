@@ -357,8 +357,9 @@ class AppManager(Q2Form):
         self.q2_app.open_selected_app()
 
     @staticmethod
-    def import_json_app(data):
-        db: Q2Db = q2app.q2_app.db_logic
+    def import_json_app(data, db = None):
+        if db is None:
+            db: Q2Db = q2app.q2_app.db_logic
         db_tables = db.get_tables()
         wait_table = Q2WaitShow(len(data))
         errors = []

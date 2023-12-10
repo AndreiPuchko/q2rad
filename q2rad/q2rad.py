@@ -59,7 +59,8 @@ from q2rad.q2packages import Q2Packages
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
-from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging  # noqa F401
+from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder  # noqa F401
+from q2rad.q2make import make_binary
 
 import gettext
 
@@ -295,7 +296,7 @@ class Q2RadApp(Q2App):
         wait.step("Prepare")
         self.clear_app_info()
         wait.step("Migrate logic DB")
-        self.migrate_db_logic()
+        self.migrate_db_logic(self.db_logic)
         wait.step("Migrate data DB")
         self.migrate_db_data()
         wait.step("looking for updates")
@@ -362,7 +363,7 @@ class Q2RadApp(Q2App):
             q2Mess(self.db_data.migrate_error_list)
         self.create_menu()
 
-    def migrate_db_logic(self):
+    def migrate_db_logic(self, db_logic):
         data_schema = Q2DbSchema()
         for form in (
             Q2Modules(),
@@ -375,7 +376,7 @@ class Q2RadApp(Q2App):
         ):
             for x in form.get_table_schema():
                 data_schema.add(**x)
-        self.db_logic.set_schema(data_schema)
+        db_logic.set_schema(data_schema)
 
     def get_autocompletition_list(self):
         rez = []
@@ -499,7 +500,11 @@ class Q2RadApp(Q2App):
         if self.frozen:
             self.dev_mode = False
 
-        self.dev_mode = self.selected_application.get("dev_mode") or os.path.isdir(self.q2market_path) or os.path.isfile(".dev")
+        self.dev_mode = (
+            self.selected_application.get("dev_mode")
+            or os.path.isdir(self.q2market_path)
+            or os.path.isfile(".dev")
+        )
         # self.dev_mode = False
 
         if self.dev_mode:
@@ -623,11 +628,16 @@ class Q2RadApp(Q2App):
             self.write_restore_file(
                 "run_q2rad",
                 ("" if "win32" in sys.platform else "#!/bin/bash\n")
-                + ("start q2rad\\scripts\\pythonw.exe -m q2rad" if "win32" in sys.platform else "q2rad/bin/q2rad\n"),
+                + (
+                    "start q2rad\\scripts\\pythonw.exe -m q2rad"
+                    if "win32" in sys.platform
+                    else "q2rad/bin/q2rad\n"
+                ),
             )
             if "win32" in sys.platform:
                 open("run_q2rad.vbs", "w").write(
-                    'WScript.CreateObject("WScript.Shell").Run ' '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
+                    'WScript.CreateObject("WScript.Shell").Run '
+                    '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
                 )
 
                 open("make_shortcut.vbs", "w").write(
@@ -681,7 +691,9 @@ class Q2RadApp(Q2App):
 
                 latest_version, new_current_version = self.get_package_versions(package)
                 if latest_version:
-                    upgraded.append(f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>")
+                    upgraded.append(
+                        f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>"
+                    )
                 else:
                     upgraded.append(f"Error occured while updating package <b>{package}</b>!")
         w.close()
@@ -718,7 +730,10 @@ class Q2RadApp(Q2App):
                 continue
             if package and package != package:
                 continue
-            trm.run(f"{executable} -m pip install  --upgrade --force-reinstall --no-deps" f" {_source_suffix}{package}{_source_postfix}")
+            trm.run(
+                f"{executable} -m pip install  --upgrade --force-reinstall --no-deps"
+                f" {_source_suffix}{package}{_source_postfix}"
+            )
             if trm.exit_code != 0:
                 q2mess(f"Error occured while updateing <b>{package}</b>! See output for details.")
         w.close()
@@ -801,7 +816,9 @@ class Q2RadApp(Q2App):
     def update_app_packages(self):
         if self.frozen:
             return
-        extra_packages = [x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()]
+        extra_packages = [
+            x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()
+        ]
         self.check_packages_update(extra_packages)
 
     def check_packages_update(self, packages_list=q2_modules):
@@ -903,47 +920,7 @@ class Q2RadApp(Q2App):
         Q2Packages().run()
 
     def make_binary(self):
-        folder = "make"
-        if q2ask("Are you about to start buidlign binary executabele file of Q2RAD!<br>Are You Sure?") != 2:
-            return
-
-        if not os.path.isdir(folder):
-            os.mkdir(folder)
-        if not os.path.isdir(folder):
-            return
-
-        main = "from q2rad.q2rad import Q2RadApp;app = Q2RadApp();app.run()"
-        open(f"{folder}/main.py", "w").write(main)
-
-        trm = Q2Terminal(callback=print)
-        pynstaller_executable = os.path.dirname(sys.executable) + "/pyinstaller"
-
-        if not os.path.isfile("poetry.lock"):
-            trm.run(f"{pynstaller_executable} -v")
-            if trm.exit_code != 0:
-                pip_executable = os.path.dirname(sys.executable) + "/pip"
-                trm.run(f"{pip_executable} install pyinstaller")
-                if trm.exit_code != 0:
-                    q2mess("Pyinstaller not installed!")
-                    return
-
-        packages = " ".join(
-            [
-                f" --collect-all {x['name']}"
-                for x in q2cursor("select package_name as name from packages where 'pyinstaller'<>package_name ", self.db_logic).records()
-            ]
-        )
-        trm.run(f"cd {folder}")
-        w = q2wait()
-        # trm.run(f"pyinstaller --onefile --noconsole {packages} main.py")
-        trm.run(f"{pynstaller_executable} -y --noconsole {packages} main.py")
-        w.close()
-
-        if trm.exit_code != 0:
-            q2mess("Error occured while making binary! See output for details.")
-        else:
-            q2mess(f"Success! You binary is located in <b>{os.path.abspath(folder)}</b>")
-        trm.close()
+        make_binary(self)
 
     def run_form(self, name, order="", where=""):
         form = q2working(lambda: self.get_form(name, where=where, order=order), "Loading form...")

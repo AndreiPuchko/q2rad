@@ -39,23 +39,23 @@ _ = gettext.gettext
 
 
 class Q2AppSelect(Q2Form):
-    def __init__(self, title=""):
+    def __init__(self, db_file_path="q2apps.sqlite"):
+        self.db_file_path = db_file_path
         super().__init__(_("Select application"))
         self.selected_application = {}
         self.no_view_action = True
         self.autoload_enabled = True
 
     def on_init(self):
-        q2_app: Q2App = q2app.q2_app
-        q2_app.clear_menu()
-        q2_app.build_menu()
-        q2_app.hide_menubar()
-        q2_app.hide_toolbar()
-        q2_app.hide_statusbar()
-        q2_app.hide_tabbar()
+        # q2_app: Q2App = q2app.q2_app
+        # q2_app.clear_menu()
+        # q2_app.build_menu()
+        # q2_app.hide_menubar()
+        # q2_app.hide_toolbar()
+        # q2_app.hide_statusbar()
+        # q2_app.hide_tabbar()
 
-        self.db = Q2Db(database_name="q2apps.sqlite")
-
+        self.db = Q2Db(database_name=self.db_file_path)
         self.define_form()
 
         data_schema = Q2DbSchema()
@@ -84,9 +84,7 @@ class Q2AppSelect(Q2Form):
             def driverDataValid(self=self):
                 self.w.host_data.set_enabled(self.s.driver_data != "Sqlite")
                 self.w.port_data.set_enabled(self.s.driver_data != "Sqlite")
-                self.w.select_data_storage_file.set_enabled(
-                    self.s.driver_data == "Sqlite"
-                )
+                self.w.select_data_storage_file.set_enabled(self.s.driver_data == "Sqlite")
 
             self.add_control(
                 "driver_data",
@@ -116,12 +114,8 @@ class Q2AppSelect(Q2Form):
                 )
                 self.add_control("/")
             if self.add_control("/h"):
-                self.add_control(
-                    "host_data", _("Host"), gridlabel=_("Data host"), datalen=100
-                )
-                self.add_control(
-                    "port_data", _("Port"), gridlabel=_("Data port"), datatype="int"
-                )
+                self.add_control("host_data", _("Host"), gridlabel=_("Data host"), datalen=100)
+                self.add_control("port_data", _("Port"), gridlabel=_("Data port"), datatype="int")
                 self.add_control(
                     "guest_mode",
                     _("Guest mode"),
@@ -139,9 +133,7 @@ class Q2AppSelect(Q2Form):
             def driverLogicValid(form=self):
                 form.w.host_logic.set_enabled(form.s.driver_logic != "Sqlite")
                 form.w.port_logic.set_enabled(form.s.driver_logic != "Sqlite")
-                form.w.select_app_storage_file.set_enabled(
-                    form.s.driver_logic == "Sqlite"
-                )
+                form.w.select_app_storage_file.set_enabled(form.s.driver_logic == "Sqlite")
 
             self.add_control(
                 "driver_logic",
@@ -154,7 +146,6 @@ class Q2AppSelect(Q2Form):
                 valid=driverLogicValid,
             )
             if self.add_control("/h"):
-
                 self.add_control(
                     "database_logic",
                     "Database",
@@ -172,12 +163,8 @@ class Q2AppSelect(Q2Form):
                 )
                 self.add_control("/")
             if self.add_control("/h"):
-                self.add_control(
-                    "host_logic", _("Host"), gridlabel=_("Logic host"), datalen=100
-                )
-                self.add_control(
-                    "port_logic", _("Port"), gridlabel=_("Logic port"), datatype="int"
-                )
+                self.add_control("host_logic", _("Host"), gridlabel=_("Logic host"), datalen=100)
+                self.add_control("port_logic", _("Port"), gridlabel=_("Logic port"), datatype="int")
                 self.add_control(
                     "dev_mode",
                     _("Dev mode"),
@@ -202,7 +189,7 @@ class Q2AppSelect(Q2Form):
             icon="💚",
             mess="Toggle autoload mark",
             eof_disabled=1,
-            tag="#4dd0e1"
+            tag="#4dd0e1",
         )
 
         self.add_action(_("Demo"), self.run_demo)
@@ -240,11 +227,6 @@ class Q2AppSelect(Q2Form):
         self.q2_app.sleep(0.2)
         if self.q2_app.keyboard_modifiers() != "":
             return
-        # if self.autoload_enabled:
-        #     cu = q2cursor("select * from applications where autoselect<>''", self.db)
-        #     if cu.row_count() > 0:
-        #         self._select_application(cu.record(0))
-        #         return False
         if self.db.table("applications").row_count() <= 0:
             if not os.path.isdir("q2rad_sqlite_databases"):
                 os.mkdir("q2rad_sqlite_databases")
@@ -257,7 +239,7 @@ class Q2AppSelect(Q2Form):
                     "database_data": "q2rad_sqlite_databases/my_first_app_data_storage.sqlite",
                     "driver_logic": "Sqlite",
                     "database_logic": "q2rad_sqlite_databases/my_first_app_logic_storage.sqlite",
-                    "dev_mode": "*"
+                    "dev_mode": "*",
                 },
                 self.db,
             )
@@ -339,6 +321,14 @@ class Q2AppSelect(Q2Form):
         self._select_application(self.model.get_record(self.current_row))
 
     def run(self, autoload_enabled=True):
+        q2_app: Q2App = q2app.q2_app
+        q2_app.clear_menu()
+        q2_app.build_menu()
+        q2_app.hide_menubar()
+        q2_app.hide_toolbar()
+        q2_app.hide_statusbar()
+        q2_app.hide_tabbar()
+
         self.autoload_enabled = autoload_enabled
         if autoload_enabled:
             cu = q2cursor("select * from applications where autoselect<>''", self.db)
