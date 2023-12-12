@@ -228,17 +228,17 @@ class Q2AppSelect(Q2Form):
         if self.q2_app.keyboard_modifiers() != "":
             return
         if self.db.table("applications").row_count() <= 0:
-            if not os.path.isdir("q2rad_sqlite_databases"):
-                os.mkdir("q2rad_sqlite_databases")
+            if not os.path.isdir("databases"):
+                os.mkdir("databases")
             insert(
                 "applications",
                 {
                     "ordnum": 1,
                     "name": "My first app",
                     "driver_data": "Sqlite",
-                    "database_data": "q2rad_sqlite_databases/my_first_app_data_storage.sqlite",
+                    "database_data": "databases/my_first_app_data_storage.sqlite",
                     "driver_logic": "Sqlite",
-                    "database_logic": "q2rad_sqlite_databases/my_first_app_logic_storage.sqlite",
+                    "database_logic": "databases/my_first_app_logic_storage.sqlite",
                     "dev_mode": "*",
                 },
                 self.db,

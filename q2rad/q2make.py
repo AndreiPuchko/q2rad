@@ -25,7 +25,7 @@ from q2rad.q2appmanager import AppManager
 
 
 def create_q2apps_sqlite(dist_folder):
-    database_folder_name = "database"
+    database_folder_name = "databases"
     database_name_prefix = "app1"
     appsel = Q2AppSelect(f"{dist_folder}/q2apps.sqlite")
     appsel.db.insert(

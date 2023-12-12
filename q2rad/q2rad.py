@@ -613,18 +613,17 @@ class Q2RadApp(Q2App):
 
         if not self.frozen:
             # create update_q2rad.sh
-            self.write_restore_file(
-                "update_q2rad",
-                ("" if "win32" in sys.platform else "#!/bin/bash\n")
-                + ("q2rad\\scripts\\activate " if "win32" in sys.platform else "source q2rad/bin/activate")
-                + "&& pip install --upgrade --force-reinstall q2gui"
-                + "&& pip install --upgrade --force-reinstall q2db"
-                + "&& pip install --upgrade --force-reinstall q2report"
-                + "&& pip install --upgrade --force-reinstall q2terminal"
-                + "&& pip install --upgrade --force-reinstall q2rad",
-            )
+            self.write_reinstall_files()
 
             # create run_q2rad
+            self.write_run_files()
+            if sys.platform != "darwin":
+                if q2AskYN("Should I make a desktop shortcut?") == 2:
+                    self.make_desktop_shortcut()
+        self.process_events()
+
+    def write_run_files(self):
+        if sys.prefix != sys.base_prefix:  # in virtualenv
             self.write_restore_file(
                 "run_q2rad",
                 ("" if "win32" in sys.platform else "#!/bin/bash\n")
@@ -634,27 +633,56 @@ class Q2RadApp(Q2App):
                     else "q2rad/bin/q2rad\n"
                 ),
             )
-            if "win32" in sys.platform:
-                open("run_q2rad.vbs", "w").write(
-                    'WScript.CreateObject("WScript.Shell").Run '
-                    '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
-                )
+        elif os.path.isdir("python.loc"):
+            self.write_restore_file(
+                "run_q2rad",
+                ("" if "win32" in sys.platform else "#!/bin/bash\n")
+                + ("python.loc\\scripts\\q2rad" if "win32" in sys.platform else "python.loc/bin/q2rad\n"),
+            )
+        else:
+            self.write_restore_file(
+                "run_q2rad",
+                ("" if "win32" in sys.platform else "#!/bin/bash\n")
+                + ("pythonw.exe -m q2rad" if "win32" in sys.platform else "python -m q2rad\n"),
+            )
 
-                open("make_shortcut.vbs", "w").write(
-                    'Set oWS = WScript.CreateObject("WScript.Shell")\n'
-                    'Set oLink = oWS.CreateShortcut(oWS.SpecialFolders("Desktop") & "\\q2RAD.lnk")\n'
-                    'cu = WScript.CreateObject("Scripting.FileSystemObject").'
-                    "GetParentFolderName(WScript.ScriptFullName)\n"
-                    'oLink.TargetPath = cu & "\\run_q2rad.vbs"\n'
-                    'oLink.WorkingDirectory = cu & ""\n'
-                    'oLink.Description = "q2RAD"\n'
-                    'oLink.IconLocation = cu & "\\assets\\q2rad.ico"\n'
-                    "oLink.Save\n"
-                )
-            if sys.platform != "darwin":
-                if q2AskYN("Should I make a desktop shortcut?") == 2:
-                    self.make_desktop_shortcut()
-        self.process_events()
+        if "win32" in sys.platform:
+            open("run_q2rad.vbs", "w").write(
+                'WScript.CreateObject("WScript.Shell").Run '
+                '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
+            )
+
+            open("make_shortcut.vbs", "w").write(
+                'Set oWS = WScript.CreateObject("WScript.Shell")\n'
+                'Set oLink = oWS.CreateShortcut(oWS.SpecialFolders("Desktop") & "\\q2RAD.lnk")\n'
+                'cu = WScript.CreateObject("Scripting.FileSystemObject").'
+                "GetParentFolderName(WScript.ScriptFullName)\n"
+                'oLink.TargetPath = cu & "\\run_q2rad.vbs"\n'
+                'oLink.WorkingDirectory = cu & ""\n'
+                'oLink.Description = "q2RAD"\n'
+                'oLink.IconLocation = cu & "\\assets\\q2rad.ico"\n'
+                "oLink.Save\n"
+            )
+
+    def write_reinstall_files(self):
+        if sys.prefix != sys.base_prefix:  # in virtualenv
+            pip_command = (
+                "q2rad\\scripts\\python -m " if "win32" in sys.platform else "q2rad/script/python -m "
+            )
+        elif os.path.isdir("python.loc"):
+            pip_command = "python.loc\\python  -m " if "win32" in sys.platform else "python.loc/python -m "
+        else:
+            pip_command = "python  -m " if "win32" in sys.platform else "python  -m "
+
+        self.write_restore_file(
+            "update_q2rad",
+            ("" if "win32" in sys.platform else "#!/bin/bash\n")
+            + f"{pip_command} pip install --upgrade --force-reinstall q2gui"
+            + f"&&{pip_command} pip install --upgrade --force-reinstall q2db"
+            + f"&&{pip_command} pip install --upgrade --force-reinstall q2report"
+            + f"&&{pip_command} pip install --upgrade --force-reinstall q2terminal"
+            + f"&&{pip_command} pip install --upgrade --force-reinstall q2rad",
+        )
 
     def get_package_versions(self, package):
         response = open_url(f"https://pypi.python.org/pypi/{package}/json")  # noqa F405
