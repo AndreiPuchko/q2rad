@@ -45,7 +45,20 @@ SQL_DATATYPES = (
 )
 HAS_DATADEC = ("dec", "numeric", "num")
 HAS_DATALEN = ("char", "varchar") + HAS_DATADEC
-WIDGETS = ("line", "text", "code", "button", "check", "radio", "combo", "list", "spin", "image", "widget")
+WIDGETS = (
+    "line",
+    "text",
+    "code",
+    "button",
+    "check",
+    "radio",
+    "combo",
+    "list",
+    "spin",
+    "image",
+    "widget",
+    "label",
+)
 # "date;"
 # "frame;"
 # "grid;"
@@ -78,6 +91,8 @@ class Q2Lines(Q2Form, Q2_save_and_run):
 
         self.add_action("Run", self.form_runner, hotkey="F4")
         self.add_action("Fill", self.filler)
+        self.add_action("-")
+        self.add_action("Select panel", icon="⭥", worker=self.select_panel, hotkey="Ctrl+F3")
 
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
@@ -89,7 +104,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             to_column="name",
             related="name",
             datatype="char",
-            datalen=100
+            datalen=100,
         )
         self.add_control("column", _("Column name"), datalen=50)
         self.add_control("/")
@@ -124,7 +139,6 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 self.add_control("/")
 
             if self.add_control("/h", _("Data type")):
-
                 self.add_control(
                     "datatype",
                     gridlabel=_("Data type"),
@@ -140,7 +154,6 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 self.add_control("/")
 
             if self.add_control("/h"):  # Db
-
                 self.add_control(
                     "migrate",
                     _("Migrate"),
@@ -255,6 +268,45 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             self._save_and_run_control = self.controls.get("save_and_run_actions_visible")
             self.controls.delete("save_and_run_actions_visible")
         self.system_controls.insert(2, self._save_and_run_control)
+
+    def select_panel(self):
+        first_row = last_row = self.current_row
+
+        def is_panel_start():
+            return self.r.column in ("/f", "/h", "/v")
+
+        def is_panel_end():
+            return self.r.column == "/"
+
+        def seek_end():
+            nonlocal last_row
+            while last_row < self.model.row_count():
+                self.set_grid_index(last_row)
+                # if is_panel_start():
+                #     break
+                if is_panel_end():
+                    break
+                last_row += 1
+
+        def seek_start():
+            in_panel = -1 if is_panel_end() else 0
+            nonlocal first_row
+            while first_row > 0:
+                self.set_grid_index(first_row)
+                if is_panel_start():
+                    if in_panel == 0:
+                        break
+                    else:
+                        in_panel -= 1
+                elif is_panel_end():
+                    in_panel += 1
+                first_row -= 1
+
+        if not is_panel_start():
+            seek_start()
+        if not is_panel_end():
+            seek_end()
+        self.set_grid_selected_rows([x for x in range(first_row, last_row + 1)])
 
     def filler(self):
         if self.model.row_count() > 0:
