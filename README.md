@@ -17,13 +17,18 @@ sudo apt install python3-pip python3-virtualenv
 ```
 
 ## Install & run - Launcher (https://github.com/AndreiPuchko/q2radlauncher)
-**Windows**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/windows/q2radlauncher.exe
 
-**Linux**: https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/linux/q2radlauncher
+Go to the download page https://github.com/AndreiPuchko/q2radlauncher/releases/latest
 
-**macOS**: run from terminal or ```git clone https://github.com/AndreiPuchko/q2radlauncher``` and build executable with ```build_executable.zsh```
+and download file for your OS:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://github.com/AndreiPuchko/q2radlauncher/blob/main/bin/macos/q2radlauncher
+**Windows**: q2radlauncher.exe
+
+**Linux**: q2radlauncher-linux.zip 
+
+**macOS**: q2radlauncher-macos.zip 
+
+
 ## Install & run - Python script
 **Windows**
 ```bash
