@@ -288,8 +288,8 @@ class Q2AppSelect(Q2Form):
             "dev_mode": "",
         }
         self._select_application(row)
-        self.q2_app.migrate_db_logic()
-        self.q2_app.migrate_db_logic()
+        self.q2_app.migrate_db_logic(self.q2_app.db_logic)
+        self.q2_app.migrate_db_logic(self.q2_app.db_logic)
 
         demo_app_url = f"{self.q2_app.q2market_url}/demo_app.json"
         demo_data_url = f"{self.q2_app.q2market_url}/demo_data.json"
