@@ -916,6 +916,9 @@ class Q2RadApp(Q2App):
             self.db_logic,
         )
         for x in cu.records():
+            if x["menu_separator"]:
+                self.add_menu(x["menu_path"] + "|-")
+
             menu_path = x["menu_path"] + "|" + (x["menu_text"] if x["menu_text"] else x["title"])
 
             def menu_worker(name):

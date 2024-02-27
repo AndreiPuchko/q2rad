@@ -61,7 +61,7 @@ def make_binary(self):
     if not form.ok_pressed:
         return
 
-    if q2ask("Are you about to start buiding binary executable file of Q2RAD!<br>Are You Sure?") != 2:
+    if q2ask("Уou are about to start buiding binary executable file of Q2RAD!<br>Are You Sure?") != 2:
         return
 
     make_folder = os.path.abspath(form.s.make_folder)
@@ -114,6 +114,6 @@ def make_binary(self):
     if terminal.exit_code != 0:
         q2mess("Error occured while making binary! See output for details.")
     else:
-        if q2ask(f"Success! You binary is located in <b>{dist_folder}</b> <br>Are You Sure?") == 2:
+        if q2ask(f"Success! You binary is located in <b>{dist_folder}</b> <br>Do you want to open the folder?") == 2:
             open_folder(dist_folder)
     terminal.close()
