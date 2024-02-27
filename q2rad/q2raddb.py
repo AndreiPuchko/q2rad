@@ -134,6 +134,10 @@ def update(table, row, q2_db=None):
     return q2_db.update(table, row)
 
 
+def last_error(q2_db=None):
+    return get_default_db(q2_db).last_sql_error
+
+
 def get(table="", where="", column="", q2_db=None):
     q2_db = get_default_db(q2_db)
     return q2_db.get(table, where, column)
