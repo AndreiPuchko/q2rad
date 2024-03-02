@@ -494,8 +494,9 @@ class Q2RadApp(Q2App):
         self.add_menu("File|Manage", self.run_app_manager, icon="tools.png")
         self.add_menu("File|Settings", self.run_stylesettings)
         self.add_menu("File|Constants", self.run_constants)
-        self.add_menu("File|-")
-        self.add_menu("File|Open", self.open_application, icon="open.png")
+        if not self.frozen:
+            self.add_menu("File|-")
+            self.add_menu("File|Open", self.open_application, icon="open.png")
         self.add_menu("File|-")
         self.add_menu("File|Close", self.close, toolbar=1, icon="exit.png")
 
