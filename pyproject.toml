@@ -1,17 +1,19 @@
 [tool.poetry]
 name = "q2rad"
-version = "0.1.171"
+version = "0.1.172"
 description = "RAD - database, GUI, reports"
 authors = ["Andrei Puchko <andrei.puchko@gmx.de>"]
 readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = ">=3.8.1"
+python = ">=3.8.1, <4.0"
 q2gui = "^0.1.36"
 q2db = "^0.1.9"
 q2report = "^0.1.16"
 q2terminal = "^0.1.10"
+q2data2docx = "^0.1.4"
+q2googledrive = "^0.1.3"
 
 [tool.poetry.scripts]
 q2rad = "q2rad.q2rad:main"
@@ -24,6 +26,8 @@ q2gui = { path = "../q2gui/", develop = true }
 q2db = { path = "../q2db/", develop = true }
 q2report = { path = "../q2report/", develop = true }
 q2terminal = { path = "../q2terminal/", develop = true }
+q2data2docx = { path = "../q2data2docx/", develop = true }
+q2googledrive = { path = "../q2googledrive/", develop = true }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

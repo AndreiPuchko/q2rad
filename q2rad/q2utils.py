@@ -190,10 +190,15 @@ class Q2Form(_Q2Form):
         report.run()
 
 
-def q2choice(records=[], title="Make your choice", column_title="Column"):
+def q2choice(records=[], title="Make your choice", column_title=["Column"]):
+    if len(records) == 0:
+        return None
     setta = Q2Form(title)
     column = list(records[0].keys())[0]
-    setta.add_control(column, column_title, datalen=300)
+    if isinstance(column_title, str):
+        column_title = [column_title]
+    for index, column in enumerate(records[0]):
+        setta.add_control(column, column_title[index], datalen=300)
     setta.no_view_action = 1
     model = Q2Model()
     # model.set_records(
@@ -203,9 +208,11 @@ def q2choice(records=[], title="Make your choice", column_title="Column"):
 
     setta.set_model(model)
     setta.heap.selected = None
+    setta.heap.selected_row = None
 
     def make_choice():
         setta.heap.selected = setta.r.__getattr__(column)
+        setta.heap.selected_row = setta.current_row
         setta.close()
 
     setta.add_action(
@@ -216,7 +223,10 @@ def q2choice(records=[], title="Make your choice", column_title="Column"):
         eof_disabled=1,
     )
     setta.run()
-    return setta.heap.selected
+    if setta.heap.selected is not None:
+        return setta.model.get_record(setta.heap.selected_row)
+    else:
+        return None
 
 
 def choice_table():
@@ -271,6 +281,9 @@ def open_folder(folder):
         subprocess.Popen(["open", folder])
     else:
         subprocess.Popen(["xdg-open", folder])
+
+
+open_document = open_folder
 
 
 class Q2Tasker:

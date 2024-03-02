@@ -17,9 +17,9 @@ from q2gui.q2model import Q2CursorModel
 from q2rad.q2raddb import Q2Cursor, insert
 from q2gui.q2dialogs import q2AskYN
 from q2rad.q2utils import choice_table, choice_column, choice_form, Q2_save_and_run
+from q2rad.q2raddb import q2cursor, last_error
 
-
-from q2rad.q2utils import Q2Form
+from q2rad.q2utils import Q2Form, int_
 
 from q2gui import q2app
 
@@ -92,7 +92,8 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         self.add_action("Run", self.form_runner, hotkey="F4")
         self.add_action("Fill", self.filler)
         self.add_action("-")
-        self.add_action("Select panel", icon="⭥", worker=self.select_panel, hotkey="Ctrl+F3")
+        self.add_action("Select panel", icon="⭥", worker=self.select_panel, hotkey="F3")
+        self.add_action("Copy to", icon="🧩", worker=self.copy_to)
 
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
@@ -269,6 +270,28 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             self.controls.delete("save_and_run_actions_visible")
         self.system_controls.insert(2, self._save_and_run_control)
 
+    def copy_to(self):
+        rows = self.get_grid_selected_rows()
+        choice = choice_form()
+        seq = (
+            int_(
+                q2cursor(
+                    f"select max(seq) as maxseq from lines where name='{choice['name']}'", q2app.q2_app.db_logic
+                ).r.maxseq
+            )
+            + 1
+        )
+        print(seq)
+        if choice:
+            for x in rows:
+                rec = self.model.get_record(x)
+                rec["seq"] = seq
+                rec["name"] = choice['name']
+                seq += 1
+                if not insert("lines", rec, q2app.q2_app.db_logic):
+                    print(last_error(q2app.q2_app.db_logic))
+            self.refresh()
+
     def select_panel(self):
         first_row = last_row = self.current_row
 
@@ -368,22 +391,22 @@ class Q2Lines(Q2Form, Q2_save_and_run):
     def select_linked_table(self):
         choice = choice_table()
         if choice:
-            self.s.to_table = choice
+            self.s.to_table = choice['table']
 
     def select_linked_table_pk(self):
         if self.s.to_table:
             choice = choice_column(self.s.to_table)
             if choice:
-                self.s.to_column = choice
+                self.s.to_column = choice['col']
 
     def select_linked_table_column(self):
         if self.s.to_table:
             choice = choice_column(self.s.to_table)
             if choice:
                 self.s.related += ", " if self.s.related else ""
-                self.s.related += choice
+                self.s.related += choice['col']
 
     def select_linked_form(self):
         choice = choice_form()
         if choice:
-            self.s.to_form = choice
+            self.s.to_form = choice['name']

@@ -62,6 +62,9 @@ from q2rad.q2reports import Q2Reports, Q2RadReport
 from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder  # noqa F401
 from q2rad.q2make import make_binary
 
+from q2data2docx.q2data2docx import q2data2docx # noqa F401
+from q2googledrive.q2googledrive import q2googledrive # noqa F401
+
 import gettext
 
 import json
@@ -75,7 +78,7 @@ import traceback
 # TODO: excel custom format 2 report
 
 
-q2_modules = ["q2rad", "q2gui", "q2db", "q2report", "q2terminal"]
+q2_modules = ["q2rad", "q2gui", "q2db", "q2report", "q2terminal", "q2data2docx", "q2googledrive"]
 const = q2const()
 _ = gettext.gettext
 

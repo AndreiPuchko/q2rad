@@ -262,7 +262,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
     def select_data_storage_table(self):
         choice = choice_table()
         if choice:
-            self.s.form_table = choice
+            self.s.form_table = choice['table']
             if self.s.name == "":
                 self.s.name = self.s.form_table
             if self.s.title == "":
@@ -272,7 +272,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         choice = choice_column(self.s.form_table)
         if choice:
             self.s.form_table_sort += ", " if self.s.form_table_sort else ""
-            self.s.form_table_sort += choice
+            self.s.form_table_sort += choice['col']
 
     def form_runner(self):
         name = self.r.name
