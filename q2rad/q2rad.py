@@ -60,6 +60,7 @@ from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
 from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder  # noqa F401
+from q2rad.q2utils import q2choice
 from q2rad.q2make import make_binary
 
 from q2data2docx.q2data2docx import q2data2docx # noqa F401

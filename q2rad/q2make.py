@@ -77,12 +77,14 @@ def make_binary(self):
     dist_folder = os.path.abspath(f"{make_folder}\\dist\\{binary_name}")
 
     terminal = Q2Terminal(callback=print)
-    pynstaller_executable = os.path.dirname(sys.executable) + "/pyinstaller"
+    # pynstaller_executable = os.path.dirname(sys.executable) + "/pyinstaller"
+    pynstaller_executable = sys.executable + " -m PyInstaller"
 
     if not os.path.isfile("poetry.lock"):
         terminal.run(f"{pynstaller_executable} -v")
         if terminal.exit_code != 0:
-            pip_executable = os.path.dirname(sys.executable) + "/pip"
+            # pip_executable = os.path.dirname(sys.executable) + "/pip"
+            pip_executable = sys.executable + " -m pip"
             terminal.run(f"{pip_executable} install pyinstaller")
             if terminal.exit_code != 0:
                 q2mess("Pyinstaller not installed!")
