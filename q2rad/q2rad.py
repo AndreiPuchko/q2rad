@@ -64,7 +64,7 @@ from q2rad.q2utils import q2choice
 from q2rad.q2make import make_binary
 
 from q2data2docx.q2data2docx import q2data2docx # noqa F401
-from q2googledrive.q2googledrive import q2googledrive # noqa F401
+# from q2googledrive.q2googledrive import q2googledrive # noqa F401
 
 import gettext
 
