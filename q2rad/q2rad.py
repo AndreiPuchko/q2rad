@@ -79,7 +79,7 @@ import traceback
 # TODO: excel custom format 2 report
 
 
-q2_modules = ["q2rad", "q2gui", "q2db", "q2report", "q2terminal", "q2data2docx", "q2googledrive"]
+q2_modules = ["q2rad", "q2gui", "q2db", "q2report", "q2terminal", "q2data2docx"]
 const = q2const()
 _ = gettext.gettext
 

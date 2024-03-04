@@ -22,12 +22,13 @@ from q2gui.q2dialogs import q2mess, q2wait, q2ask
 from q2rad.q2appselector import Q2AppSelect
 from q2db.db import Q2Db
 from q2rad.q2appmanager import AppManager
+from q2gui import q2app
 
 
 def create_q2apps_sqlite(dist_folder):
     database_folder_name = "databases"
-    database_name_prefix = "app1"
     appsel = Q2AppSelect(f"{dist_folder}/q2apps.sqlite")
+    database_name_prefix = os.path.basename(appsel.q2_app.app_url) if appsel.q2_app.app_url else "app1"
     appsel.db.insert(
         "applications",
         {
@@ -49,12 +50,20 @@ def create_q2apps_sqlite(dist_folder):
     )
     appsel.q2_app.migrate_db_logic(db_logic)
     AppManager().import_json_app(AppManager().get_app_json(), db_logic)
+    db_logic.close()
+    db_logic = None
 
 
 def make_binary(self):
     form = Q2Form()
     form.add_control("make_folder", "Working folder", datatype="char", data="make")
-    form.add_control("binary_name", "Application name", datatype="char", data="q2-app")
+    form.add_control(
+        "binary_name",
+        "Application name",
+        datatype="char",
+        data=os.path.basename(q2app.q2_app.app_url) if q2app.q2_app.app_url else "q2-app",
+    )
+    form.add_control("onefile", "One file", datatype="char", control="check")
     form.ok_button = 1
     form.cancel_button = 1
     form.show_form("Build binary")
@@ -66,6 +75,7 @@ def make_binary(self):
 
     make_folder = os.path.abspath(form.s.make_folder)
     binary_name = form.s.binary_name
+    onefile = "--onefile" if form.s.onefile else ""
     if not os.path.isdir(make_folder):
         os.mkdir(make_folder)
     if not os.path.isdir(make_folder):
@@ -74,7 +84,7 @@ def make_binary(self):
     main = "from q2rad.q2rad import Q2RadApp;app = Q2RadApp();app.run()"
     open(f"{make_folder}/{binary_name}.py", "w").write(main)
 
-    dist_folder = os.path.abspath(f"{make_folder}\\dist\\{binary_name}")
+    dist_folder = os.path.abspath(f"{make_folder}/dist/{binary_name}")
 
     terminal = Q2Terminal(callback=print)
     # pynstaller_executable = os.path.dirname(sys.executable) + "/pyinstaller"
@@ -105,17 +115,30 @@ def make_binary(self):
     if not os.path.isfile(os.path.abspath(f"{make_folder}/q2rad.ico")):
         shutil.copy("assets/q2rad.ico", os.path.abspath(f"{make_folder}/q2rad.ico"))
     # run pyinstaller
-    terminal.run(f"{pynstaller_executable} -y --noconsole {packages} -i q2rad.ico {binary_name}.py")
-
+    terminal.run(
+        f"{pynstaller_executable} -y --noconsole --clean {onefile} "
+        f" {packages} -i q2rad.ico '{binary_name}.py'"
+    )
     if not os.path.isdir(os.path.abspath(f"{dist_folder}/assets")):
         shutil.copytree("assets", os.path.abspath(f"{dist_folder}/assets"))
     create_q2apps_sqlite(f"{dist_folder}")
+
+    if onefile:
+        dist_folder = os.path.abspath(f"{make_folder}/dist")
+        for x in os.listdir(dist_folder):
+            if os.path.isfile(os.path.join(dist_folder, x)):
+                shutil.move(os.path.join(dist_folder, x), os.path.join(dist_folder, binary_name, x))
 
     w.close()
 
     if terminal.exit_code != 0:
         q2mess("Error occured while making binary! See output for details.")
     else:
-        if q2ask(f"Success! You binary is located in <b>{dist_folder}</b> <br>Do you want to open the folder?") == 2:
+        if (
+            q2ask(
+                f"Success! You binary is located in <b>{dist_folder}</b> <br>Do you want to open the folder?"
+            )
+            == 2
+        ):
             open_folder(dist_folder)
     terminal.close()
