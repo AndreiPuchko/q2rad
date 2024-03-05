@@ -63,7 +63,7 @@ def make_binary(self):
         datatype="char",
         data=os.path.basename(q2app.q2_app.app_url) if q2app.q2_app.app_url else "q2-app",
     )
-    form.add_control("onefile", "One file", datatype="char", control="check")
+    # form.add_control("onefile", "One file", datatype="char", control="check")
     form.ok_button = 1
     form.cancel_button = 1
     form.show_form("Build binary")
@@ -75,7 +75,8 @@ def make_binary(self):
 
     make_folder = os.path.abspath(form.s.make_folder)
     binary_name = form.s.binary_name
-    onefile = "--onefile" if form.s.onefile else ""
+    # onefile = "--onefile" if form.s.onefile else ""
+    onefile = ""
     if not os.path.isdir(make_folder):
         os.mkdir(make_folder)
     if not os.path.isdir(make_folder):
@@ -123,11 +124,11 @@ def make_binary(self):
         shutil.copytree("assets", os.path.abspath(f"{dist_folder}/assets"))
     create_q2apps_sqlite(f"{dist_folder}")
 
-    if onefile:
-        dist_folder = os.path.abspath(f"{make_folder}/dist")
-        for x in os.listdir(dist_folder):
-            if os.path.isfile(os.path.join(dist_folder, x)):
-                shutil.move(os.path.join(dist_folder, x), os.path.join(dist_folder, binary_name, x))
+    # if onefile:
+    #     dist_folder = os.path.abspath(f"{make_folder}/dist")
+    #     for x in os.listdir(dist_folder):
+    #         if os.path.isfile(os.path.join(dist_folder, x)):
+    #             shutil.move(os.path.join(dist_folder, x), os.path.join(dist_folder, binary_name, x))
 
     w.close()
 
