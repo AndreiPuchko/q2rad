@@ -27,8 +27,8 @@ import json
 import os
 
 from q2rad import Q2App
-from q2rad.q2utils import Q2Form
-from q2rad.q2raddb import q2cursor, insert
+from q2rad.q2utils import q2cursor, Q2Form
+from q2rad.q2raddb import insert
 from q2rad.q2appmanager import AppManager
 from q2rad.q2raddb import open_url
 

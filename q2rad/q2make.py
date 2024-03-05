@@ -16,8 +16,7 @@ import os
 import sys
 import shutil
 from q2terminal.q2terminal import Q2Terminal
-from q2rad.q2utils import Q2Form, open_folder  # noqa F401
-from q2rad.q2raddb import q2cursor
+from q2rad.q2utils import q2cursor, Q2Form, open_folder  # noqa F401
 from q2gui.q2dialogs import q2mess, q2wait, q2ask
 from q2rad.q2appselector import Q2AppSelect
 from q2db.db import Q2Db

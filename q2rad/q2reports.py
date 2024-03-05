@@ -23,8 +23,7 @@ from q2gui.q2utils import dotdict, set_dict_default, num, int_
 from q2report.q2report import Q2Report, Q2Report_rows
 from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
-from q2rad.q2raddb import q2cursor
-from q2rad.q2utils import Q2_save_and_run
+from q2rad.q2utils import q2cursor, Q2_save_and_run
 from q2gui import q2app
 from q2gui.q2dialogs import Q2WaitShow, q2WaitMax, q2WaitStep, q2working
 import json

@@ -18,8 +18,7 @@ from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel, Q2Model
 from q2gui.q2widget import Q2Widget
 from q2gui.q2app import Q2Actions
-from q2rad.q2raddb import q2cursor
-from q2rad.q2utils import Q2_save_and_run
+from q2rad.q2utils import q2cursor, Q2_save_and_run
 from q2gui.q2utils import set_dict_default
 import json
 import gettext

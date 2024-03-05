@@ -15,8 +15,8 @@
 
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
-from q2rad.q2raddb import q2cursor, last_error, insert
-from q2rad.q2utils import choice_form, choice_column, Q2_save_and_run, Q2Form, int_
+from q2rad.q2raddb import last_error, insert
+from q2rad.q2utils import q2cursor, choice_form, choice_column, Q2_save_and_run, Q2Form, int_
 from q2gui import q2app
 # from q2rad import Q2Form
 

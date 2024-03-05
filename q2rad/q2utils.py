@@ -18,12 +18,15 @@ import random
 import string
 import threading
 import subprocess
+import html
 
 from q2rad import Q2Form as _Q2Form
-from q2rad.q2raddb import q2cursor, num
+from q2db.cursor import Q2Cursor
+from q2rad.q2raddb import num
 from q2gui.q2model import Q2Model
+from q2gui.q2model import Q2CursorModel
 from q2gui import q2app
-from q2gui.q2dialogs import q2working
+from q2gui.q2dialogs import q2working, q2Mess
 from q2gui.q2app import Q2Actions
 from q2gui.q2app import Q2Controls
 from q2gui.q2utils import int_
@@ -188,6 +191,36 @@ class Q2Form(_Q2Form):
         report.add_rows(rows=detail_rows)
 
         report.run()
+
+
+class q2cursor(Q2Cursor):
+    def __init__(self, sql="", q2_db=None):
+        if q2_db is None:
+            q2_db = q2app.q2_app.db_data
+        super().__init__(q2_db, sql)
+        if q2_db.last_sql_error:
+            print(q2_db.last_sql_error)
+
+    def q2form(self):
+        form = Q2Form(self.sql)
+        for x in self.record(0):
+            form.add_control(x, x, datalen=250)
+        form.set_model(Q2CursorModel(self))
+        return form
+
+    def browse(self):
+        if self.row_count() <= 0:
+            q2Mess(
+                f"""Query<br>
+                        <b>{html.escape(self.sql)}</b><br>
+                        returned no records,<br>
+                        <font color=red>
+                        {self.last_sql_error()}
+                    """
+            )
+        else:
+            self.q2form().run()
+        return self
 
 
 def q2choice(records=[], title="Make your choice", column_title=["Column"]):

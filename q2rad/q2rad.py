@@ -46,7 +46,7 @@ from q2rad.q2actions import Q2Actions
 from q2rad.q2raddb import *  # noqa:F403
 
 from q2gui import q2app
-from q2rad.q2raddb import q2cursor
+from q2rad.q2utils import q2cursor
 from q2rad.q2appmanager import AppManager
 from q2rad.q2stylesettings import AppStyleSettings
 from q2terminal.q2terminal import Q2Terminal

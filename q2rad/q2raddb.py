@@ -70,34 +70,34 @@ def read_url(url, waitbar=False, chunk_size=10000000):
         return b""
 
 
-class q2cursor(Q2Cursor):
-    def __init__(self, sql="", q2_db=None):
-        if q2_db is None:
-            q2_db = q2app.q2_app.db_data
-        super().__init__(q2_db, sql)
-        if q2_db.last_sql_error:
-            print(q2_db.last_sql_error)
+# class q2cursor(Q2Cursor):
+#     def __init__(self, sql="", q2_db=None):
+#         if q2_db is None:
+#             q2_db = q2app.q2_app.db_data
+#         super().__init__(q2_db, sql)
+#         if q2_db.last_sql_error:
+#             print(q2_db.last_sql_error)
 
-    def q2form(self):
-        form = Q2Form(self.sql)
-        for x in self.record(0):
-            form.add_control(x, x, datalen=250)
-        form.set_model(Q2CursorModel(self))
-        return form
+#     def q2form(self):
+#         form = Q2Form(self.sql)
+#         for x in self.record(0):
+#             form.add_control(x, x, datalen=250)
+#         form.set_model(Q2CursorModel(self))
+#         return form
 
-    def browse(self):
-        if self.row_count() <= 0:
-            q2Mess(
-                f"""Query<br>
-                        <b>{html.escape(self.sql)}</b><br>
-                        returned no records,<br>
-                        <font color=red>
-                        {self.last_sql_error()}
-                    """
-            )
-        else:
-            self.q2form().run()
-        return self
+#     def browse(self):
+#         if self.row_count() <= 0:
+#             q2Mess(
+#                 f"""Query<br>
+#                         <b>{html.escape(self.sql)}</b><br>
+#                         returned no records,<br>
+#                         <font color=red>
+#                         {self.last_sql_error()}
+#                     """
+#             )
+#         else:
+#             self.q2form().run()
+#         return self
 
 
 def get_default_db(q2_db):
