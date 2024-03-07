@@ -13,7 +13,6 @@
 #    limitations under the License.
 
 
-
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel, Q2Model
 from q2gui.q2widget import Q2Widget
@@ -26,7 +25,7 @@ import re
 from q2rad.q2utils import Q2Form
 
 _ = gettext.gettext
-re_find_param = re.compile(r":\b\w+\b")
+re_find_param = re.compile(r"(?::\b\w+\b|\{.+\})")
 
 
 class Q2Queries(Q2Form, Q2_save_and_run):
@@ -254,7 +253,10 @@ class Q2QueryList(Q2Form):
         params = re_find_param.findall(sql)
         for x in params:
             value = self.query_editor_form.param_list.get_param(x)
-            sql = sql.replace(x, f"'{value}'")
+            if x[1] == "_":
+                sql = sql.replace(x, f"{value}")
+            else:
+                sql = sql.replace(x, f"'{value}'")
         q2cursor(sql).browse()
 
     def sql_to_model(self, sql):
@@ -315,14 +317,15 @@ class Q2ParamList(Q2Form):
         return params
 
     def get_param(self, param):
+        print(self.model.records)
         for x in self.model.records:
-            if x["name"] == param[1:]:
+            if x["name"] == (param[1:] if param.startswith(":") else param[1:-1]):
                 return x["value"]
         return ""
 
     def put_params(self, sql):
         params = set(re_find_param.findall(sql))
-        params = {x[1:] for x in params}
+        params = {x[1:] if x.startswith(":") else x[1:-1] for x in params}
         names = {}
         for x in range(len(self.model.records)):
             names[self.model.records[x]["name"]] = x

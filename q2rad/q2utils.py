@@ -192,6 +192,40 @@ class Q2Form(_Q2Form):
 
         report.run()
 
+    def grid_data_info(self):
+        # super().grid_data_info()
+        form = Q2Form("Info")
+        form.add_control("/")
+        form.add_control("/vs")
+        form.add_control("/h")
+        form.add_control("/f")
+        form.add_control("row_count", q2app.GRID_DATA_INFO_ROWS, data=self.model.row_count(), readonly=True)
+        form.add_control("order", q2app.GRID_DATA_INFO_ORDER, data=self.model.get_order(), readonly=True)
+        form.add_control("where", q2app.GRID_DATA_INFO_FILTER, data=self.model.get_where(), readonly=True)
+        form.add_control("/")
+        form.add_control(
+            "columns",
+            q2app.GRID_DATA_INFO_COLUMNS,
+            control="list",
+            pic=";".join(self.model.columns),
+            readonly=True,
+        )
+        form.add_control("/")
+
+        if q2app.q2_app.dev_mode:
+            from q2rad.q2queries import Q2QueryEdit
+
+            form.query_edit = Q2QueryEdit()
+            form.add_control("ql", "", widget=form.query_edit, nogrid=1, migrate=0)
+
+            def after_form_show():
+                form.query_edit.set_content({"queries": {"query": self.model.get_table_name()}})
+
+            form.after_form_show = after_form_show
+
+        form.add_control("/")
+        form.run()
+
 
 class q2cursor(Q2Cursor):
     def __init__(self, sql="", q2_db=None):
