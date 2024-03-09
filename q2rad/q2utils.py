@@ -24,6 +24,7 @@ from q2rad import Q2Form as _Q2Form
 from q2db.cursor import Q2Cursor
 from q2rad.q2raddb import num
 from q2gui.q2model import Q2Model
+from q2gui.q2dialogs import q2ask
 from q2gui.q2model import Q2CursorModel
 from q2gui import q2app
 from q2gui.q2dialogs import q2working, q2Mess
@@ -192,8 +193,49 @@ class Q2Form(_Q2Form):
 
         report.run()
 
+    def grid_navigation_actions_hook(self, actions):
+        if self.is_grid_updateable():
+            actions.add_action(q2app.q2app.ACTION_TOOLS_TEXT + "|-")
+            actions.add_action(
+                q2app.q2app.ACTION_TOOLS_TEXT + "|" + "Changelog",
+                self.changelog,
+                icon="🕟",
+            )
+
+    def changelog(self):
+        choice = q2ask("Что смотрим?", buttons=["Cancel", "Current row", "All rows"])
+        if choice < 2:  # Cancel
+            return
+        elif choice == 2:  # Row
+            pk = self.model.get_meta_primary_key()
+            cu = q2cursor(
+                f"""select * 
+                        from log_{self.model.get_table_name()}
+                        where {pk} = '{self.r.__getattr__(pk)}'
+                    """
+            )
+        elif choice == 3:
+            where = self.model.get_where()
+            where = f" where {where}" if where != "" else ""
+            cu = q2cursor(
+                f"""select * 
+                        from log_{self.model.get_table_name()}
+                        {where}
+                    """
+            )
+        form = Q2Form(f"Changelog ({self.title})")
+        form.add_control("/")
+        form.add_control("/h", "-")
+        form.add_control("q2_mode", "Mode", datalen=3)
+        form.add_control("q2_time", "Time", datalen=10)
+        form.add_control("/s")
+        form.add_control("/")
+        form.add_control("/f")
+        form.controls.extend(self.controls)
+        form.set_cursor(cu)
+        form.run()
+
     def grid_data_info(self):
-        # super().grid_data_info()
         form = Q2Form("Info")
         form.add_control("/")
         form.add_control("/vs")
