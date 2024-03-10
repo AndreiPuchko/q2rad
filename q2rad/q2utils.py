@@ -203,7 +203,10 @@ class Q2Form(_Q2Form):
             )
 
     def changelog(self):
-        choice = q2ask("Что смотрим?", buttons=["Cancel", "Current row", "All rows"])
+        choice = q2ask(
+            "Select viewing mode for changelog: only current row or all rows?",
+            buttons=["Cancel", "Current row", "All rows"],
+        )
         if choice < 2:  # Cancel
             return
         elif choice == 2:  # Row
@@ -507,10 +510,10 @@ class auto_filter:
                 self.mem.add_control("/h", cu.r.label, check=1)
                 col["label"] = "from"
                 co = col["column"]
-                col["column"] = co + "1"
+                col["column"] = co + "____1"
                 self.mem.add_control(**col)
                 col["label"] = "to"
-                col["column"] = co + "2"
+                col["column"] = co + "____2"
                 self.mem.add_control(**col)
                 self.mem.add_control("/s")
                 self.mem.add_control("/")
@@ -534,8 +537,8 @@ class auto_filter:
         if control1 is None:
             if column in mem_widgets:
                 control1 = column
-            elif column + "1" in mem_widgets:
-                control1 = column + "1"
+            elif column + "____1" in mem_widgets:
+                control1 = column + "____1"
         if control1 not in mem_widgets:
             return ""
 
@@ -546,8 +549,8 @@ class auto_filter:
         num_control = self.mem.controls.c.__getattr__(control1).get("num")
         control1_value = self.mem.s.__getattr__(control1)
         if control2 is None:
-            if control1.endswith("1"):
-                control2 = control1[:-1] + "2"
+            if control1.endswith("____1"):
+                control2 = control1[:-5] + "____2"
                 control2_value = self.mem.s.__getattr__(control2)
             else:
                 control2_value = None
