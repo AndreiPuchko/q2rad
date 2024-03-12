@@ -15,6 +15,7 @@
 import os
 import sys
 import shutil
+import zipfile
 from q2terminal.q2terminal import Q2Terminal
 from q2rad.q2utils import q2cursor, Q2Form, open_folder  # noqa F401
 from q2gui.q2dialogs import q2mess, q2wait, q2ask
@@ -69,7 +70,7 @@ def make_binary(self):
     if not form.ok_pressed:
         return
 
-    if q2ask("Уou are about to start buiding binary executable file of Q2RAD!<br>Are You Sure?") != 2:
+    if q2ask("Уou are about to start building binary executable file of Q2RAD!<br>Are You Sure?") != 2:
         return
 
     make_folder = os.path.abspath(form.s.make_folder)
@@ -81,7 +82,16 @@ def make_binary(self):
     if not os.path.isdir(make_folder):
         return
 
-    main = "from q2rad.q2rad import Q2RadApp;app = Q2RadApp();app.run()"
+    main = """
+if "darwin" in sys.platform:
+    path = sys.argv[0].split("/Contents/MacOS")[0]
+    path = os.path.dirname(path)
+    os.chdir(path)
+
+from q2rad.q2rad import Q2RadApp
+app = Q2RadApp()
+app.run()
+    """
     open(f"{make_folder}/{binary_name}.py", "w").write(main)
 
     dist_folder = os.path.abspath(f"{make_folder}/dist/{binary_name}")
@@ -89,6 +99,8 @@ def make_binary(self):
     terminal = Q2Terminal(callback=print)
     # pynstaller_executable = os.path.dirname(sys.executable) + "/pyinstaller"
     pynstaller_executable = f"'{sys.executable}' -m PyInstaller"
+    if "win32" in sys.platform:
+        pynstaller_executable = "&" + pynstaller_executable
 
     if not os.path.isfile("poetry.lock"):
         terminal.run(f"{pynstaller_executable} -v")
@@ -127,6 +139,24 @@ def make_binary(self):
     #     for x in os.listdir(dist_folder):
     #         if os.path.isfile(os.path.join(dist_folder, x)):
     #             shutil.move(os.path.join(dist_folder, x), os.path.join(dist_folder, binary_name, x))
+
+    if "darwin" in sys.platform:
+        shutil.move(
+            f"{make_folder}/dist/{binary_name}.app", f"{make_folder}/dist/{binary_name}/{binary_name}.app"
+        )
+        os.remove(f"{make_folder}/dist/{binary_name}/{binary_name}")
+        shutil.rmtree(f"{make_folder}/dist/{binary_name}/_internal", ignore_errors=True)
+
+    name = f"{make_folder}/dist/{binary_name}"
+    zip_name = name + ".zip"
+
+    with zipfile.ZipFile(zip_name, "w", zipfile.ZIP_DEFLATED) as zip_ref:
+        for folder_name, subfolders, filenames in os.walk(name):
+            for filename in filenames:
+                file_path = os.path.join(folder_name, filename)
+                zip_ref.write(file_path, arcname=f"{binary_name}/{os.path.relpath(file_path, name)}")
+
+    zip_ref.close()
 
     w.close()
 

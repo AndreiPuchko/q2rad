@@ -40,9 +40,9 @@ class Q2Packages(Q2Form):
         self.set_model(model)
         self.add_action("/crud")
         # self.add_action("Imp", self.imp)
-        self.add_action("Install", self.install)
-        self.add_action("Uninstall", self.uninstall)
-        self.add_action("Versions", self.info)
+        self.add_action("Install", self.install, eof_disabled=True)
+        self.add_action("Uninstall", self.uninstall, eof_disabled=True)
+        self.add_action("Versions", self.info, eof_disabled=True)
 
     # def imp(self):
     #     __import__(self.r.package_name)
