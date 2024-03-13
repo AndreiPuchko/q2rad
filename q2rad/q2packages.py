@@ -31,7 +31,8 @@ class Q2Packages(Q2Form):
 
     def on_init(self):
         self.add_control("package_name", _("Name"), datatype="char", datalen=100, pk="*")
-        self.add_control("package_version", _("Version"), datatype="char", datalen=10, disabled="*")
+        self.add_control("package_alias", _("Alias"), datatype="char", datalen=100)
+        self.add_control("package_version", _("Version"), datatype="char", datalen=10)
         self.add_control("comment", _("Comment"), datatype="text")
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="packages")

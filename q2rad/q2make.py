@@ -83,6 +83,7 @@ def make_binary(self):
         return
 
     main = """
+import sys
 if "darwin" in sys.platform:
     path = sys.argv[0].split("/Contents/MacOS")[0]
     path = os.path.dirname(path)
@@ -97,16 +98,14 @@ app.run()
     dist_folder = os.path.abspath(f"{make_folder}/dist/{binary_name}")
 
     terminal = Q2Terminal(callback=print)
-    # pynstaller_executable = os.path.dirname(sys.executable) + "/pyinstaller"
-    pynstaller_executable = f"'{sys.executable}' -m PyInstaller"
+    pynstaller_executable = f"'{sys.executable.replace('w.exe', '.exe')}' -m PyInstaller"
     if "win32" in sys.platform:
-        pynstaller_executable = "&" + pynstaller_executable
-
+        pynstaller_executable = "& " + pynstaller_executable
+    print(pynstaller_executable)
     if not os.path.isfile("poetry.lock"):
         terminal.run(f"{pynstaller_executable} -v")
         if terminal.exit_code != 0:
-            # pip_executable = os.path.dirname(sys.executable) + "/pip"
-            terminal.run(f"'{sys.executable}' -m pip install pyinstaller")
+            terminal.run(f"'{sys.executable.replace('w.exe', '.exe')}' -m pip install pyinstaller")
             if terminal.exit_code != 0:
                 q2mess("Pyinstaller not installed!")
                 return

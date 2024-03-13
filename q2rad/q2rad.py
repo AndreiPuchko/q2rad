@@ -16,6 +16,7 @@ import sys
 import os
 import re
 import threading
+from packaging import version
 
 if __name__ == "__main__":
     sys.path.insert(0, ".")
@@ -63,7 +64,8 @@ from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folde
 from q2rad.q2utils import q2choice
 from q2rad.q2make import make_binary
 
-from q2data2docx.q2data2docx import q2data2docx # noqa F401
+from q2data2docx.q2data2docx import q2data2docx  # noqa F401
+
 # from q2googledrive.q2googledrive import q2googledrive # noqa F401
 
 import gettext
@@ -866,9 +868,19 @@ class Q2RadApp(Q2App):
         list_2_upgrade = []
 
         rez = self.get_packages_version(packages_list)
-
         for package in rez:
             latest_version, current_version = rez[package]
+            if self.db_logic is not None and package not in q2_modules:
+                pkg_ver = get("packages", f"package_name='{package}'", "package_version", q2_db=self.db_logic)
+                pkg_ver = pkg_ver if pkg_ver else "99999"
+                try:
+                    if version.parse(latest_version) > version.parse(pkg_ver):
+                        continue
+                except Exception as error:
+                    q2mess(f"Error occured while checking updates for <b>{package}</b>:"
+                           f"<br> {error}<br>"
+                            f"<b>{package}</b> package update interrupted")
+                    continue
             if latest_version != current_version and latest_version:
                 list_2_upgrade_message.append(f"<b>{package}</b>: {current_version} > {latest_version}")
                 list_2_upgrade.append(package)
@@ -877,7 +889,7 @@ class Q2RadApp(Q2App):
         if can_upgrade:
             if (
                 q2AskYN(
-                    "Updates for packages are avaiable!<p><p>"
+                    "!Updates for packages are avaiable!<p><p>"
                     f"{',<br> '.join(list_2_upgrade_message)}<br><br>"
                     "Do you want to proceed with update?<p><p>"
                     "The program will be restarted after the update!"
