@@ -243,6 +243,7 @@ class Q2RadApp(Q2App):
         sys.excepthook = self.handle_error
 
     def handle_error(self, exc_type, exc_value, exc_traceback):
+        _logger.error(f"{exc_value}")
         explain_error(exc_traceback, exc_value)
 
     def clear_app_info(self):
@@ -714,6 +715,17 @@ class Q2RadApp(Q2App):
             if w.step(package):
                 break
             latest_version, current_version = self.get_package_versions(package)
+            if self.db_logic is not None and package not in q2_modules:
+                pkg_ver = get("packages", f"package_name='{package}'", "package_version", q2_db=self.db_logic)
+                try:
+                    latest_version = version.parse(pkg_ver)
+                except Exception as error:
+                    q2mess(
+                        f"Error parsing version for <b>{package}</b>:"
+                        f"<br> {error}<br>"
+                        f"<b>{package}</b> packages update interrupted"
+                    )
+                    continue
             self.process_events()
             if force or latest_version != current_version and latest_version:
                 try:
@@ -785,39 +797,27 @@ class Q2RadApp(Q2App):
     def pip_install(self, package, latest_version):
         if self.frozen:
             return
-        q2working(
-            lambda: subprocess.check_call(
-                [
-                    sys.executable.replace("w.exe", ".exe"),
-                    "-m",
-                    "pip",
-                    "install",
-                    "--upgrade",
-                    "--no-cache-dir",
-                    f"{package}=={latest_version}",
-                ],
-                shell=True if "win32" in sys.platform else False,
-            ),
-            _("Installing package %s...") % package,
-        )
+
+        def pip_runner():
+            trm = Q2Terminal(callback=print)
+            trm.run(
+                f'&"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
+                f"--upgrade --no-cache-dir {package}=={latest_version}"
+            )
+            trm.close()
+
+        q2working(pip_runner, _("Installing package %s...") % package)
 
     def pip_uninstall(self, package):
         if self.frozen:
             return
-        q2working(
-            lambda: subprocess.check_call(
-                [
-                    sys.executable.replace("w.exe", ".exe"),
-                    "-m",
-                    "pip",
-                    "uninstall",
-                    "-y",
-                    f"{package}",
-                ],
-                shell=True if "win32" in sys.platform else False,
-            ),
-            _("Uninstalling package %s...") % package,
-        )
+
+        def pip_runner():
+            trm = Q2Terminal(callback=print)
+            trm.run(f'&"{sys.executable.replace("w.exe", ".exe")}" -m pip uninstall -y {package}')
+            trm.close()
+
+        q2working(pip_runner, _("Uninstalling package %s...") % package)
 
     def check_app_update(self, force_update=False):
         # self.update_app_packages()
@@ -874,12 +874,18 @@ class Q2RadApp(Q2App):
                 pkg_ver = get("packages", f"package_name='{package}'", "package_version", q2_db=self.db_logic)
                 pkg_ver = pkg_ver if pkg_ver else "99999"
                 try:
-                    if version.parse(latest_version) > version.parse(pkg_ver):
+                    if current_version is None:
+                        pass
+                    elif version.parse(current_version) < version.parse(pkg_ver):
+                        pass
+                    elif version.parse(latest_version) > version.parse(pkg_ver):
                         continue
                 except Exception as error:
-                    q2mess(f"Error occured while checking updates for <b>{package}</b>:"
-                           f"<br> {error}<br>"
-                            f"<b>{package}</b> package update interrupted")
+                    q2mess(
+                        f"Error зparsing version for <b>{package}</b>:"
+                        f"<br> {error}<br>"
+                        f"<b>{package}</b> packages update skipped"
+                    )
                     continue
             if latest_version != current_version and latest_version:
                 list_2_upgrade_message.append(f"<b>{package}</b>: {current_version} > {latest_version}")
@@ -889,7 +895,7 @@ class Q2RadApp(Q2App):
         if can_upgrade:
             if (
                 q2AskYN(
-                    "!Updates for packages are avaiable!<p><p>"
+                    "Updates for packages are avaiable!<p><p>"
                     f"{',<br> '.join(list_2_upgrade_message)}<br><br>"
                     "Do you want to proceed with update?<p><p>"
                     "The program will be restarted after the update!"

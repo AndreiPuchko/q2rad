@@ -101,7 +101,6 @@ app.run()
     pynstaller_executable = f"'{sys.executable.replace('w.exe', '.exe')}' -m PyInstaller"
     if "win32" in sys.platform:
         pynstaller_executable = "& " + pynstaller_executable
-    print(pynstaller_executable)
     if not os.path.isfile("poetry.lock"):
         terminal.run(f"{pynstaller_executable} -v")
         if terminal.exit_code != 0:
