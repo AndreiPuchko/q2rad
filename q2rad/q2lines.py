@@ -273,20 +273,20 @@ class Q2Lines(Q2Form, Q2_save_and_run):
     def copy_to(self):
         rows = self.get_grid_selected_rows()
         choice = choice_form()
-        seq = (
-            int_(
-                q2cursor(
-                    f"select max(seq) as maxseq from lines where name='{choice['name']}'", q2app.q2_app.db_logic
-                ).r.maxseq
-            )
-            + 1
-        )
-        print(seq)
         if choice:
+            seq = (
+                int_(
+                    q2cursor(
+                        f"select max(seq) as maxseq from lines where name='{choice['name']}'",
+                        q2app.q2_app.db_logic,
+                    ).r.maxseq
+                )
+                + 1
+            )
             for x in rows:
                 rec = self.model.get_record(x)
                 rec["seq"] = seq
-                rec["name"] = choice['name']
+                rec["name"] = choice["name"]
                 seq += 1
                 if not insert("lines", rec, q2app.q2_app.db_logic):
                     print(last_error(q2app.q2_app.db_logic))
@@ -391,22 +391,22 @@ class Q2Lines(Q2Form, Q2_save_and_run):
     def select_linked_table(self):
         choice = choice_table()
         if choice:
-            self.s.to_table = choice['table']
+            self.s.to_table = choice["table"]
 
     def select_linked_table_pk(self):
         if self.s.to_table:
             choice = choice_column(self.s.to_table)
             if choice:
-                self.s.to_column = choice['col']
+                self.s.to_column = choice["col"]
 
     def select_linked_table_column(self):
         if self.s.to_table:
             choice = choice_column(self.s.to_table)
             if choice:
                 self.s.related += ", " if self.s.related else ""
-                self.s.related += choice['col']
+                self.s.related += choice["col"]
 
     def select_linked_form(self):
         choice = choice_form()
         if choice:
-            self.s.to_form = choice['name']
+            self.s.to_form = choice["name"]

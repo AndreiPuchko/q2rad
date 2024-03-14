@@ -67,7 +67,7 @@ class Q2AppSelect(Q2Form):
     def define_form(self):
         self.add_control("uid", "", datatype="int", pk="*", noform=1, nogrid=1)
         if self.add_control("/h"):
-            self.add_control("ordnum", _("Order"), datatype="int")
+            self.add_control("seq", _("Order"), datatype="int")
             self.add_control(
                 "autoselect",
                 label=_("Autoload"),
@@ -197,9 +197,8 @@ class Q2AppSelect(Q2Form):
         self.before_form_show = self.before_form_show
         self.before_crud_save = self.before_crud_save
 
-        cursor: Q2Cursor = self.db.table(table_name="applications", order="ordnum")
-        model = Q2CursorModel(cursor)
-        self.set_model(model)
+        cursor: Q2Cursor = self.db.table(table_name="applications", order="seq")
+        self.set_cursor(cursor)
 
         self.actions.add_action("/crud")
 

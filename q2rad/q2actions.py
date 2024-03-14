@@ -147,15 +147,15 @@ class Q2Actions(Q2Form, Q2_save_and_run):
     def copy_to(self):
         rows = self.get_grid_selected_rows()
         choice = choice_form()
-        seq = (
-            int_(
-                q2cursor(
-                    f"select max(seq) as maxseq from actions where name='{choice['name']}'", q2app.q2_app.db_logic
-                ).r.maxseq
-            )
-            + 1
-        )
         if choice:
+            seq = (
+                int_(
+                    q2cursor(
+                        f"select max(seq) as maxseq from actions where name='{choice['name']}'", q2app.q2_app.db_logic
+                    ).r.maxseq
+                )
+                + 1
+            )
             for x in rows:
                 rec = self.model.get_record(x)
                 rec["seq"] = seq
