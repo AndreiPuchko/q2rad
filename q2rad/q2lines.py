@@ -94,6 +94,10 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         self.add_action("-")
         self.add_action("Select panel", icon="⭥", worker=self.select_panel, hotkey="F3")
         self.add_action("Copy to", icon="🧩", worker=self.copy_to)
+        self.add_action("Move rows down", icon="⭸", worker=self.move_rows_down)
+        self.add_action("Layout|Form", icon="☆", worker=lambda: self.add_layout("/f"))
+        self.add_action("Layout|Horizontally", worker=lambda: self.add_layout("/h"))
+        self.add_action("Layout|Vertically", worker=lambda: self.add_layout("/v"))
 
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
@@ -290,6 +294,35 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 seq += 1
                 if not insert("lines", rec, q2app.q2_app.db_logic):
                     print(last_error(q2app.q2_app.db_logic))
+            self.refresh()
+
+    def add_layout(self, layout_type):
+        selected_row = sorted(self.get_grid_selected_rows())
+        if len(selected_row) == 0:
+            return
+        first = min(selected_row)
+        first_seq = self.model.get_record(first)["seq"]
+
+        last = max(selected_row) + 1
+
+        if last < self.model.row_count():
+            last_seq = int_(self.model.get_record(last)["seq"]) + 1
+            self.move_rows_down(last, False)
+        else:
+            last_seq = int_(self.model.get_record(self.model.row_count() - 1)["seq"]) + 2
+
+        self.move_rows_down(first, False)
+        self.model.insert({"column": layout_type, "seq": first_seq})
+        self.model.insert({"column": "/", "seq": last_seq})
+        self.refresh()
+
+    def move_rows_down(self, current_row=None, refresh=True):
+        if current_row in (None, False):
+            current_row = self.current_row
+        for x in range(current_row, self.model.row_count()):
+            rec = self.model.get_record(x)
+            self.model.update({"id": rec["id"], "seq": 1 + int_(rec["seq"])})
+        if refresh:
             self.refresh()
 
     def select_panel(self):

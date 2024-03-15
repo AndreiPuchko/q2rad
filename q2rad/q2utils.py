@@ -264,7 +264,10 @@ class Q2Form(_Q2Form):
             form.add_control("ql", "", widget=form.query_edit, nogrid=1, migrate=0)
 
             def after_form_show():
-                form.query_edit.set_content({"queries": {"query": self.model.get_table_name()}})
+                query = self.model.get_table_name()
+                if not query.strip().lower().startswith("select "):
+                    query = f"select * from {query}"
+                form.query_edit.set_content({"queries": {"query": query}})
 
             form.after_form_show = after_form_show
 

@@ -16,7 +16,7 @@
 from q2db.db import Q2Db
 from q2gui.q2utils import num
 from q2gui import q2app
-from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow, q2ask
+from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow, q2ask, q2working
 
 from q2rad import Q2Form
 from q2terminal.q2terminal import Q2Terminal
@@ -287,10 +287,14 @@ class AppManager(Q2Form):
         if app_name == "demo_app":
             self.export_data(f"{self.q2_app.q2market_path}/demo_data.json")
 
-        trm = Q2Terminal()
-        trm.run(f"cd {self.q2_app.q2market_path}")
-        trm.run("git add -A")
-        trm.run(f"""git commit -a -m"{version}"  """)
+        trm = Q2Terminal(callback=print)
+
+        def worker():
+            trm.run(f"cd {self.q2_app.q2market_path}")
+            trm.run("git add -A")
+            trm.run(f"""git commit -a -m"{version}"  """)
+
+        q2working(worker, "Commiting")
         q2Mess(trm.run("""git push"""))
         trm.close()
 
@@ -357,7 +361,7 @@ class AppManager(Q2Form):
         self.q2_app.open_selected_app()
 
     @staticmethod
-    def import_json_app(data, db = None):
+    def import_json_app(data, db=None):
         if db is None:
             db: Q2Db = q2app.q2_app.db_logic
         db_tables = db.get_tables()

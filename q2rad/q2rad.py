@@ -717,15 +717,16 @@ class Q2RadApp(Q2App):
             latest_version, current_version = self.get_package_versions(package)
             if self.db_logic is not None and package not in q2_modules:
                 pkg_ver = get("packages", f"package_name='{package}'", "package_version", q2_db=self.db_logic)
-                try:
-                    latest_version = version.parse(pkg_ver)
-                except Exception as error:
-                    q2mess(
-                        f"Error parsing version for <b>{package}</b>:"
-                        f"<br> {error}<br>"
-                        f"<b>{package}</b> packages update interrupted"
-                    )
-                    continue
+                if pkg_ver != "":
+                    try:
+                        latest_version = version.parse(pkg_ver)
+                    except Exception as error:
+                        q2mess(
+                            f"Error parsing version for <b>{package}</b>:"
+                            f"<br> {error}<br>"
+                            f"<b>{package}</b> packages update interrupted"
+                        )
+                        continue
             self.process_events()
             if force or latest_version != current_version and latest_version:
                 try:
@@ -801,7 +802,7 @@ class Q2RadApp(Q2App):
         def pip_runner():
             trm = Q2Terminal(callback=print)
             trm.run(
-                f'&"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
+                f'"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
                 f"--upgrade --no-cache-dir {package}=={latest_version}"
             )
             trm.close()
@@ -814,7 +815,7 @@ class Q2RadApp(Q2App):
 
         def pip_runner():
             trm = Q2Terminal(callback=print)
-            trm.run(f'&"{sys.executable.replace("w.exe", ".exe")}" -m pip uninstall -y {package}')
+            trm.run(f'"{sys.executable.replace("w.exe", ".exe")}" -m pip uninstall -y {package}')
             trm.close()
 
         q2working(pip_runner, _("Uninstalling package %s...") % package)
@@ -873,20 +874,21 @@ class Q2RadApp(Q2App):
             if self.db_logic is not None and package not in q2_modules:
                 pkg_ver = get("packages", f"package_name='{package}'", "package_version", q2_db=self.db_logic)
                 pkg_ver = pkg_ver if pkg_ver else "99999"
-                try:
-                    if current_version is None:
-                        pass
-                    elif version.parse(current_version) < version.parse(pkg_ver):
-                        pass
-                    elif version.parse(latest_version) > version.parse(pkg_ver):
+                if pkg_ver != "":                
+                    try:
+                        if current_version is None:
+                            pass
+                        elif version.parse(current_version) < version.parse(pkg_ver):
+                            pass
+                        elif version.parse(latest_version) > version.parse(pkg_ver):
+                            continue
+                    except Exception as error:
+                        q2mess(
+                            f"Error зparsing version for <b>{package}</b>:"
+                            f"<br> {error}<br>"
+                            f"<b>{package}</b> packages update skipped"
+                        )
                         continue
-                except Exception as error:
-                    q2mess(
-                        f"Error зparsing version for <b>{package}</b>:"
-                        f"<br> {error}<br>"
-                        f"<b>{package}</b> packages update skipped"
-                    )
-                    continue
             if latest_version != current_version and latest_version:
                 list_2_upgrade_message.append(f"<b>{package}</b>: {current_version} > {latest_version}")
                 list_2_upgrade.append(package)
