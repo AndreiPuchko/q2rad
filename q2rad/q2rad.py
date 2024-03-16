@@ -74,6 +74,7 @@ import json
 import subprocess
 import shutil
 import pkgutil
+import pkg_resources
 import logging
 import traceback
 
@@ -700,7 +701,20 @@ class Q2RadApp(Q2App):
             latest_version = None
         installed_packages = [x.name for x in pkgutil.iter_modules()]
         if package in installed_packages:
-            current_version = self.code_runner(f"from {package} import __version__ as tmpv;return tmpv")()
+            try:
+                current_version = pkg_resources.get_distribution(package).version
+            except Exception as error:
+                _logger.error(f"Error checking version of {package}: {error}")
+                current_version = None
+            if current_version is None:
+                try:
+                    current_version = self.code_runner(
+                        f"from {package} import __version__ as tmpv;return tmpv"
+                    )()
+                except Exception as error:
+                    _logger.error(f"Error checking version of {package}: {error}")
+            if current_version is None:
+                q2mess(f"Error checkin curent version of {package}!")
         else:
             current_version = None
 
@@ -874,7 +888,7 @@ class Q2RadApp(Q2App):
             if self.db_logic is not None and package not in q2_modules:
                 pkg_ver = get("packages", f"package_name='{package}'", "package_version", q2_db=self.db_logic)
                 pkg_ver = pkg_ver if pkg_ver else "99999"
-                if pkg_ver != "":                
+                if pkg_ver != "":
                     try:
                         if current_version is None:
                             pass
