@@ -359,7 +359,8 @@ class Q2ReportEdit(Q2Form):
             return content
 
     def after_form_show(self):
-        self.w.rl.meta["form_window"].set_style_sheet("* {font-size: 8pt;}")
+        # self.form_stack[-1].set_style_sheet("border-radius:0px;border: 0px")
+        pass
 
 
 class Q2ReportReport(Q2Form):
@@ -775,7 +776,7 @@ class Q2ReportReport(Q2Form):
         self.w.font_weight.set_title("Bold")
         ReportForm.set_style_button(self, "Report")
         self.w.style_button.set_focus()
-        self.w.style_button.meta["form_window"].set_style_sheet("* {font-size: 8pt;}")
+        self.w.style_button.parentWidget().set_style_sheet("border-radius:0px;border: 0px solid red")
 
     def show_content(self):
         if self.widget() is None:
@@ -933,6 +934,9 @@ class Q2ReportPage(Q2Form, ReportForm):
     def after_form_show(self):
         self.set_content()
         ReportForm.set_style_button(self, "Page")
+        self.w.style_button.parentWidget().set_style_sheet("border-radius:0px;border: 0px solid red")
+        self.form_stack[-1].set_style_sheet("border-radius:0px;border: 0px;font-size: 8pt;font-family:Fixed")
+        
 
     def set_content(self):
         self.anchor: Q2Widget = self.w.anchor
@@ -1233,7 +1237,8 @@ class Q2ReportColumns(Q2Form, ReportForm):
         self.columns_sheet.hide_column_headers()
 
         ReportForm.set_style_button(self, "Columns")
-
+        self.w.style_button.parentWidget().parentWidget().parentWidget().set_style_sheet("border: 0px;margin:0px;padding:0px")
+        self.w.style_button.parentWidget().parentWidget().parentWidget().layout().setSpacing(0)
         self.set_content()
         self._repaint()
 
@@ -2035,6 +2040,13 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.rows_sheet.add_style_sheet("border-style:solid; border-radius:0")
 
         ReportForm.set_style_button(self)
+        self.w.style_button.parentWidget().parentWidget().parentWidget().set_style_sheet("border: 0px;margin:0px;padding:0px")
+        self.w.style_button.parentWidget().parentWidget().parentWidget().layout().setSpacing(0)
+        self.w.style_button.parentWidget().parentWidget().parentWidget().layout().setContentsMargins(0, 0, 0, 0)
+        self.w.style_button.parentWidget().parentWidget().layout().setContentsMargins(0, 0, 0, 0)
+        self.w.style_button.parentWidget().layout().setContentsMargins(0, 0, 0, 0)
+        # self.w.style_button.parentWidget().layout().setContentsMargins(0, 0, 0, 0)
+        
 
         self._repaint()
         self.set_content()
@@ -2116,6 +2128,6 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.rows_data.heights, column=self.report_columns_form.get_column_count()
         )
 
-        self.w.style_button.set_row_size(self.rows_sheet.height())
+        # self.w.style_button.set_row_size(self.rows_sheet.height())
 
         self.set_rows_role_text()
