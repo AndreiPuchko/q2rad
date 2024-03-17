@@ -13,7 +13,7 @@
 #    limitations under the License.
 
 
-from q2gui.q2dialogs import q2AskYN, q2mess
+from q2gui.q2dialogs import q2AskYN, q2mess  # noqa:F401
 from q2gui.q2widget import Q2Widget
 
 from q2gui.q2app import Q2Actions
@@ -415,8 +415,15 @@ class Q2ReportReport(Q2Form):
                     dblclick=self.style_button_pressed,
                 )
 
-                self.add_control("", tag="pages", actions=actions)
-                # self.add_control("", control="label", tag="pages", actions=actions)
+                self.add_control("", control="toolbar", tag="report_action", actions=actions)
+                self.add_control(
+                    "efs",
+                    "Editors font size",
+                    datatype="int",
+                    control="spin",
+                    data=8,
+                    valid=self.editor_font_size,
+                )
                 self.add_control("/")
                 if self.add_control("/vr", tag="pages"):
                     self.add_control("anchor", "*", control="label")
@@ -424,126 +431,127 @@ class Q2ReportReport(Q2Form):
                 self.add_control("/")
         if self.add_control("/v", tag="style_panel"):
             self.add_control("/vr")
-            self.add_control("/f", "Font")
-            self.add_control(
-                "font_family",
-                "Font family",
-                control="combo",
-                pic="Arial;Times;Courier",
-                check=1,
-                valid=self.prop_font_family,
-                when=self.prop_font_family,
-            )
-            self.add_control(
-                "font_size",
-                "Font size",
-                control="spin",
-                datalen=5,
-                datatype="int",
-                check=1,
-                valid=self.prop_font_size,
-                when=self.prop_font_size,
-            )
-            self.add_control(
-                "font_weight",
-                "Font weight",
-                control="check",
-                check=1,
-                valid=self.prop_font_weight,
-                when=self.prop_font_weight,
-            )
+            if self.add_control("/f", "Font"):
+                self.add_control(
+                    "font_family",
+                    "Font family",
+                    control="combo",
+                    pic="Arial;Times;Courier",
+                    check=1,
+                    valid=self.prop_font_family,
+                    when=self.prop_font_family,
+                )
+                self.add_control(
+                    "font_size",
+                    "Font size",
+                    control="spin",
+                    datalen=5,
+                    datatype="int",
+                    check=1,
+                    valid=self.prop_font_size,
+                    when=self.prop_font_size,
+                )
+                self.add_control(
+                    "font_weight",
+                    "Font weight",
+                    control="check",
+                    check=1,
+                    valid=self.prop_font_weight,
+                    when=self.prop_font_weight,
+                )
             self.add_control("/")
+            if self.add_control("/v", "-"):
+                self.add_control(
+                    "/h",
+                    "Borders",
+                    check=1,
+                    tag="border_width",
+                    valid=self.prop_border,
+                    when=self.prop_border,
+                )
+                self.add_control(
+                    "border_left",
+                    "",
+                    control="spin",
+                    datalen=5,
+                    valid=self.prop_border,
+                    when=self.prop_border,
+                )
+                self.add_control("/v")
+                self.add_control(
+                    "border_top",
+                    "",
+                    control="spin",
+                    datalen=5,
+                    valid=self.prop_border,
+                    when=self.prop_border,
+                )
+                self.add_control(
+                    "border_bottom",
+                    "",
+                    control="spin",
+                    datalen=5,
+                    valid=self.prop_border,
+                    when=self.prop_border,
+                )
+                self.add_control("/")
+                self.add_control(
+                    "border_right",
+                    "",
+                    control="spin",
+                    datalen=5,
+                    valid=self.prop_border,
+                    when=self.prop_border,
+                )
+                self.add_control("/")
 
-            self.add_control(
-                "/h",
-                "Borders",
-                check=1,
-                tag="border_width",
-                valid=self.prop_border,
-                when=self.prop_border,
-            )
-            self.add_control(
-                "border_left",
-                "",
-                control="spin",
-                datalen=5,
-                valid=self.prop_border,
-                when=self.prop_border,
-            )
-            self.add_control("/v")
-            self.add_control(
-                "border_top",
-                "",
-                control="spin",
-                datalen=5,
-                valid=self.prop_border,
-                when=self.prop_border,
-            )
-            self.add_control(
-                "border_bottom",
-                "",
-                control="spin",
-                datalen=5,
-                valid=self.prop_border,
-                when=self.prop_border,
-            )
-            self.add_control("/")
-            self.add_control(
-                "border_right",
-                "",
-                control="spin",
-                datalen=5,
-                valid=self.prop_border,
-                when=self.prop_border,
-            )
-            self.add_control("/")
-
-            self.add_control(
-                "/h",
-                "Paddings",
-                check=1,
-                tag="padding",
-                valid=self.prop_padding,
-                when=self.prop_padding,
-            )
-            self.add_control(
-                "padding_left",
-                "",
-                control="doublespin",
-                datalen=5,
-                datadec=2,
-                valid=self.prop_padding,
-                when=self.prop_padding,
-            )
-            self.add_control("/v")
-            self.add_control(
-                "padding_top",
-                "",
-                control="doublespin",
-                datalen=5,
-                datadec=2,
-                valid=self.prop_padding,
-                when=self.prop_padding,
-            )
-            self.add_control(
-                "padding_bottom",
-                "",
-                control="doublespin",
-                datalen=5,
-                datadec=2,
-                valid=self.prop_padding,
-                when=self.prop_padding,
-            )
-            self.add_control("/")
-            self.add_control(
-                "padding_right",
-                "",
-                control="doublespin",
-                datalen=5,
-                datadec=2,
-                valid=self.prop_padding,
-                when=self.prop_padding,
-            )
+                self.add_control(
+                    "/h",
+                    "Paddings",
+                    check=1,
+                    tag="padding",
+                    valid=self.prop_padding,
+                    when=self.prop_padding,
+                )
+                self.add_control(
+                    "padding_left",
+                    "",
+                    control="doublespin",
+                    datalen=5,
+                    datadec=2,
+                    valid=self.prop_padding,
+                    when=self.prop_padding,
+                )
+                self.add_control("/v")
+                self.add_control(
+                    "padding_top",
+                    "",
+                    control="doublespin",
+                    datalen=5,
+                    datadec=2,
+                    valid=self.prop_padding,
+                    when=self.prop_padding,
+                )
+                self.add_control(
+                    "padding_bottom",
+                    "",
+                    control="doublespin",
+                    datalen=5,
+                    datadec=2,
+                    valid=self.prop_padding,
+                    when=self.prop_padding,
+                )
+                self.add_control("/")
+                self.add_control(
+                    "padding_right",
+                    "",
+                    control="doublespin",
+                    datalen=5,
+                    datadec=2,
+                    valid=self.prop_padding,
+                    when=self.prop_padding,
+                )
+                self.add_control("/")
             self.add_control("/")
             if self.add_control("/v", "-"):  # Alignments
                 self.add_control(
@@ -576,6 +584,13 @@ class Q2ReportReport(Q2Form):
             self.add_control("/s")
 
         self.set_content()
+
+    def editor_font_size(self):
+        if int_(self.s.efs) <= 7:
+            self.s.efs = "8"
+        if int_(self.s.efs) >= 18:
+            self.s.efs = "18"
+        self.set_pages_style()
 
     def run_report(self, output_file="html"):
         rep = Q2RadReport(self.report_edit_form.get_content())
@@ -665,7 +680,10 @@ class Q2ReportReport(Q2Form):
                 row_sheet.apply_style()
 
     def get_pages(self):
-        return self.anchor.get_layout_widgets()[1:]
+        if self.anchor:
+            return self.anchor.get_layout_widgets()[1:]
+        else:
+            return []
 
     def style_button_pressed(self):
         self.focus_changed(self.w.style_button)
@@ -776,7 +794,20 @@ class Q2ReportReport(Q2Form):
         self.w.font_weight.set_title("Bold")
         ReportForm.set_style_button(self, "Report")
         self.w.style_button.set_focus()
-        self.w.style_button.parentWidget().set_style_sheet("border-radius:0px;border: 0px solid red")
+        self.w.style_button.parentWidget().set_style_sheet("border-radius:0px;")
+        self.set_pages_style()
+
+    def set_pages_style(self):
+        self.w.pages.set_style_sheet(
+            f"border-radius:0px;border:0px;font-size:{self.s.efs}pt;font-family:Fixed; margin:0px;padding:0px"
+        )
+        self.report_report_form.ratio = int_(num(45) + (num(self.s.efs) - num(8)) * 2)
+        # print(self.report_report_form.ratio)
+        # if self.report_report_form.ratio != 1:
+        #     self.report_report_form.ratio = int(self.report_report_form.ratio / num(1.7))
+        # print(self.report_report_form.ratio)
+        for x in self.get_pages():
+            x.q2_form._repaint()
 
     def show_content(self):
         if self.widget() is None:
@@ -934,9 +965,6 @@ class Q2ReportPage(Q2Form, ReportForm):
     def after_form_show(self):
         self.set_content()
         ReportForm.set_style_button(self, "Page")
-        self.w.style_button.parentWidget().set_style_sheet("border-radius:0px;border: 0px solid red")
-        self.form_stack[-1].set_style_sheet("border-radius:0px;border: 0px;font-size: 8pt;font-family:Fixed")
-        
 
     def set_content(self):
         self.anchor: Q2Widget = self.w.anchor
@@ -1137,9 +1165,9 @@ class Q2ReportColumns(Q2Form, ReportForm):
         form.cancel_button = 1
         form.run()
         if form.ok_pressed:
-            self.columns_data.widths[
-                self.columns_sheet.current_column()
-            ] = f"{form.s.w}{'%' if form.s.p == '*' else ''}"
+            self.columns_data.widths[self.columns_sheet.current_column()] = (
+                f"{form.s.w}{'%' if form.s.p == '*' else ''}"
+            )
             self._repaint()
 
     def style_button_pressed(self):
@@ -1237,7 +1265,9 @@ class Q2ReportColumns(Q2Form, ReportForm):
         self.columns_sheet.hide_column_headers()
 
         ReportForm.set_style_button(self, "Columns")
-        self.w.style_button.parentWidget().parentWidget().parentWidget().set_style_sheet("border: 0px;margin:0px;padding:0px")
+        self.w.style_button.parentWidget().parentWidget().parentWidget().set_style_sheet(
+            "border: 0px;margin:0px;padding:0px"
+        )
         self.w.style_button.parentWidget().parentWidget().parentWidget().layout().setSpacing(0)
         self.set_content()
         self._repaint()
@@ -1660,7 +1690,7 @@ class Q2ReportRows(Q2Form, ReportForm):
                 datatype="char",
                 data=self.rows_data.role,
                 pic=roles_list,
-                datalen=50,
+                datalen=10,
                 valid=role_valid,
             )
             form.add_control(
@@ -2040,14 +2070,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.rows_sheet.add_style_sheet("border-style:solid; border-radius:0")
 
         ReportForm.set_style_button(self)
-        self.w.style_button.parentWidget().parentWidget().parentWidget().set_style_sheet("border: 0px;margin:0px;padding:0px")
-        self.w.style_button.parentWidget().parentWidget().parentWidget().layout().setSpacing(0)
-        self.w.style_button.parentWidget().parentWidget().parentWidget().layout().setContentsMargins(0, 0, 0, 0)
-        self.w.style_button.parentWidget().parentWidget().layout().setContentsMargins(0, 0, 0, 0)
-        self.w.style_button.parentWidget().layout().setContentsMargins(0, 0, 0, 0)
-        # self.w.style_button.parentWidget().layout().setContentsMargins(0, 0, 0, 0)
-        
-
+        self.w.style_button.parentWidget().parentWidget().layout().setSpacing(0)
         self._repaint()
         self.set_content()
 

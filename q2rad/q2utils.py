@@ -212,7 +212,7 @@ class Q2Form(_Q2Form):
         elif choice == 2:  # Row
             pk = self.model.get_meta_primary_key()
             cu = q2cursor(
-                f"""select * 
+                f"""select *
                         from log_{self.model.get_table_name()}
                         where {pk} = '{self.r.__getattr__(pk)}'
                     """
@@ -221,7 +221,7 @@ class Q2Form(_Q2Form):
             where = self.model.get_where()
             where = f" where {where}" if where != "" else ""
             cu = q2cursor(
-                f"""select * 
+                f"""select *
                         from log_{self.model.get_table_name()}
                         {where}
                     """
