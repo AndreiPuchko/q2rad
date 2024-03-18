@@ -220,6 +220,7 @@ class Q2RadApp(Q2App):
         self.last_root_password = ""
         self.selected_application = {}
         self.q2style.font_size = int_(self.settings.get("Style Settings", "font_size", "10"))  # noqa F405
+        self.q2style.font_name = self.settings.get("Style Settings", "font_name", "Arial")  # noqa F405
         self.set_color_mode(self.settings.get("Style Settings", "color_mode", ""))
 
         self.clear_app_info()
@@ -496,7 +497,7 @@ class Q2RadApp(Q2App):
         self.clear_menu()
         self.add_menu("File|About", self.about, icon="info.png")
         self.add_menu("File|Manage", self.run_app_manager, icon="tools.png")
-        self.add_menu("File|Settings", self.run_stylesettings)
+        self.add_menu("File|Style", self.run_stylesettings)
         self.add_menu("File|Constants", self.run_constants)
         if not self.frozen:
             self.add_menu("File|-")
