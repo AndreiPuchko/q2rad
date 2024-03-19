@@ -186,7 +186,7 @@ class Q2AppSelect(Q2Form):
         self.add_action(
             _("Autoload"),
             self.set_autoload,
-            icon="💚",
+            icon="☆",
             mess="Toggle autoload mark",
             eof_disabled=1,
             tag="#4dd0e1",
@@ -212,7 +212,7 @@ class Q2AppSelect(Q2Form):
     def openSqliteDataFile(self):
         fname = self.q2_app.get_save_file_dialoq(
             self.focus_widget().meta.get("mess"),
-            "",
+            ".",
             _("SQLite (*.sqlite);;All files(*.*)"),
             confirm_overwrite=False,
         )[0]
@@ -257,12 +257,19 @@ class Q2AppSelect(Q2Form):
             q2Mess(_("Give me some database!!!"))
             self.w.database_logic.set_focus()
             return False
+
         if self.s.driver_logic == "Sqlite":
             self.s.host_logic = ""
             self.s.port_logic = ""
+            if not os.path.isdir(os.path.dirname(self.s.database_logic)):
+                os.makedirs(os.path.dirname(self.s.database_logic))
+
         if self.s.driver_data == "Sqlite":
             self.s.host_data = ""
             self.s.port_data = ""
+            if not os.path.isdir(os.path.dirname(self.s.database_data)):
+                os.makedirs(os.path.dirname(self.s.database_data))
+
         if self.s.autoselect:
             self.db.cursor("update applications set autoselect='' ")
         return True
@@ -271,7 +278,9 @@ class Q2AppSelect(Q2Form):
         if self.crud_mode == "NEW":
             self.s.driver_logic = "Sqlite"
             self.s.driver_data = "Sqlite"
-            self.s.dev_mode = "*"
+            self.s.dev_mode = ""
+            self.s.database_logic = "databases/_logic"
+            self.s.database_data = "databases/_data"
         self.w.driver_data.valid()
         self.w.driver_logic.valid()
         if self.crud_mode in [NEW, COPY]:

@@ -64,7 +64,7 @@ class AppStyleSettings(Q2Form):
 
         self.add_control(
             "font_name",
-            "Font",
+            "Name",
             control="line",
             disabled=1,
             data=self.q2_app.q2style.font_name,

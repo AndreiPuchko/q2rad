@@ -11,3 +11,4 @@ q2apps.sqlite
 *.sh
 make/
 .vscode
+database/
