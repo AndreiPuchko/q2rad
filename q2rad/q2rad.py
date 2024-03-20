@@ -91,6 +91,9 @@ set_logging()
 _logger = logging.getLogger(__name__)
 
 
+class ReturnEvent(Exception):
+    pass
+
 def get_report(report_name="", style={}):
     if report_name == "":
         return Q2RadReport(style=style)
@@ -126,9 +129,6 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
         else:
             __name__ = "__main__"
 
-        class ReturnEvent(Exception):
-            pass
-
         locals.update(
             {
                 "RETURN": None,
@@ -141,9 +141,9 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
         )
         try:
             exec(code["code"], globals, locals)
-        except ReturnEvent:
+        except ReturnEvent as error:
             pass
-        except Exception:
+        except Exception as error:
             explain_error()
         return locals["RETURN"]
 
@@ -1015,6 +1015,7 @@ class Q2RadApp(Q2App):
                 `column`
                 , label
                 , gridlabel
+                , mess
                 , nogrid
                 , noform
                 , `check`
@@ -1129,23 +1130,41 @@ class Q2RadApp(Q2App):
         return form
 
     def code_compiler(self, script):
+        def count_leading_spaces(string):
+            count = 0
+            for char in string:
+                if char == " ":
+                    count += 1
+                else:
+                    break
+            return count
+
         if "return" in script or "?" in script or "import" in script:
             # modify script for
             new_script_lines = []
             in_def = False
+            in_def_indent = -1
             for x in script.split("\n"):
+                if x.strip() == "":
+                    continue
+                spaces_count = count_leading_spaces(x)
                 # when in_def is True  - do not modify return
-                if re.findall(r"^def|^class", x):
+                if in_def is False and re.findall(r"^\s*def|^\s*class", x):
                     in_def = True
-                elif not re.findall(r"^\s+", x):
+                    in_def_indent = spaces_count
+                elif spaces_count <= in_def_indent:
                     in_def = False
+                    in_def_indent = -1
                 # return
                 if in_def is False and re.findall(r"^\s*return\W*.*|;\s*return\W*.*", x):
                     if x.strip() == "return":
                         x = x.replace("return", "raise ReturnEvent")
                     else:
-                        x = x.replace("return", "RETURN = ") + "; raise ReturnEvent"
-                # print
+                        # x = x.replace("return", "RETURN = ") + ";raise ReturnEvent"
+                        # x = x.replace("\n", "").replace("\r", "") + ";raise ReturnEvent"
+                        x = x.replace("\n", "").replace("\r", "")
+                        x = x.replace("return", "RETURN =")
+                        x += ";raise ReturnEvent"
                 if re.findall(r"^\s*\?\W*.*", x):
                     # lets print it
                     x = x.split("?")[0] + "print(" + "".join(x.split("?")[1:]) + ")"
@@ -1182,10 +1201,6 @@ class Q2RadApp(Q2App):
 
         # to provide return ability for exec
         def real_runner(**args):
-            # make exec stop on return
-            class ReturnEvent(Exception):
-                pass
-
             __locals_dict = {
                 "RETURN": None,
                 "ReturnEvent": ReturnEvent,

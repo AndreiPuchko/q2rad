@@ -93,7 +93,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         self.add_action("Fill", self.filler)
         self.add_action("-")
         self.add_action("Select panel", icon="⭥", worker=self.select_panel, hotkey="F3")
-        self.add_action("Copy to", icon="🧩", worker=self.copy_to)
+        self.add_action("Copy to", icon="❖", worker=self.copy_to)
         self.add_action("Move rows down", icon="⭸", worker=self.move_rows_down)
         self.add_action("Layout|Form", icon="☆", worker=lambda: self.add_layout("/f"))
         self.add_action("Layout|Horizontally", worker=lambda: self.add_layout("/h"))
@@ -117,6 +117,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             self.add_control("/f")
             self.add_control("label", _("Form label"), datatype="char", datalen=100)
             self.add_control("gridlabel", _("Grid label"), datatype="char", datalen=100)
+            self.add_control("mess", _("Tooltip"), datatype="char", datalen=200)
             if self.add_control("/h"):
                 self.add_control("seq", _("Sequence number"), datatype="int")
                 self.add_control("nogrid", _("No grid"), control="check", datalen=1)
