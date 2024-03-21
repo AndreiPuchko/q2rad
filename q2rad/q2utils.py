@@ -266,7 +266,11 @@ class Q2Form(_Q2Form):
             def after_form_show():
                 query = self.model.get_table_name()
                 if not query.strip().lower().startswith("select "):
-                    query = f"select * from {query}"
+                    where = self.model.get_where()
+                    where = "" if where == "" else f" where {where}"
+                    order = self.model.get_order()
+                    order = "" if order == "" else f" order by {order}"
+                    query = f"select * from {query} {where} {order}"
                 form.query_edit.set_content({"queries": {"query": query}})
 
             form.after_form_show = after_form_show
