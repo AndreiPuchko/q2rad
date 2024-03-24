@@ -238,7 +238,7 @@ class Q2AppSelect(Q2Form):
                     "database_data": "databases/my_first_app_data_storage.sqlite",
                     "driver_logic": "Sqlite",
                     "database_logic": "databases/my_first_app_logic_storage.sqlite",
-                    "dev_mode": "*",
+                    "dev_mode": "",
                 },
                 self.db,
             )

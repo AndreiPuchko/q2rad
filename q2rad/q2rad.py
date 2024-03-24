@@ -1015,6 +1015,7 @@ class Q2RadApp(Q2App):
                 `column`
                 , label
                 , gridlabel
+                , tag
                 , mess
                 , nogrid
                 , noform
