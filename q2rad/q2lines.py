@@ -52,6 +52,7 @@ WIDGETS = (
     "button",
     "check",
     "radio",
+    "vradio",
     "combo",
     "list",
     "spin",

@@ -34,9 +34,7 @@ class Q2Market(Q2Form):
     def on_init(self):
         self.add_control("app_title", _("Name"), datatype="char", datalen=100)
         self.add_control("app_version", _("Version"), datatype="char", datalen=100)
-        self.add_control(
-            "app_description", _("Description"), datatype="char", datalen=100
-        )
+        self.add_control("app_description", _("Description"), control="text", datatype="char", datalen=100)
         self.add_control("app_url", _("Path"), datatype="char", datalen=100)
 
         q2market_catalogue_url = f"{self.q2_app.q2market_url}/q2market.json"
