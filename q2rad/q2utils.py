@@ -510,6 +510,8 @@ class auto_filter:
         )
         self.mem.add_control("/f")
         for col in cu.records():
+            if col["control"] == "text":
+                col["control"] = "line"
             col = Q2Controls.validate(col)
             self.filter_columns.append(cu.r.column)
 
