@@ -131,8 +131,10 @@ class Q2Form(_Q2Form):
 
         report = get_report(style=get_report().make_style(font_size=q2app.q2_app.q2style.font_size))
 
-        report.data_sets["cursor"] = [{"_n_n_n_": x} for x in range(self.model.row_count())]
-
+        report.data_sets["cursor"] = [
+            {"_n_n_n_": x} for x in range(self.model.row_count()) if not self.model.is_hidden(x)
+        ]
+        
         detail_rows = report.new_rows()
         detail_rows.rows["role"] = "table"
         detail_rows.rows["data_source"] = "cursor"

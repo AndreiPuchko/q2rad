@@ -43,7 +43,7 @@ SQL_DATATYPES = (
     "time",
     "datetime",
 )
-HAS_DATADEC = ("dec", "numeric", "num")
+HAS_DATADEC = ("dec", "numeric", "num", "decimal")
 HAS_DATALEN = ("char", "varchar") + HAS_DATADEC
 WIDGETS = (
     "line",
@@ -72,7 +72,7 @@ WIDGETS = (
 # "toolbar;"
 # "toolbutton;"
 
-HAS_PIC = "radio;" "combo;" "list;"
+HAS_PIC = "radio;" "combo;" "list;" "line;"
 
 
 class Q2Lines(Q2Form, Q2_save_and_run):
