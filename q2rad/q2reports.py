@@ -90,6 +90,7 @@ class Q2RadReport(Q2Report):
             def repo_valid(mode):
                 form.heap.mode = mode
                 form.close()
+
             form.add_control("/s")
             form.add_control("/h")
             form.add_control("/s")
@@ -125,6 +126,8 @@ class Q2RadReport(Q2Report):
             def repo_edit():
                 report_edit_form = Q2ReportEdit()
                 report_edit_form.after_form_show = lambda: report_edit_form.set_content(self.report_content)
+                report_edit_form.data.update(self.data)
+                report_edit_form.data_sets.update(self.data_sets)
                 report_edit_form.run()
                 form.close()
 
@@ -341,6 +344,8 @@ class ReportForm:
 class Q2ReportEdit(Q2Form):
     def __init__(self):
         super().__init__("Report Edit")
+        self.data = {}
+        self.data_sets = {}
 
     def on_init(self):
         self.query_edit = Q2QueryEdit()
@@ -610,6 +615,8 @@ class Q2ReportReport(Q2Form):
 
     def run_report(self, output_file="html"):
         rep = Q2RadReport(self.report_edit_form.get_content())
+        rep.data.update(self.report_edit_form.data)
+        rep.data_sets.update(self.report_edit_form.data_sets)
         rep.run(output_file)
 
     def set_default_report_content(self):
@@ -679,7 +686,8 @@ class Q2ReportReport(Q2Form):
         prop_key = prop_name.replace("_", "-")
 
         if not self.w.__getattr__(prop_name).check.is_checked():
-            del self.current_propertys[prop_key]
+            if prop_key in self.current_propertys:
+                del self.current_propertys[prop_key]
         else:
             self.current_propertys[prop_key] = prop_value
         self.style_changed()
@@ -2001,6 +2009,9 @@ class Q2ReportRows(Q2Form, ReportForm):
                 cell_data = self.rows_data.cells.get(f"{row},{column}", {})
 
                 self.rows_sheet.cell_styles[f"{row},{column}"] = cell_data.get("style", {})
+                self.rows_sheet.cell_styles[f"{row},{column}"]["border-color"] = (
+                    "white" if self.q2_app.q2style.color_mode == "dark" else "black"
+                )
                 rowspan = cell_data.get("rowspan", 1)
                 colspan = cell_data.get("colspan", 1)
                 if rowspan > 1 or colspan > 1:
