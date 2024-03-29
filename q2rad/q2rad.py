@@ -94,6 +94,7 @@ _logger = logging.getLogger(__name__)
 class ReturnEvent(Exception):
     pass
 
+
 def get_report(report_name="", style={}):
     if report_name == "":
         return Q2RadReport(style=style)
@@ -1017,6 +1018,7 @@ class Q2RadApp(Q2App):
                 , gridlabel
                 , tag
                 , mess
+                , alignment
                 , nogrid
                 , noform
                 , `check`

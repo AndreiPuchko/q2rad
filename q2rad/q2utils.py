@@ -134,7 +134,7 @@ class Q2Form(_Q2Form):
         report.data_sets["cursor"] = [
             {"_n_n_n_": x} for x in range(self.model.row_count()) if not self.model.is_hidden(x)
         ]
-        
+
         detail_rows = report.new_rows()
         detail_rows.rows["role"] = "table"
         detail_rows.rows["data_source"] = "cursor"

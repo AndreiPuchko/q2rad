@@ -90,7 +90,7 @@ class Q2RadReport(Q2Report):
             def repo_valid(mode):
                 form.heap.mode = mode
                 form.close()
-
+            form.add_control("/s")
             form.add_control("/h")
             form.add_control("/s")
             form.add_control("/v")
@@ -121,6 +121,22 @@ class Q2RadReport(Q2Report):
             form.add_control("/")
             form.add_control("/s")
             form.add_control("/")
+
+            def repo_edit():
+                report_edit_form = Q2ReportEdit()
+                report_edit_form.after_form_show = lambda: report_edit_form.set_content(self.report_content)
+                report_edit_form.run()
+                form.close()
+
+            if q2app.q2_app.dev_mode:
+                form.add_control("/s")
+                form.add_control("/h")
+                form.add_control("/s")
+                form.add_control("edit", "Edit", control="button", datalen=8, valid=repo_edit)
+                form.add_control("/s")
+                form.add_control("/")
+                form.add_control("/s")
+
             form.cancel_button = 1
             form.do_not_save_geometry = 1
             form.run()
