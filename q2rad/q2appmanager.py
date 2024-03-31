@@ -26,6 +26,16 @@ from datetime import datetime
 import json
 import os
 
+app_tables = [
+    "forms",
+    "lines",
+    "actions",
+    "reports",
+    "modules",
+    "queries",
+    "packages",
+]
+
 
 class AppManager(Q2Form):
     def __init__(self, title=""):
@@ -307,7 +317,7 @@ class AppManager(Q2Form):
         file = self.validate_impexp_file_name(file, filetype)
         if file:
             if app_json is None:
-                app_json = self.get_app_json()
+                app_json = q2working(self.get_app_json, "Prepare data...")
             if app_json:
                 json.dump(app_json, open(file, "w"), indent=1)
 
@@ -315,6 +325,8 @@ class AppManager(Q2Form):
         db: Q2Db = q2app.q2_app.db_logic
         rez = {}
         for x in db.get_tables():
+            if x not in app_tables:
+                continue
             if x.startswith("log_") or x == "sqlite_sequence":
                 continue
             rez[x] = []
@@ -332,17 +344,22 @@ class AppManager(Q2Form):
 
         file = self.validate_impexp_file_name(file, filetype)
         if file:
-            db: Q2Db = q2app.q2_app.db_data
-            rez = {}
-            for x in db.get_tables():
-                if x.startswith("log_") or x == "sqlite_sequence":
-                    continue
-                rez[x] = []
-                for row in db.table(x).records():
-                    rez[x].append(row)
-
+            rez = q2working(self.get_data_json, "Prepare data...")
             if rez:
                 json.dump(rez, open(file, "w"), indent=1)
+
+    def get_data_json(self):
+        db: Q2Db = q2app.q2_app.db_data
+        rez = {}
+        for x in db.get_tables():
+            if x in app_tables:
+                continue
+            if x.startswith("log_") or x == "sqlite_sequence":
+                continue
+            rez[x] = []
+            for row in db.table(x).records():
+                rez[x].append(row)
+        return rez
 
     def import_q2market(self):
         self.q2_app.check_app_update(force_update=True)
