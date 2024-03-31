@@ -421,7 +421,6 @@ class Q2RadApp(Q2App):
     def _open_database(self, database_name, db_engine_name, host, port, password, user, guest_mode=None):
         db = None
         first_pass = 0
-
         while True:
             try:
                 db = q2working(
@@ -465,7 +464,8 @@ class Q2RadApp(Q2App):
                         ),
                         mess=_("Creating database"),
                     )
-                except Exception:
+                except Exception as error:
+                    q2mess(f"Error occured while creating the database:<br>{error}")
                     return None
 
     def open_databases(self):
@@ -491,7 +491,7 @@ class Q2RadApp(Q2App):
         self.last_root_password = ""
         if self.db_data is None or self.db_logic is None:
             self.selected_application = {}
-            q2Mess(_("Can not open database"))
+            # q2Mess(_("Can not open database"))
             self.open_application()
 
     def create_menu(self):
@@ -799,7 +799,7 @@ class Q2RadApp(Q2App):
                 f" {_source_suffix}{package}{_source_postfix}"
             )
             if trm.exit_code != 0:
-                q2mess(f"Error occured while updateing <b>{package}</b>! See output for details.")
+                q2mess(f"Error occured while updating <b>{package}</b>! See output for details.")
         w.close()
         q2Mess("Finished!<p>The program will be restarted!")
         self.restart()
