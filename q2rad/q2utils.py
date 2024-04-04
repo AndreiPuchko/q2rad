@@ -282,10 +282,10 @@ class Q2Form(_Q2Form):
 
 
 class q2cursor(Q2Cursor):
-    def __init__(self, sql="", q2_db=None):
+    def __init__(self, sql="", q2_db=None, data=[]):
         if q2_db is None:
             q2_db = q2app.q2_app.db_data
-        super().__init__(q2_db, sql)
+        super().__init__(q2_db, sql, data=data)
         if q2_db.last_sql_error:
             print(q2_db.last_sql_error)
 
