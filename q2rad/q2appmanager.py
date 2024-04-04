@@ -392,7 +392,7 @@ class AppManager(Q2Form):
             if table != "packages":
                 db.cursor(f'delete from `{table}` where name not like "\_%"')
             if db.last_sql_error:
-                print(db.last_sql_error)
+                errors.append(db.last_sql_error)
             for row in data[table]:
                 wait_row.step()
                 if table == "packages":
@@ -401,6 +401,8 @@ class AppManager(Q2Form):
                         == row["package_name"]
                     ):
                         continue
+                if row.get("name", "").startswith("_"):
+                    continue
                 if not db.insert(table, row):
                     errors.append(db.last_sql_error)
                     errors.append(db.last_record)
