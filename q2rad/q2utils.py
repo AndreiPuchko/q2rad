@@ -226,7 +226,8 @@ class Q2Form(_Q2Form):
                 f"""select *
                         from log_{self.model.get_table_name()}
                         {where}
-                    """
+                    """,
+                self.db,
             )
         form = Q2Form(f"Changelog ({self.title})")
         form.add_control("/")

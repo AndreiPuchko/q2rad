@@ -390,7 +390,7 @@ class AppManager(Q2Form):
                 continue
             wait_row = Q2WaitShow(len(data[table]))
             if table != "packages":
-                db.cursor(f'delete from `{table}` where name not like "\_%"')
+                db.cursor(f'delete from `{table}` where name not like "\\_%"')
             if db.last_sql_error:
                 errors.append(db.last_sql_error)
             for row in data[table]:

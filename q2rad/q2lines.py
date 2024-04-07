@@ -15,7 +15,7 @@
 
 from q2gui.q2model import Q2CursorModel
 from q2rad.q2raddb import Q2Cursor, insert
-from q2gui.q2dialogs import q2AskYN
+from q2gui.q2dialogs import q2AskYN, q2mess
 from q2rad.q2utils import q2cursor, choice_table, choice_column, choice_form, Q2_save_and_run
 from q2rad.q2raddb import last_error
 
@@ -99,6 +99,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         self.add_action("Layout|Form", icon="☆", worker=lambda: self.add_layout("/f"))
         self.add_action("Layout|Horizontally", worker=lambda: self.add_layout("/h"))
         self.add_action("Layout|Vertically", worker=lambda: self.add_layout("/v"))
+        self.add_action("Alter column", icon="🔧", worker=self.alter_column)
 
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
@@ -130,7 +131,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 self.add_control("/")
             if self.add_control("/h"):
                 self.add_control("stretch", _("Stretch factor"), datatype="int")
-                self.add_control("alignment", _("Alignment"), datatype="int",datalen=3)
+                self.add_control("alignment", _("Alignment"), datatype="int", datalen=3)
                 self.add_control("tag", _("Tag"), datatype="char", datalen=100)
                 self.add_control("/")
             if self.add_control("/h", _("Control type")):
@@ -277,6 +278,13 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             self.controls.delete("save_and_run_actions_visible")
         self.system_controls.insert(2, self._save_and_run_control)
 
+    def alter_column(self):
+        if self.r.migrate and q2AskYN(f"Alter column {self.r.column}?") == 2:
+            record = self.get_current_record()
+            record["table"] = self.db.get("forms", f"name = '{self.prev_form.r.name}'", "form_table")
+            if not q2app.q2_app.db_data.alter_column(record):
+                q2mess(self.db_data.migrate_error_list)
+
     def copy_to(self):
         rows = self.get_grid_selected_rows()
         choice = choice_form()
@@ -374,20 +382,21 @@ class Q2Lines(Q2Form, Q2_save_and_run):
 
         cols = self.q2_app.db_data.db_schema.get_schema_columns(self.prev_form.r.form_table)
         for x in cols:
-            insert(
-                "lines",
-                {
-                    "name": self.prev_form.r.name,
-                    "column": x,
-                    "label": x,
-                    "datatype": cols[x]["datatype"],
-                    "datalen": cols[x]["datalen"],
-                    "pk": cols[x]["pk"],
-                    "ai": cols[x]["ai"],
-                    "migrate": "*",
-                },
-                self.db,
-            )
+            if self.db.get("lines", f"name = '{self.prev_form.r.name}' and column = '{x}'") == {}:
+                insert(
+                    "lines",
+                    {
+                        "name": self.prev_form.r.name,
+                        "column": x,
+                        "label": x,
+                        "datatype": cols[x]["datatype"],
+                        "datalen": cols[x]["datalen"],
+                        "pk": cols[x]["pk"],
+                        "ai": cols[x]["ai"],
+                        "migrate": "*",
+                    },
+                    self.db,
+                )
         self.refresh()
 
     def before_crud_save(self):
