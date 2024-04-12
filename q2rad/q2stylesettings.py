@@ -114,8 +114,8 @@ class AppStyleSettings(Q2Form):
         self.q2_app.set_color_mode(color_mode)
 
     def font_size_valid(self):
-        if int_(self.s.font_size) < 8:
-            self.s.font_size = 8
+        if int_(self.s.font_size) < 10:
+            self.s.font_size = 10
         if self.s.apply:
             self.q2_app.q2style.font_size = int_(self.s.font_size)
             self.style_valid()

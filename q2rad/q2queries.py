@@ -171,6 +171,7 @@ class Q2QueryEdit(Q2Form):
         self.query_list = Q2QueryList(self)
         self.param_list = Q2ParamList()
         self.actions = Q2Actions()
+        self._db = None
         self.actions.add_action("Run F4", self.query_list.sql_runner, hotkey="F4")
 
         self.actions.show_main_button = 0
@@ -257,7 +258,7 @@ class Q2QueryList(Q2Form):
                 sql = sql.replace(x, f"{value}")
             else:
                 sql = sql.replace(x, f"'{value}'")
-        q2cursor(sql).browse()
+        q2cursor(sql, q2_db=self.query_editor_form._db).browse()
 
     def sql_to_model(self, sql):
         self.model.update({"sql": sql}, self.current_row, refresh=False)
@@ -317,7 +318,6 @@ class Q2ParamList(Q2Form):
         return params
 
     def get_param(self, param):
-        print(self.model.records)
         for x in self.model.records:
             if x["name"] == (param[1:] if param.startswith(":") else param[1:-1]):
                 return x["value"]

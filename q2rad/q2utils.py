@@ -217,7 +217,8 @@ class Q2Form(_Q2Form):
                 f"""select *
                         from log_{self.model.get_table_name()}
                         where {pk} = '{self.r.__getattr__(pk)}'
-                    """
+                    """,
+                q2_db=self.db,
             )
         elif choice == 3:
             where = self.model.get_where()
@@ -264,6 +265,7 @@ class Q2Form(_Q2Form):
             from q2rad.q2queries import Q2QueryEdit
 
             form.query_edit = Q2QueryEdit()
+            form.query_edit._db = self.db
             form.add_control("ql", "", widget=form.query_edit, nogrid=1, migrate=0)
 
             def after_form_show():

@@ -18,6 +18,7 @@ from q2gui.q2model import Q2CursorModel
 from q2rad.q2raddb import last_error, insert
 from q2rad.q2utils import q2cursor, choice_form, choice_column, Q2_save_and_run, Q2Form, int_
 from q2gui import q2app
+
 # from q2rad import Q2Form
 
 import gettext
@@ -44,17 +45,9 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         self.add_action("Copy to", icon="❖", worker=self.copy_to)
 
     def create_form(self):
+        from q2rad.q2forms import Q2Forms
+
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
-        self.add_control(
-            "name",
-            _("Form"),
-            disabled="*",
-            to_table="forms",
-            to_column="name",
-            related="name",
-            datatype="char",
-            datalen=100,
-        )
         self.add_control("action_text", _("Action text"), datatype="char", datalen=100)
         self.add_control("/")
         if self.add_control("/t", _("Main"), tag="tab"):
@@ -119,8 +112,22 @@ class Q2Actions(Q2Form, Q2_save_and_run):
                 control="radio",
                 datatype="int",
             )
+            self.add_control("/")
+            self.add_control("/f")
+            self.add_control(
+                "name",
+                _("Form"),
+                # disabled="*",
+                to_table="forms",
+                to_column="name",
+                to_form=Q2Forms(),
+                related="name",
+                datatype="char",
+                datalen=100,
+            )
 
             self.add_control("/s")
+
         self.add_control("/t", _("Action Script"))
         self.add_control(
             "action_worker",
@@ -151,7 +158,8 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             seq = (
                 int_(
                     q2cursor(
-                        f"select max(seq) as maxseq from actions where name='{choice['name']}'", q2app.q2_app.db_logic
+                        f"select max(seq) as maxseq from actions where name='{choice['name']}'",
+                        q2app.q2_app.db_logic,
                     ).r.maxseq
                 )
                 + 1
@@ -159,7 +167,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             for x in rows:
                 rec = self.model.get_record(x)
                 rec["seq"] = seq
-                rec["name"] = choice['name']
+                rec["name"] = choice["name"]
                 seq += 1
                 if not insert("actions", rec, q2app.q2_app.db_logic):
                     print(last_error(q2app.q2_app.db_logic))
@@ -184,7 +192,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
     def select_child_form(self):
         choice = choice_form()
         if choice:
-            self.s.child_form = choice['name']
+            self.s.child_form = choice["name"]
             if self.s.child_where == "":
                 parent_pk = q2cursor(
                     f"""select column
@@ -199,7 +207,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         if self.s.child_where.startswith("=") or self.s.child_where == "":
             choice = choice_column(self.s.child_form)
             if choice:
-                self.s.child_where = choice['col'] + self.s.child_where
+                self.s.child_where = choice["col"] + self.s.child_where
 
     def before_form_show(self):
         self.action_mode_valid()

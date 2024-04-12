@@ -50,7 +50,6 @@ class AppManager(Q2Form):
                     "upgrade",
                     "Check updates",
                     control="button",
-                    datalen=10,
                     valid=q2app.q2_app.update_packages,
                 )
 
@@ -76,7 +75,6 @@ class AppManager(Q2Form):
                 "reload_assets",
                 "Reload assets",
                 control="button",
-                datalen=10,
                 valid=self.reload_assets,
             )
 
