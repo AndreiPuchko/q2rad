@@ -20,7 +20,7 @@ from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow, q2ask, q2working
 
 from q2rad import Q2Form
 from q2terminal.q2terminal import Q2Terminal
-from q2rad.q2raddb import today, insert, update, get
+from q2rad.q2raddb import insert, update, get
 from datetime import datetime
 
 import json
@@ -108,7 +108,7 @@ class AppManager(Q2Form):
                 self.add_control(
                     "drl",
                     "Database type",
-                    data=app_data["driver_logic"],
+                    data=app_data["driver_logic"].lower(),
                     disabled=1,
                     datalen=len(app_data["driver_logic"].strip()) + 5,
                 )
@@ -186,7 +186,7 @@ class AppManager(Q2Form):
                 self.add_control(
                     "drd",
                     "Database type",
-                    data=app_data["driver_data"],
+                    data=app_data["driver_data"].lower(),
                     disabled=1,
                     datalen=len(app_data["driver_data"].strip()) + 5,
                 )

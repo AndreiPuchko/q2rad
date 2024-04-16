@@ -271,6 +271,13 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             nogrid="*",
             datatype="longtext",
         )
+        self.add_control("/t", _("Stylesheet"))
+        self.add_control(
+            "style",
+            control="code",
+            nogrid="*",
+            datatype="longtext",
+        )
         self.add_control("/")
         self._add_save_and_run()
         self._add_save_and_run_visible()

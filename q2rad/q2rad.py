@@ -297,9 +297,9 @@ class Q2RadApp(Q2App):
             self.open_selected_app(True)
             self.check_app_update()
             self.on_new_tab()
-            # self.update_app_packages()
         else:
             self.close()
+        self.subwindow_count_changed()
 
     def open_selected_app(self, go_to_q2market=False):
         wait = Q2WaitShow(5, "Loading app> ")
@@ -475,8 +475,8 @@ class Q2RadApp(Q2App):
             host=self.selected_application.get("host_data", ""),
             port=self.selected_application.get("port_data", ""),
             guest_mode=self.selected_application.get("guest_mode", ""),
-            user="q2user",
-            password="q2password",
+            user=self.selected_application.get("username", ""),
+            password=self.selected_application.get("password", ""),
         )
         self.db = self.db_data
         if self.db_data:
@@ -485,8 +485,8 @@ class Q2RadApp(Q2App):
                 db_engine_name=self.selected_application.get("driver_logic", "").lower(),
                 host=self.selected_application.get("host_logic", ""),
                 port=self.selected_application.get("port_logic", ""),
-                user="q2user",
-                password="q2password",
+                user=self.selected_application.get("username", ""),
+                password=self.selected_application.get("password", ""),
             )
         self.last_root_password = ""
         if self.db_data is None or self.db_logic is None:
@@ -1040,6 +1040,7 @@ class Q2RadApp(Q2App):
                 , code_valid as valid
                 , code_when as _when
                 , code_show as _show
+                , style
             from `lines`
             where name = '{name}'
             order by seq

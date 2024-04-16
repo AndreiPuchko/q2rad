@@ -81,6 +81,7 @@ class Q2Form(_Q2Form):
         tag="",
         eat_enter=None,
         hotkey="",
+        style="",
         **args,
     ):
         if isinstance(to_form, str) and to_form != "":
@@ -123,6 +124,7 @@ class Q2Form(_Q2Form):
             tag,
             eat_enter,
             hotkey,
+            style,
             **args,
         )
 

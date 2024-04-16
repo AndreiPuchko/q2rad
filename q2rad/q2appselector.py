@@ -15,8 +15,8 @@
 
 from q2gui import q2app
 from q2gui.q2form import NEW, COPY
-from q2gui.q2model import Q2CursorModel
-from q2gui.q2dialogs import q2Mess, q2Wait, q2mess, q2working
+from q2gui.q2dialogs import q2Mess
+from q2gui.q2utils import Q2Crypto
 
 from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
@@ -33,7 +33,7 @@ from q2rad.q2appmanager import AppManager
 from q2rad.q2raddb import open_url
 
 
-SQL_ENGINES = ["MySQl", "Sqlite", "Postgresql"]
+SQL_ENGINES = ["MySQL", "SQLite", "PostgreSQL"]
 
 _ = gettext.gettext
 
@@ -81,11 +81,6 @@ class Q2AppSelect(Q2Form):
         self.add_control("/")
         if self.add_control("/f", _("Data storage")):
 
-            def driverDataValid(self=self):
-                self.w.host_data.set_enabled(self.s.driver_data != "Sqlite")
-                self.w.port_data.set_enabled(self.s.driver_data != "Sqlite")
-                self.w.select_data_storage_file.set_enabled(self.s.driver_data == "Sqlite")
-
             self.add_control(
                 "driver_data",
                 label=_("Storage type"),
@@ -94,7 +89,7 @@ class Q2AppSelect(Q2Form):
                 datatype="char",
                 datalen=30,
                 pic=";".join(SQL_ENGINES),
-                valid=driverDataValid,
+                valid=self.driver_data_valid,
             )
             if self.add_control("/h"):
                 self.add_control(
@@ -109,7 +104,6 @@ class Q2AppSelect(Q2Form):
                     _("?"),
                     mess=_("Open Data Storage sqlite database file"),
                     control="button",
-                    datalen=3,
                     valid=self.openSqliteDataFile,
                 )
                 self.add_control("/")
@@ -130,11 +124,6 @@ class Q2AppSelect(Q2Form):
 
         if self.add_control("/f", _("Logic storage")):
 
-            def driverLogicValid(form=self):
-                form.w.host_logic.set_enabled(form.s.driver_logic != "Sqlite")
-                form.w.port_logic.set_enabled(form.s.driver_logic != "Sqlite")
-                form.w.select_app_storage_file.set_enabled(form.s.driver_logic == "Sqlite")
-
             self.add_control(
                 "driver_logic",
                 label=_("Storage type"),
@@ -143,7 +132,7 @@ class Q2AppSelect(Q2Form):
                 datatype="char",
                 datalen=30,
                 pic=";".join(SQL_ENGINES),
-                valid=driverLogicValid,
+                valid=self.driver_logic_valid,
             )
             if self.add_control("/h"):
                 self.add_control(
@@ -158,7 +147,6 @@ class Q2AppSelect(Q2Form):
                     _("?"),
                     mess=_("Open App Storage sqlite database file"),
                     control="button",
-                    datalen=3,
                     valid=self.openSqliteDataFile,
                 )
                 self.add_control("/")
@@ -174,6 +162,19 @@ class Q2AppSelect(Q2Form):
                     mess=_("Allow to change App"),
                 )
                 self.add_control("/")
+            self.add_control("/")
+
+        if self.add_control("/h", "Database Credentials"):
+            self.add_control("epwd", "Credentials settings", control="button", valid=self.show_password_form)
+            self.add_control(
+                "credhash",
+                "Credhash",
+                datatype="char",
+                datalen=256,
+                noform=1,
+                nogrid=1,
+            )
+            self.add_control("/")
 
         self.add_action(
             _("Select"),
@@ -202,6 +203,147 @@ class Q2AppSelect(Q2Form):
 
         self.actions.add_action("/crud")
 
+    @staticmethod
+    def decrypt_creds(pin, credhash):
+        creds = Q2Crypto(pin).decrypt(credhash)
+        if creds is not None:
+            username = creds.split(":")[0]
+            password = creds.split(":")[1]
+            return username, password
+        else:
+            return None
+
+    def show_password_form(self):
+        username = ""
+        password = ""
+        if self.crud_mode == "EDIT" and self.s.credhash:
+            pin = self.get_pin(self.r.name)
+            if pin is None:
+                return
+            if Q2Crypto(pin).check_pin(self.s.credhash) is None:
+                q2Mess("Wrong PIN")
+                return
+            creds = self.decrypt_creds(pin, self.s.credhash)
+            if creds is not None:
+                username, password = creds
+        else:
+            pin = ""
+
+        pform = Q2Form("Database credentials")
+        pform.add_control("/f", "Username")
+        pform.add_control(
+            "user1",
+            "Enter username",
+            datatype="char",
+            datalen=100,
+            pic="*",
+            data=username,
+        )
+        pform.add_control(
+            "user2",
+            "Repeat username",
+            datatype="char",
+            datalen=100,
+            pic="*",
+            data=username,
+        )
+        pform.add_control("/")
+
+        pform.add_control("/")
+        pform.add_control("/f", "Password")
+        pform.add_control(
+            "pass1",
+            "Enter password",
+            datatype="char",
+            datalen=100,
+            pic="*",
+            data=password,
+        )
+        pform.add_control(
+            "pass2",
+            "Repeat password",
+            datatype="char",
+            datalen=100,
+            pic="*",
+            data=password,
+        )
+        pform.add_control("/")
+        pform.add_control("/f", "Protect credentials with PIN")
+        pform.add_control("pin1", "Enter PIN", datatype="char", datalen=10, pic="*", data=pin)
+        pform.add_control("pin2", "Repeat PIN", datatype="char", datalen=10, pic="*", data=pin)
+        pform.add_control("/")
+
+        def after_form_show():
+            pass
+
+        pform.after_form_show = after_form_show
+
+        def valid():
+            if (pform.s.user1 or pform.s.user2) and pform.s.user1 != pform.s.user2:
+                q2Mess("Username mismatch")
+                return False
+            if (pform.s.pass1 or pform.s.pass2) and pform.s.pass1 != pform.s.pass2:
+                q2Mess("Password mismatch")
+                return False
+            if (pform.s.pin1 or pform.s.pin2) and pform.s.pin1 != pform.s.pin2:
+                q2Mess("PIN mismatch")
+                return False
+            return True
+
+        pform.valid = valid
+        pform.ok_button = 1
+        pform.cancel_button = 1
+        pform.run()
+
+        if pform.ok_pressed:
+            if pform.s.user1 == "" and pform.s.pass1 == "":
+                self.s.credhash = ""
+            else:
+                self.s.credhash = Q2Crypto(pform.s.pin1).encrypt(pform.s.user1 + ":" + pform.s.pass1)
+
+    def get_pin(self, app_name=""):
+        pinform = Q2Form("Enter PIN")
+        pinform.add_control("/")
+        pinform.add_control("/h")
+        pinform.add_control("/s")
+        pinform.add_control("", "Application:", control="label")
+        pinform.add_control("appname", app_name, control="label", style="color:green;font-weight:bold;background:white")
+        pinform.add_control("/s")
+        pinform.add_control("/")
+        pinform.add_control("/f")
+        pinform.add_control("pin", "PIN", pic="*")
+        pinform.ok_button = 1
+        pinform.cancel_button = 1
+
+        # def before_form_show():
+        #     pinform.w.appname.set_style_sheet("color:green;font-weight:bold")
+
+        # pinform.before_form_show = before_form_show
+        pinform.run()
+        if pinform.ok_pressed:
+            return pinform.s.pin
+        else:
+            return None
+
+    def driver_logic_valid(self):
+        is_sqlite = self.s.driver_logic.lower() == "sqlite"
+        self.w.host_logic.set_enabled(not is_sqlite)
+        self.w.port_logic.set_enabled(not is_sqlite)
+        self.w.select_app_storage_file.set_enabled(is_sqlite)
+        self.credentials_fields_enable()
+
+    def driver_data_valid(self):
+        is_sqlite = self.s.driver_data.lower() == "sqlite"
+        self.w.host_data.set_enabled(not is_sqlite)
+        self.w.port_data.set_enabled(not is_sqlite)
+        self.w.select_data_storage_file.set_enabled(is_sqlite)
+        self.credentials_fields_enable()
+
+    def credentials_fields_enable(self):
+        creds_required = self.s.driver_data.lower() != "sqlite" or self.s.driver_logic.lower() != "sqlite"
+        # self.w.credhash.set_enabled(creds_required)
+        self.w.epwd.set_enabled(creds_required)
+
     def set_autoload(self):
         clean_this = self.r.autoselect
         self.db.cursor("update applications set autoselect='' ")
@@ -223,9 +365,6 @@ class Q2AppSelect(Q2Form):
                 self.s.database_data = fname
 
     def before_grid_show(self):
-        self.q2_app.sleep(0.2)
-        if self.q2_app.keyboard_modifiers() != "":
-            return
         if self.db.table("applications").row_count() <= 0:
             if not os.path.isdir("databases"):
                 os.mkdir("databases")
@@ -234,15 +373,22 @@ class Q2AppSelect(Q2Form):
                 {
                     "ordnum": 1,
                     "name": "My first app",
-                    "driver_data": "Sqlite",
+                    "driver_data": "SQLite",
                     "database_data": "databases/my_first_app_data_storage.sqlite",
-                    "driver_logic": "Sqlite",
+                    "driver_logic": "SQLite",
                     "database_logic": "databases/my_first_app_logic_storage.sqlite",
                     "dev_mode": "",
                 },
                 self.db,
             )
             self.refresh()
+        elif (
+            q2cursor("select * from applications where autoselect<>''", self.db).row_count() == 1
+        ):  # seek autoload
+            for row in range(self.model.row_count()):
+                if self.model.get_record(row).get("autoselect"):
+                    self.set_grid_index(row)
+                    break
 
     def before_crud_save(self):
         if self.s.name == "":
@@ -258,13 +404,13 @@ class Q2AppSelect(Q2Form):
             self.w.database_logic.set_focus()
             return False
 
-        if self.s.driver_logic == "Sqlite":
+        if self.s.driver_logic.lower() == "sqlite":
             self.s.host_logic = ""
             self.s.port_logic = ""
             if not os.path.isdir(os.path.dirname(self.s.database_logic)):
                 os.makedirs(os.path.dirname(self.s.database_logic))
 
-        if self.s.driver_data == "Sqlite":
+        if self.s.driver_data.lower() == "sqlite":
             self.s.host_data = ""
             self.s.port_data = ""
             if not os.path.isdir(os.path.dirname(self.s.database_data)):
@@ -276,11 +422,19 @@ class Q2AppSelect(Q2Form):
 
     def before_form_show(self):
         if self.crud_mode == "NEW":
-            self.s.driver_logic = "Sqlite"
-            self.s.driver_data = "Sqlite"
+            self.s.driver_logic = "SQLite"
+            self.s.driver_data = "SQLite"
             self.s.dev_mode = ""
             self.s.database_logic = "databases/_logic"
             self.s.database_data = "databases/_data"
+        else:
+            self.s.driver_logic = SQL_ENGINES[
+                ["mysql", "sqlite", "postgresql"].index(self.r.driver_logic.lower())
+            ]
+            self.s.driver_data = SQL_ENGINES[
+                ["mysql", "sqlite", "postgresql"].index(self.r.driver_data.lower())
+            ]
+
         self.w.driver_data.valid()
         self.w.driver_logic.valid()
         if self.crud_mode in [NEW, COPY]:
@@ -289,9 +443,9 @@ class Q2AppSelect(Q2Form):
 
     def run_demo(self):
         row = {
-            "driver_data": "Sqlite",
+            "driver_data": "SQLite",
             "database_data": ":memory:",
-            "driver_logic": "Sqlite",
+            "driver_logic": "SQLite",
             "database_logic": ":memory:",
             "dev_mode": "",
         }
@@ -313,6 +467,19 @@ class Q2AppSelect(Q2Form):
             q2Mess(_("Can't to load Demo App"))
 
     def _select_application(self, app_data={}):
+        if app_data.get("credhash"):
+            pin = self.get_pin(app_data.get("name", ""))
+            if pin is None:
+                return False
+            creds = self.decrypt_creds(pin, app_data.get("credhash"))
+            if creds is None:
+                q2Mess("Wrong PIN")
+                return False
+            app_data["username"] = creds[0]
+            app_data["password"] = creds[1]
+        else:
+            app_data["username"] = "q2user"
+            app_data["password"] = "q2password"
         q2_app: Q2App = q2app.q2_app
         q2_app.dev_mode = app_data.get("dev_mode")
         q2_app.selected_application = app_data
@@ -322,11 +489,13 @@ class Q2AppSelect(Q2Form):
         q2_app.show_statusbar()
         q2_app.show_tabbar()
         self.q2_app.process_events()
+        return True
 
     def select_application(self):
-        self.close()
+        # self.close()
         self.q2_app.process_events()
-        self._select_application(self.model.get_record(self.current_row))
+        if self._select_application(self.model.get_record(self.current_row)):
+            self.close()
 
     def run(self, autoload_enabled=True):
         q2_app: Q2App = q2app.q2_app
@@ -338,9 +507,12 @@ class Q2AppSelect(Q2Form):
         q2_app.hide_tabbar()
 
         self.autoload_enabled = autoload_enabled
-        if autoload_enabled:
+        self.q2_app.process_events()
+        self.q2_app.sleep(0.1)
+        km = self.q2_app.keyboard_modifiers()
+        if autoload_enabled and km != "shift":
             cu = q2cursor("select * from applications where autoselect<>''", self.db)
             if cu.row_count() > 0:
-                self._select_application(cu.record(0))
-                return False
+                if self._select_application(cu.record(0)):
+                    return False
         super().run()
