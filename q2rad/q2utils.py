@@ -492,13 +492,14 @@ class Q2_save_and_run:
 
 
 class auto_filter:
-    def __init__(self, form_name, mem):
+    def __init__(self, form_name, mem, lines_per_tab=10):
         self.form_name = form_name
         self.mem = mem
         self.filter_columns = []
         self.mem.ok_button = True
         self.mem.cancel_button = True
         self.mem.add_ok_cancel_buttons()
+        self.lines_per_tab = lines_per_tab
 
         self.auto_filter()
 
@@ -515,8 +516,13 @@ class auto_filter:
             """,
             self.mem.q2_app.db_logic,
         )
-        self.mem.add_control("/f")
+        make_tabs = cu.row_count() > self.lines_per_tab
+        if not make_tabs:
+            self.mem.add_control("/f")
         for col in cu.records():
+            if make_tabs and cu.current_row() % self.lines_per_tab == 0:
+                self.mem.add_control("/t", f"Tab #{1+ cu.current_row() // self.lines_per_tab}")
+                self.mem.add_control("/f")
             if col["control"] == "text":
                 col["control"] = "line"
             col = Q2Controls.validate(col)
@@ -538,6 +544,7 @@ class auto_filter:
                 col["check"] = 1
 
                 self.mem.add_control(**col)
+        self.mem.add_control("/")
         self.mem.valid = self.valid
 
     def valid(self):

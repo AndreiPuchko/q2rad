@@ -188,6 +188,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         _("?"),
                         mess=_("Open list of existing tables"),
                         control="button",
+                        datalen=2,
                         valid=self.select_linked_table,
                     )
                     self.add_control("to_table", gridlabel=_("To table"), datatype="char", datalen=100)
@@ -198,6 +199,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         _("?"),
                         mess=_("Open list of existing tables"),
                         control="button",
+                        datalen=2,
                         valid=self.select_linked_table_pk,
                     )
                     self.add_control("to_column", gridlabel=_("To field"), datatype="char", datalen=100)
@@ -209,6 +211,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         _("?"),
                         mess=_("Open list of existing columns"),
                         control="button",
+                        datalen=2,
                         valid=self.select_linked_table_column,
                     )
                     self.add_control("/")
@@ -222,6 +225,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         _("?"),
                         mess=_("Open list of existing forms"),
                         control="button",
+                        datalen=2,
                         valid=self.select_linked_form,
                     )
                     self.add_control("to_form", gridlabel=_("Form to open"), datatype="char", datalen=100)
@@ -328,11 +332,11 @@ class Q2Lines(Q2Form, Q2_save_and_run):
 
         if last < self.model.row_count():
             last_seq = int_(self.model.get_record(last)["seq"]) + 1
-            self.move_rows_down(last, False)
+            self.move_rows_down(last)
         else:
             last_seq = int_(self.model.get_record(self.model.row_count() - 1)["seq"]) + 2
 
-        self.move_rows_down(first, False)
+        self.move_rows_down(first)
         self.model.insert({"column": layout_type, "seq": first_seq})
         self.model.insert({"column": "/", "seq": last_seq})
         self.refresh()
@@ -342,7 +346,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             current_row = self.current_row
         for x in range(current_row, self.model.row_count()):
             rec = self.model.get_record(x)
-            self.model.update({"id": rec["id"], "seq": 1 + int_(rec["seq"])})
+            self.model.update({"id": rec["id"], "seq": 1 + int_(rec["seq"])}, refresh=False)
         if refresh:
             self.refresh()
 
@@ -357,17 +361,22 @@ class Q2Lines(Q2Form, Q2_save_and_run):
 
         def seek_end():
             nonlocal last_row
+            same_panel = 0
             while last_row < self.model.row_count():
                 self.set_grid_index(last_row)
-                # if is_panel_start():
-                #     break
-                if is_panel_end():
-                    break
+                if is_panel_start():
+                    same_panel += 1
+                elif is_panel_end():
+                    if same_panel == 1:
+                        break
+                    else:
+                        same_panel -= 1
                 last_row += 1
 
         def seek_start():
-            in_panel = -1 if is_panel_end() else 0
             nonlocal first_row
+            self.set_grid_index(first_row)
+            in_panel = -1 if is_panel_end() else 0
             while first_row > 0:
                 self.set_grid_index(first_row)
                 if is_panel_start():
@@ -381,6 +390,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
 
         if not is_panel_start():
             seek_start()
+        last_row = first_row
         if not is_panel_end():
             seek_end()
         self.set_grid_selected_rows([x for x in range(first_row, last_row + 1)])
