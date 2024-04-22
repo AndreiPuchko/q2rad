@@ -75,6 +75,7 @@ import subprocess
 import shutil
 import pkgutil
 import pkg_resources
+from importlib.metadata import version
 import logging
 import traceback
 
@@ -704,7 +705,7 @@ class Q2RadApp(Q2App):
         installed_packages = [x.name for x in pkgutil.iter_modules()]
         if package in installed_packages:
             try:
-                current_version = pkg_resources.get_distribution(package).version
+                current_version = version(package)
             except Exception as error:
                 _logger.error(f"Error checking version of {package}: {error}")
                 current_version = None
