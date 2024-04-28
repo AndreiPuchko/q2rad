@@ -188,7 +188,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         _("?"),
                         mess=_("Open list of existing tables"),
                         control="button",
-                        datalen=2,
+                        datalen=3,
                         valid=self.select_linked_table,
                     )
                     self.add_control("to_table", gridlabel=_("To table"), datatype="char", datalen=100)
@@ -199,7 +199,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         _("?"),
                         mess=_("Open list of existing tables"),
                         control="button",
-                        datalen=2,
+                        datalen=3,
                         valid=self.select_linked_table_pk,
                     )
                     self.add_control("to_column", gridlabel=_("To field"), datatype="char", datalen=100)
@@ -211,7 +211,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         _("?"),
                         mess=_("Open list of existing columns"),
                         control="button",
-                        datalen=2,
+                        datalen=3,
                         valid=self.select_linked_table_column,
                     )
                     self.add_control("/")
@@ -225,7 +225,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         _("?"),
                         mess=_("Open list of existing forms"),
                         control="button",
-                        datalen=2,
+                        datalen=3,
                         valid=self.select_linked_form,
                     )
                     self.add_control("to_form", gridlabel=_("Form to open"), datatype="char", datalen=100)
@@ -402,7 +402,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
 
         cols = self.q2_app.db_data.db_schema.get_schema_columns(self.prev_form.r.form_table)
         for x in cols:
-            if self.db.get("lines", f"name = '{self.prev_form.r.name}' and column = '{x}'") == {}:
+            if self.db.get("lines", f"name = '{self.prev_form.r.name}' and `column` = '{x}'") == {}:
                 insert(
                     "lines",
                     {

@@ -60,7 +60,7 @@ from q2rad.q2packages import Q2Packages
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
-from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder  # noqa F401
+from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder, open_document  # noqa F401
 from q2rad.q2utils import q2choice
 from q2rad.q2make import make_binary
 
@@ -110,7 +110,7 @@ def run_form(form_name, order="", where=""):
     return q2app.q2_app.run_form(form_name, order=order, where=where)
 
 
-def run_module(module_name=None, globals=globals(), locals=locals(), script="", import_only=False):
+def run_module(module_name=None, _globals={}, _locals=locals(), script="", import_only=False):
     if module_name is not None:
         script = q2app.q2_app.db_logic.get("modules", f"name = '{module_name}'", "script")
     if not script:
@@ -130,7 +130,7 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
         else:
             __name__ = "__main__"
 
-        locals.update(
+        _locals.update(
             {
                 "RETURN": None,
                 "ReturnEvent": ReturnEvent,
@@ -140,13 +140,15 @@ def run_module(module_name=None, globals=globals(), locals=locals(), script="", 
                 "__name__": __name__,
             }
         )
+        _globals.update(globals())
+        _globals.update(_locals)
         try:
-            exec(code["code"], globals, locals)
+            exec(code["code"], _globals)
         except ReturnEvent as error:
             pass
         except Exception as error:
             explain_error()
-        return locals["RETURN"]
+        return _globals["RETURN"]
 
 
 def explain_error(tb=None, errtype=None):
@@ -193,8 +195,10 @@ def explain_error(tb=None, errtype=None):
     for x in error["locals"]:
         if x in ("RETURN", "ReturnEvent", "mem", "self", "q2_app", "form", "myapp", "__name__"):
             continue
+        # if x in globals():
+        #     continue
         value = str(error["locals"][x])[:100]
-        msg.append(f"{x}:{value}")
+        msg.append(f"{x}: {value}")
     msg.append("-" * 25)
     msg = "\n".join(msg)
 
@@ -695,8 +699,13 @@ class Q2RadApp(Q2App):
             + f"&&{pip_command} pip install --upgrade --force-reinstall q2rad",
         )
 
-    def get_package_versions(self, package):
-        response = open_url(f"https://pypi.python.org/pypi/{package}/json")  # noqa F405
+    def get_package_versions(self, package, pipname=None):
+        if not isinstance(package, str):
+            pipname = package[1]
+            package = package[0]
+        response = open_url(
+            f"https://pypi.python.org/pypi/{pipname if pipname else package}/json"
+        )  # noqa F405
         if response:
             latest_version = json.load(response)["info"]["version"]
         else:
@@ -716,7 +725,7 @@ class Q2RadApp(Q2App):
                 except Exception as error:
                     _logger.error(f"Error checking version of {package}: {error}")
             if current_version is None:
-                q2mess(f"Error checkin curent version of {package}!")
+                q2mess(f"Error checking curent version of {package}!")
         else:
             current_version = None
 
@@ -731,8 +740,14 @@ class Q2RadApp(Q2App):
             if w.step(package):
                 break
             latest_version, current_version = self.get_package_versions(package)
+            # q2mess([package, latest_version, current_version])
             if self.db_logic is not None and package not in q2_modules:
-                pkg_ver = get("packages", f"package_name='{package}'", "package_version", q2_db=self.db_logic)
+                pkg_ver = get(
+                    "packages",
+                    f"package_name='{package if isinstance(package, str) else package[0]}'",
+                    "package_version",
+                    q2_db=self.db_logic,
+                )
                 if pkg_ver != "":
                     try:
                         latest_version = version.parse(pkg_ver)
@@ -745,9 +760,10 @@ class Q2RadApp(Q2App):
                         continue
             self.process_events()
             if force or latest_version != current_version and latest_version:
+                self.pip_install(package, latest_version)
                 try:
                     self.pip_install(package, latest_version)
-                except Exception:
+                except Exception as error:
                     try:
                         self.pip_install(package, latest_version)
                     except Exception:
@@ -756,10 +772,15 @@ class Q2RadApp(Q2App):
                 latest_version, new_current_version = self.get_package_versions(package)
                 if latest_version:
                     upgraded.append(
-                        f"{package} - " f"<b>{current_version}</b> => " f"<b>{latest_version}</b>"
+                        f"{package if isinstance(package, str) else package[0]} - "
+                        f"<b>{current_version}</b> => "
+                        f"<b>{latest_version}</b>"
                     )
                 else:
-                    upgraded.append(f"Error occured while updating package <b>{package}</b>!")
+                    upgraded.append(
+                        "Error occured while updating package "
+                        f"<b>{package if isinstance(package, str) else package[0]}</b>!"
+                    )
         w.close()
         if upgraded:
             mess = ("Upgrading complete!<p>" "The program will be restarted!" "<p><p>") + "<p>".join(upgraded)
@@ -815,15 +836,24 @@ class Q2RadApp(Q2App):
         if self.frozen:
             return
 
+        q2mess(
+            f'"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
+            f"--upgrade --no-cache-dir {package if isinstance(package, str) else package[1]} "
+            f"=={latest_version}"
+        )
+
         def pip_runner():
             trm = Q2Terminal(callback=print)
             trm.run(
                 f'"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
-                f"--upgrade --no-cache-dir {package}=={latest_version}"
+                f"--upgrade --no-cache-dir {package if isinstance(package, str) else package[1]}"
+                f"=={latest_version}"
             )
             trm.close()
 
-        q2working(pip_runner, _("Installing package %s...") % package)
+        q2working(
+            pip_runner, _("Installing package %s...") % package if isinstance(package, str) else package[1]
+        )
 
     def pip_uninstall(self, package):
         if self.frozen:
@@ -869,7 +899,8 @@ class Q2RadApp(Q2App):
         if self.frozen:
             return
         extra_packages = [
-            x["package_name"] for x in q2cursor("select * from packages", self.db_logic).records()
+            (x["package_name"], x["package_pipname"])
+            for x in q2cursor("select * from packages", self.db_logic).records()
         ]
         self.check_packages_update(extra_packages)
 
@@ -900,13 +931,16 @@ class Q2RadApp(Q2App):
                             continue
                     except Exception as error:
                         q2mess(
-                            f"Error зparsing version for <b>{package}</b>:"
+                            f"Error parsing version for <b>{package}</b>:"
                             f"<br> {error}<br>"
                             f"<b>{package}</b> packages update skipped"
                         )
                         continue
             if latest_version != current_version and latest_version:
-                list_2_upgrade_message.append(f"<b>{package}</b>: {current_version} > {latest_version}")
+                list_2_upgrade_message.append(
+                    f"<b>{package if isinstance(package, str) else package[0]}</b>: "
+                    f"{current_version} > {latest_version}"
+                )
                 list_2_upgrade.append(package)
                 if not can_upgrade:
                     can_upgrade = True
@@ -1150,12 +1184,14 @@ class Q2RadApp(Q2App):
             in_def_indent = -1
             for x in script.split("\n"):
                 if x.strip() == "":
+                    new_script_lines.append("")
                     continue
                 spaces_count = count_leading_spaces(x)
                 # when in_def is True  - do not modify return
-                if in_def is False and re.findall(r"^\s*def|^\s*class", x):
-                    in_def = True
-                    in_def_indent = spaces_count
+                if re.findall(r"^\s*def|^\s*class", x):
+                    if in_def is False:
+                        in_def = True
+                        in_def_indent = spaces_count
                 elif spaces_count <= in_def_indent:
                     in_def = False
                     in_def_indent = -1
@@ -1164,8 +1200,6 @@ class Q2RadApp(Q2App):
                     if x.strip() == "return":
                         x = x.replace("return", "raise ReturnEvent")
                     else:
-                        # x = x.replace("return", "RETURN = ") + ";raise ReturnEvent"
-                        # x = x.replace("\n", "").replace("\r", "") + ";raise ReturnEvent"
                         x = x.replace("\n", "").replace("\r", "")
                         x = x.replace("return", "RETURN =")
                         x += ";raise ReturnEvent"
@@ -1218,7 +1252,7 @@ class Q2RadApp(Q2App):
             for x in args:
                 __locals_dict[x] = args[x]
             globals()["q2_app"] = self
-            return run_module(script=script, locals=__locals_dict)
+            return run_module(script=script, _locals=__locals_dict)
 
         return real_runner
 

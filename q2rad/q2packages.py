@@ -31,7 +31,7 @@ class Q2Packages(Q2Form):
 
     def on_init(self):
         self.add_control("package_name", _("Name"), datatype="char", datalen=100, pk="*")
-        self.add_control("package_alias", _("Alias"), datatype="char", datalen=100)
+        self.add_control("package_pipname", _("Pip name"), datatype="char", datalen=100)
         self.add_control("package_version", _("Version"), datatype="char", datalen=10)
         self.add_control("comment", _("Comment"), datatype="text")
 
@@ -53,17 +53,21 @@ class Q2Packages(Q2Form):
 
     def uninstall(self):
         if q2AskYN(f"You are about tu uninstall package: {self.r.package_name}") == 2:
-            self.q2_app.pip_uninstall(self.r.package_name)
+            self.q2_app.pip_uninstall(
+                self.r.package_name if self.r.package_pipname == "" else self.r.package_pipname
+            )
 
     def install(self):
         version = (
             self.r.package_version
             if self.r.package_version
-            else self.q2_app.get_package_versions(self.r.package_name)[0]
+            else self.q2_app.get_package_versions(self.r.package_name, self.r.package_pipname)[0]
         )
         if version:
             try:
-                self.q2_app.pip_install(self.r.package_name, version)
+                self.q2_app.pip_install(
+                    self.r.package_name if self.r.package_pipname == "" else self.r.package_pipname, version
+                )
             except Exception:
                 q2Mess(_(f"pip install <b>{self.r.package_name}</b> error!"))
             finally:
@@ -72,7 +76,9 @@ class Q2Packages(Q2Form):
             q2Mess(f"Package <b>{self.r.package_name}</b> not found!")
 
     def info(self):
-        latest_version, current_version = self.q2_app.get_package_versions(self.r.package_name)
+        latest_version, current_version = self.q2_app.get_package_versions(
+            self.r.package_name, self.r.package_pipname
+        )
         # if not current_version:
         #     current_version = "Was not imported; "
         #     _cv = self.q2_app.code_runner(
