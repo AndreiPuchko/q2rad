@@ -523,11 +523,11 @@ class Q2RadApp(Q2App):
         # self.dev_mode = False
 
         if self.dev_mode:
-            self.add_menu("Dev|Forms", self.run_forms, toolbar=self.dev_mode)
-            self.add_menu("Dev|Modules", self.run_modules, toolbar=self.dev_mode)
-            self.add_menu("Dev|Querys", self.run_queries, toolbar=self.dev_mode)
-            self.add_menu("Dev|Reports", self.run_reports, toolbar=self.dev_mode)
-            self.add_menu("Dev|Packages", self.run_packages, toolbar=self.dev_mode)
+            self.add_menu("Dev|Forms", self.run_forms)
+            self.add_menu("Dev|Modules", self.run_modules)
+            self.add_menu("Dev|Querys", self.run_queries)
+            self.add_menu("Dev|Reports", self.run_reports)
+            self.add_menu("Dev|Packages", self.run_packages)
             if not self.frozen:
                 self.add_menu("Dev|-")
                 self.add_menu("Dev|Make binary", self.make_binary)
@@ -786,7 +786,6 @@ class Q2RadApp(Q2App):
             mess = ("Upgrading complete!<p>" "The program will be restarted!" "<p><p>") + "<p>".join(upgraded)
         else:
             mess = "Updates not found!<p>"
-        q2Mess(mess)
         if upgraded:
             self.restart()
 
@@ -835,12 +834,6 @@ class Q2RadApp(Q2App):
     def pip_install(self, package, latest_version):
         if self.frozen:
             return
-
-        q2mess(
-            f'"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
-            f"--upgrade --no-cache-dir {package if isinstance(package, str) else package[1]} "
-            f"=={latest_version}"
-        )
 
         def pip_runner():
             trm = Q2Terminal(callback=print)

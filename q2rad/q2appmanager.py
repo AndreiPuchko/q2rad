@@ -40,6 +40,7 @@ app_tables = [
 class AppManager(Q2Form):
     def __init__(self, title=""):
         super().__init__("Manage q2Application")
+        self.selected_tables = []
 
     def on_init(self):
         app_data = q2app.q2_app.selected_application
@@ -332,7 +333,68 @@ class AppManager(Q2Form):
                 rez[x].append(row)
         return rez
 
+    def tables_selector(self, mode="export"):
+        st = Q2Form(f"Select tables for {mode}")
+        st.ok_button = 1
+        st.cancel_button = 1
+
+        def get_widgets(st=st):
+            return [x for x in st.widgets() if x.startswith("c_")]
+
+        tables = [
+            x
+            for x in q2app.q2_app.db_data.get_tables()
+            if not x.startswith("log_") and x != "sqlite_sequence"
+        ]
+        if st.add_control("/v"):
+            if st.add_control("/vr"):
+                tables.sort()
+                for index, table in enumerate(tables):
+                    if self.selected_tables == []:
+                        check_data = 1
+                    else:
+                        check_data = table in self.selected_tables
+
+                    label = get("forms", f"form_table='{table}'", "title", self.q2_app.db_logic)
+                    st.add_control(
+                        f"c_{index}", pic=f"{table} ({label})", control="check", data=check_data, stretch=99
+                    )
+            st.add_control("/")
+        st.add_control("/")
+        st.add_control("/h")
+        st.add_control(
+            "all",
+            "Check all",
+            control="button",
+            datalen=10,
+            valid=lambda: [st.s.__setattr__(x, 1) for x in get_widgets()],
+        )
+        st.add_control(
+            "nothing",
+            "Uncheck all",
+            control="button",
+            datalen=10,
+            valid=lambda: [st.s.__setattr__(x, 0) for x in get_widgets()],
+        )
+        st.add_control(
+            "invert",
+            "Invert",
+            control="button",
+            datalen=10,
+            valid=lambda: [st.s.__setattr__(x, 0 if st.s.__getattr__(x) else 1) for x in get_widgets()],
+        )
+        st.add_control("/")
+        st.run()
+
+        if st.ok_pressed:
+            self.selected_tables = [
+                table for index, table in enumerate(tables) if st.s.__getattr__(f"c_{index}")
+            ]
+            return True
+
     def export_data(self, file=""):
+        if not self.tables_selector("export"):
+            return
         filetype = "JSON(*.json)"
         if not file:
             file, filetype = q2app.q2_app.get_save_file_dialoq("Export Database", filter=filetype)
@@ -349,14 +411,16 @@ class AppManager(Q2Form):
     def get_data_json(self):
         db: Q2Db = q2app.q2_app.db_data
         rez = {}
-        for x in db.get_tables():
-            if x in app_tables:
+        for table in db.get_tables():
+            if table in app_tables:
                 continue
-            if x.startswith("log_") or x == "sqlite_sequence":
+            if table.startswith("log_") or table == "sqlite_sequence":
                 continue
-            rez[x] = []
-            for row in db.table(x).records():
-                rez[x].append(row)
+            if table not in self.selected_tables:
+                continue
+            rez[table] = []
+            for row in db.table(table).records():
+                rez[table].append(row)
         return rez
 
     def import_q2market(self):
@@ -410,6 +474,8 @@ class AppManager(Q2Form):
             q2Mess("<br>".join(errors))
 
     def import_data(self, file=""):
+        if not self.tables_selector("import"):
+            return
         filetype = "JSON(*.json)"
         if not file:
             file, filetype = q2app.q2_app.get_open_file_dialoq("Import Data", filter=filetype)
@@ -418,10 +484,10 @@ class AppManager(Q2Form):
             return
 
         data = json.load(open(file))
-        self.import_json_data(data)
+        self.import_json_data(data, self.selected_tables)
 
     @staticmethod
-    def import_json_data(data):
+    def import_json_data(data, selected_tables=[]):
         db: Q2Db = q2app.q2_app.db_data
         db_tables = db.get_tables()
         wait_table = Q2WaitShow(len(data))
@@ -429,6 +495,8 @@ class AppManager(Q2Form):
         for table in data:
             wait_table.step(table)
             if table not in db_tables:
+                continue
+            if selected_tables and table not in selected_tables:
                 continue
             wait_row = Q2WaitShow(len(data[table]))
             db.cursor(f"delete from {table}")
