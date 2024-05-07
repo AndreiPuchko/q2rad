@@ -22,7 +22,7 @@ from q2rad.q2raddb import last_error
 from q2rad.q2utils import Q2Form, int_
 
 from q2gui import q2app
-
+import csv
 
 import gettext
 
@@ -91,7 +91,8 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         # self.add_seq_actions()
 
         self.add_action("Run", self.form_runner, hotkey="F4")
-        self.add_action("Fill", self.filler)
+        self.add_action("Fill from DB", self.filler)
+        self.add_action("Fill from CSV", self.csv_filler)
         self.add_action("-")
         self.add_action("Select panel", icon="⭥", worker=self.select_panel, hotkey="F3")
         self.add_action("Copy to", icon="❖", worker=self.copy_to)
@@ -103,6 +104,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
 
     def create_form(self):
         from q2rad.q2forms import Q2Forms
+
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
         self.add_control("column", _("Column name"), datalen=50)
         self.add_control("/")
@@ -303,15 +305,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         rows = self.get_grid_selected_rows()
         choice = choice_form()
         if choice:
-            seq = (
-                int_(
-                    q2cursor(
-                        f"select max(seq) as maxseq from lines where name='{choice['name']}'",
-                        q2app.q2_app.db_logic,
-                    ).r.maxseq
-                )
-                + 1
-            )
+            seq = self.get_next_sequence(choice["name"])
             for x in rows:
                 rec = self.model.get_record(x)
                 rec["seq"] = seq
@@ -320,6 +314,18 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 if not insert("lines", rec, q2app.q2_app.db_logic):
                     print(last_error(q2app.q2_app.db_logic))
             self.refresh()
+
+    def get_next_sequence(self, form_name):
+        seq = (
+            int_(
+                q2cursor(
+                    f"select max(seq) as maxseq from lines where name='{form_name}'",
+                    q2app.q2_app.db_logic,
+                ).r.maxseq
+            )
+            + 1
+        )
+        return seq
 
     def add_layout(self, layout_type):
         selected_row = sorted(self.get_grid_selected_rows())
@@ -401,6 +407,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 return
 
         cols = self.q2_app.db_data.db_schema.get_schema_columns(self.prev_form.r.form_table)
+        seq = self.get_next_sequence(self.prev_form.r.name)
         for x in cols:
             if self.db.get("lines", f"name = '{self.prev_form.r.name}' and `column` = '{x}'") == {}:
                 insert(
@@ -414,9 +421,46 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         "pk": cols[x]["pk"],
                         "ai": cols[x]["ai"],
                         "migrate": "*",
+                        "seq": seq,
                     },
                     self.db,
                 )
+                seq += 1
+        self.refresh()
+
+    def csv_filler(self):
+        if self.model.row_count() > 0:
+            if q2AskYN("Lines list is not empty! Are you sure") != 2:
+                return
+
+        csv_file_name = q2app.q2_app.get_open_file_dialoq("Open CSV file", filter="CSV (*.csv)")[0]
+        if not csv_file_name:
+            return
+
+        with open(csv_file_name) as csv_file:
+            reader = csv.DictReader(csv_file, dialect="excel", delimiter=";")
+            cols = {x: 0 for x in reader.fieldnames}
+            for x in reader:
+                for key, value in x.items():
+                    cols[key] = max(cols[key], len(value))
+            cols
+        seq = self.get_next_sequence(self.prev_form.r.name)
+        for x in cols:
+            if self.db.get("lines", f"name = '{self.prev_form.r.name}' and `column` = '{x}'") == {}:
+                insert(
+                    "lines",
+                    {
+                        "name": self.prev_form.r.name,
+                        "column": x,
+                        "label": x,
+                        "datatype": "char",
+                        "datalen": cols[x],
+                        "migrate": "*",
+                        "seq": seq,
+                    },
+                    self.db,
+                )
+                seq += 1
         self.refresh()
 
     def before_crud_save(self):
@@ -431,7 +475,6 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         self.datatype_valid()
         self.control_valid()
         self.database_valid()
-        # self.next_sequense()
 
     def datatype_valid(self):
         self.w.datalen.set_enabled(self.s.datatype in ";".join(HAS_DATALEN))

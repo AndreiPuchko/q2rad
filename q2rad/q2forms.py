@@ -262,7 +262,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
     def select_data_storage_table(self):
         choice = choice_table()
         if choice:
-            self.s.form_table = choice['table']
+            self.s.form_table = choice["table"]
             if self.s.name == "":
                 self.s.name = self.s.form_table
             if self.s.title == "":
@@ -272,7 +272,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         choice = choice_column(self.s.form_table)
         if choice:
             self.s.form_table_sort += ", " if self.s.form_table_sort else ""
-            self.s.form_table_sort += choice['col']
+            self.s.form_table_sort += choice["col"]
 
     def form_runner(self):
         name = self.r.name
@@ -283,3 +283,29 @@ class Q2Forms(Q2Form, Q2_save_and_run):
             q2mess(_("Give me some NAME!!!"))
             self.w.name.set_focus()
             return False
+
+    def after_crud_save(self):
+        super().after_crud_save()
+        if self.crud_mode != "EDIT":
+            if self.s.form_table:
+                self.db.insert(
+                    "lines",
+                    {
+                        "name": self.s.name,
+                        "column": "id",
+                        "noform": "*",
+                        "nogrid": "*",
+                        "datatype": "int",
+                        "migrate": "*",
+                        "pk": "*",
+                        "ai": "*",
+                    },
+                )
+                self.db.insert(
+                    "actions",
+                    {
+                        "name": self.s.name,
+                        "action_mode": "1",
+                    },
+                )
+                self.refresh()

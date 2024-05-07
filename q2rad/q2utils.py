@@ -357,7 +357,7 @@ def q2choice(records=[], title="Make your choice", column_title=["Column"]):
 
 def choice_table():
     return q2choice(
-        [{"table": x} for x in q2app.q2_app.db_data.db_schema.get_schema_tables()],
+        [{"table": x} for x in q2app.q2_app.db_data.db_schema.get_schema_tables() if not x.startswith("log_")],
         title="Select table",
         column_title="Table",
     )
