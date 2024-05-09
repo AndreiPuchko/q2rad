@@ -731,6 +731,12 @@ class Q2RadApp(Q2App):
 
         return latest_version, current_version
 
+    def get_git_package_version(git_package):
+        package_name = os.path.basename(git_package)
+        package_path = git_package.replace("github.com", "githubusercontent.com")
+        version_url = f"https://raw.{package_path}/main/{package_name}/version.py"
+        return read_url(version_url).decode().split("=")[-1].strip()
+
     def update_packages(self, packages_list=q2_modules, force=False):
         if self.frozen:
             return
@@ -912,7 +918,12 @@ class Q2RadApp(Q2App):
         for package in rez:
             latest_version, current_version = rez[package]
             if self.db_logic is not None and package not in q2_modules:
-                pkg_ver = get("packages", f"package_name='{package}'", "package_version", q2_db=self.db_logic)
+                pkg_ver = get(
+                    "packages",
+                    f"package_name='{package if isinstance(package, str) else package[0]}'",
+                    "package_version",
+                    q2_db=self.db_logic,
+                )
                 pkg_ver = pkg_ver if pkg_ver else "99999"
                 if pkg_ver != "":
                     try:

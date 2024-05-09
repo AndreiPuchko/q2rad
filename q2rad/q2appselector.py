@@ -102,13 +102,14 @@ class Q2AppSelect(Q2Form):
                 self.add_control(
                     "select_data_storage_file",
                     _("?"),
+                    datalen=3,
                     mess=_("Open Data Storage sqlite database file"),
                     control="button",
                     valid=self.openSqliteDataFile,
                 )
                 self.add_control("/")
             if self.add_control("/h"):
-                self.add_control("host_data", _("Host"), gridlabel=_("Data host"), datalen=100)
+                self.add_control("host_data", _("Host"), gridlabel=_("Data host"), datalen=100, stretch=90)
                 self.add_control("port_data", _("Port"), gridlabel=_("Data port"), datatype="int")
                 self.add_control(
                     "guest_mode",
@@ -118,6 +119,7 @@ class Q2AppSelect(Q2Form):
                     datalen=1,
                     mess=_("No database schema changes"),
                 )
+                self.add_control("/s", stretch=0)
                 self.add_control("/")
 
             self.add_control("/")
@@ -145,13 +147,14 @@ class Q2AppSelect(Q2Form):
                 self.add_control(
                     "select_app_storage_file",
                     _("?"),
+                    datalen=3,
                     mess=_("Open App Storage sqlite database file"),
                     control="button",
                     valid=self.openSqliteDataFile,
                 )
                 self.add_control("/")
             if self.add_control("/h"):
-                self.add_control("host_logic", _("Host"), gridlabel=_("Logic host"), datalen=100)
+                self.add_control("host_logic", _("Host"), gridlabel=_("Logic host"), datalen=100, stretch=90)
                 self.add_control("port_logic", _("Port"), gridlabel=_("Logic port"), datatype="int")
                 self.add_control(
                     "dev_mode",
@@ -161,6 +164,7 @@ class Q2AppSelect(Q2Form):
                     datalen=1,
                     mess=_("Allow to change App"),
                 )
+                self.add_control("/s", stretch=0)
                 self.add_control("/")
             self.add_control("/")
 
@@ -307,7 +311,9 @@ class Q2AppSelect(Q2Form):
         pinform.add_control("/h")
         pinform.add_control("/s")
         pinform.add_control("", "Application:", control="label")
-        pinform.add_control("appname", app_name, control="label", style="color:green;font-weight:bold;background:white")
+        pinform.add_control(
+            "appname", app_name, control="label", style="color:green;font-weight:bold;background:white"
+        )
         pinform.add_control("/s")
         pinform.add_control("/")
         pinform.add_control("/f")
