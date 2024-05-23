@@ -766,16 +766,15 @@ class Q2RadApp(Q2App):
                         continue
             self.process_events()
             if force or latest_version != current_version and latest_version:
-                self.pip_install(package, latest_version)
                 try:
                     self.pip_install(package, latest_version)
                 except Exception as error:
                     try:
                         self.pip_install(package, latest_version)
-                    except Exception:
-                        pass
-
-                latest_version, new_current_version = self.get_package_versions(package)
+                    except Exception as error:
+                        latest_version = None
+                        logging.warning(f"pip update {package} error:{error}")
+                    # latest_version, new_current_version = self.get_package_versions(package)
                 if latest_version:
                     upgraded.append(
                         f"{package if isinstance(package, str) else package[0]} - "
@@ -792,6 +791,7 @@ class Q2RadApp(Q2App):
             mess = ("Upgrading complete!<p>" "The program will be restarted!" "<p><p>") + "<p>".join(upgraded)
         else:
             mess = "Updates not found!<p>"
+        q2mess(mess)
         if upgraded:
             self.restart()
 
@@ -1144,13 +1144,13 @@ class Q2RadApp(Q2App):
                             return self.get_form(child_form_name)
 
                         return worker
-
                     form.add_action(
                         x["action_text"],
                         self.code_runner(x["action_worker"]) if x["action_worker"] else None,
                         child_form=get_action_form(child_form_name),
                         child_where=x["child_where"],
                         hotkey=x["action_key"],
+                        mess=x["action_mess"],
                         icon=x["action_icon"],
                         tag=x["tag"],
                         child_noshow=x["child_noshow"],
@@ -1163,6 +1163,7 @@ class Q2RadApp(Q2App):
                         self.code_runner(x["action_worker"], form=form) if x["action_worker"] else None,
                         hotkey=x["action_key"],
                         icon=x["action_icon"],
+                        mess=x["action_mess"],
                         tag=x["tag"],
                         child_noshow=x["child_noshow"],
                         child_copy_mode=x["child_copy_mode"],

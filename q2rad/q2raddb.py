@@ -111,7 +111,7 @@ def insert(table, row, q2_db=None):
     return q2_db.insert(table, row)
 
 
-def insert_if_not_exist(table, row, key_column, q2_db=None):
+def insert_if_not_exists(table, row, key_column, q2_db=None):
     q2_db: Q2Db = get_default_db(q2_db)
     value = row.get(key_column, "0")
     if q2_db.get(table, f"{key_column} = '{value}'") == {}:
@@ -122,6 +122,9 @@ def insert_if_not_exist(table, row, key_column, q2_db=None):
         return q2_db.insert(table, row)
     else:
         return True
+
+
+insert_if_not_exist = insert_if_not_exists
 
 
 def raw_insert(table, row, q2_db=None):
