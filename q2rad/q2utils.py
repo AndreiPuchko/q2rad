@@ -233,6 +233,7 @@ class Q2Form(_Q2Form):
                 self.db,
             )
         form = Q2Form(f"Changelog ({self.title})")
+        form.db = self.db
         form.add_control("/")
         form.add_control("/h", "-")
         form.add_control("q2_mode", "Mode", datalen=3)
@@ -290,12 +291,14 @@ class q2cursor(Q2Cursor):
     def __init__(self, sql="", q2_db=None, data=[]):
         if q2_db is None:
             q2_db = q2app.q2_app.db_data
+        self._q2_db = q2_db
         super().__init__(q2_db, sql, data=data)
         if q2_db.last_sql_error:
             print(q2_db.last_sql_error)
 
     def q2form(self):
         form = Q2Form(self.sql)
+        form.db = self._q2_db
         for x in self.record(0):
             form.add_control(x, x, datalen=250)
         form.set_model(Q2CursorModel(self))

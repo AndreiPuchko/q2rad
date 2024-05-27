@@ -218,6 +218,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
 
     def on_init(self):
         self.report_edit_form = None
+        self.db = q2app.q2_app.db_logic
 
         self.add_control("name", _("Name"), datatype="char", datalen=100, pk="*")
         self.add_control("/")

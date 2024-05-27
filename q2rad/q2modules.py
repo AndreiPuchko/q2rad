@@ -16,6 +16,7 @@
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2dialogs import q2AskYN
+from q2gui import q2app
 from q2rad.q2utils import Q2Form
 from q2rad.q2utils import Q2_save_and_run
 from q2gui.q2utils import num
@@ -34,6 +35,7 @@ class Q2Modules(Q2Form, Q2_save_and_run):
 
     def on_init(self):
         self.editor_actions = Q2Actions()
+        self.db = q2app.q2_app.db_logic
         self.add_control(
             "name",
             _("Name"),

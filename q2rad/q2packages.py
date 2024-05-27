@@ -18,6 +18,7 @@ from q2gui.q2model import Q2CursorModel
 from q2gui.q2dialogs import q2Mess, q2AskYN
 
 from q2rad.q2utils import Q2Form
+from q2gui import q2app
 import gettext
 
 
@@ -30,6 +31,7 @@ class Q2Packages(Q2Form):
         self.no_view_action = True
 
     def on_init(self):
+        self.db = q2app.q2_app.db_logic
         self.add_control("package_name", _("Name"), datatype="char", datalen=100, pk="*")
         self.add_control("package_pipname", _("Pip name"), datatype="char", datalen=100)
         self.add_control("package_version", _("Version"), datatype="char", datalen=10)

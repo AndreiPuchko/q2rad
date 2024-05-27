@@ -23,6 +23,7 @@ import json
 import gettext
 import re
 from q2rad.q2utils import Q2Form
+from q2gui import q2app
 
 _ = gettext.gettext
 re_find_param = re.compile(r"(?::\b\w+\b|\{.+\})")
@@ -35,6 +36,7 @@ class Q2Queries(Q2Form, Q2_save_and_run):
 
     def on_init(self):
         self.create_form()
+        self.db = q2app.q2_app.db_logic
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="queries")
         model = Q2CursorModel(cursor)
