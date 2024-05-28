@@ -446,13 +446,14 @@ class AppManager(Q2Form):
         db_tables = db.get_tables()
         wait_table = Q2WaitShow(len(data))
         errors = []
+        db.transaction()
         for table in data:
             wait_table.step(table)
             if table not in db_tables:
                 continue
             wait_row = Q2WaitShow(len(data[table]))
             if table != "packages":
-                db.cursor(f'delete from `{table}` where name not like "\\_%"')
+                db.cursor(f'delete from `{table}` where substr(name,1,1) <> "_"')
             if db.last_sql_error:
                 errors.append(db.last_sql_error)
             for row in data[table]:
@@ -469,6 +470,7 @@ class AppManager(Q2Form):
                     errors.append(db.last_sql_error)
                     errors.append(db.last_record)
             wait_row.close()
+        db.commit()
         wait_table.close()
         if errors:
             q2Mess("<br>".join(errors))
@@ -491,6 +493,7 @@ class AppManager(Q2Form):
         db: Q2Db = q2app.q2_app.db_data
         db_tables = db.get_tables()
         wait_table = Q2WaitShow(len(data))
+        db.transaction()
         errors = []
         for table in data:
             wait_table.step(table)
@@ -506,6 +509,7 @@ class AppManager(Q2Form):
                     errors.append(db.last_sql_error)
                     # print(db.last_sql_error)
             wait_row.close()
+        db.commit()
         wait_table.close()
         if errors:
             q2Mess("<br>".join(errors))
