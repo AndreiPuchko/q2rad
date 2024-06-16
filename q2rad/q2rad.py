@@ -57,6 +57,7 @@ from q2rad.q2forms import Q2Forms
 from q2rad.q2lines import Q2Lines
 from q2rad.q2market import Q2Market
 from q2rad.q2packages import Q2Packages
+from q2rad.q2extensions import Q2Extensions
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
@@ -111,44 +112,57 @@ def run_form(form_name, order="", where=""):
 
 
 def run_module(module_name=None, _globals={}, _locals=locals(), script="", import_only=False):
+    ext_modules = []
     if module_name is not None:
         script = q2app.q2_app.db_logic.get("modules", f"name = '{module_name}'", "script")
-    if not script:
-        return
-    code = q2app.q2_app.code_compiler(script)
-    if code["code"] is False:
-        msg = code["error"]
-        if threading.current_thread() is threading.main_thread():
-            q2Mess(f"{msg}".replace("\n", "<br>").replace(" ", "&nbsp;"))
-        print(f"{msg}")
-        print("-" * 25)
-        _logger.error(msg)
-        return
-    else:
-        if import_only:
-            __name__ = ""
+        for row in q2cursor("select prefix from extensions order by seq").records():
+            ext_module_name = row["prefix"] + module_name
+            if get("modules", f"name='{ext_module_name}'", "name", q2app.q2_app.db_logic) == ext_module_name:
+                ext_modules.append(ext_module_name)
+    if script:
+        code = q2app.q2_app.code_compiler(script)
+        if code["code"] is False:
+            msg = code["error"]
+            if threading.current_thread() is threading.main_thread():
+                q2Mess(f"{msg}".replace("\n", "<br>").replace(" ", "&nbsp;"))
+            print(f"{msg}")
+            print("-" * 25)
+            _logger.error(msg)
+            return
         else:
-            __name__ = "__main__"
+            if import_only:
+                __name__ = ""
+            else:
+                __name__ = "__main__"
 
-        _locals.update(
-            {
-                "RETURN": None,
-                "ReturnEvent": ReturnEvent,
-                "self": q2app.q2_app,
-                "q2_app": q2app.q2_app,
-                "myapp": q2app.q2_app,
-                "__name__": __name__,
-            }
-        )
-        _globals.update(globals())
-        _globals.update(_locals)
-        try:
-            exec(code["code"], _globals)
-        except ReturnEvent as error:
-            pass
-        except Exception as error:
-            explain_error()
-        return _globals["RETURN"]
+            _locals.update(
+                {
+                    "RETURN": None,
+                    "ReturnEvent": ReturnEvent,
+                    "self": q2app.q2_app,
+                    "q2_app": q2app.q2_app,
+                    "myapp": q2app.q2_app,
+                    "__name__": __name__,
+                }
+            )
+            _globals.update(globals())
+            _globals.update(_locals)
+            try:
+                exec(code["code"], _globals)
+            except ReturnEvent as error:
+                pass
+            except Exception as error:
+                explain_error()
+
+    if ext_modules:
+        res = None
+        for mdl in ext_modules:
+            res = run_module(mdl, _globals=_globals, _locals=_locals, import_only=import_only)
+
+        if res is not None:
+            return res
+
+    return _globals.get("RETURN")
 
 
 def explain_error(tb=None, errtype=None):
@@ -326,6 +340,7 @@ class Q2RadApp(Q2App):
         else:
             self.set_title(f"{self.selected_application.get('name', '')}")
         self.run_module("autorun")
+        self.run_module("_autorun")
 
         if go_to_q2market and (
             max(
@@ -368,7 +383,10 @@ class Q2RadApp(Q2App):
         )
         for column in cu.records():
             data_schema.add(**column)
-        for form in (Q2Constants(),):
+        for form in (
+            Q2Constants(),
+            Q2Extensions(),
+        ):
             for x in form.get_table_schema():
                 data_schema.add(**x)
 
@@ -1029,6 +1047,9 @@ class Q2RadApp(Q2App):
     def run_packages(self):
         Q2Packages().run()
 
+    def run_extensions(self):
+        Q2Extensions().run()
+
     def make_binary(self):
         make_binary(self)
 
@@ -1144,6 +1165,7 @@ class Q2RadApp(Q2App):
                             return self.get_form(child_form_name)
 
                         return worker
+
                     form.add_action(
                         x["action_text"],
                         self.code_runner(x["action_worker"]) if x["action_worker"] else None,
@@ -1214,8 +1236,8 @@ class Q2RadApp(Q2App):
                 # import
                 if re.findall(r"^\s*import\W*.*", x):
                     module = x.split("import")[1].strip()
-                    if self.db_logic.get("modules", f"name='{module}'", "name"):
-                        x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
+                    # if self.db_logic.get("modules", f"name='{module}'", "name"):
+                    x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
 
                 new_script_lines.append(x)
             script = "\n".join(new_script_lines)

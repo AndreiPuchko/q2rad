@@ -96,7 +96,7 @@ class AppManager(Q2Form):
                         "App URL",
                         control="line",
                         data=q2app.q2_app.app_url,
-                        disabled=1,
+                        readonly=1,
                     )
                 if q2app.q2_app.app_version:
                     self.add_control(
@@ -104,20 +104,20 @@ class AppManager(Q2Form):
                         "App version",
                         control="line",
                         data=q2app.q2_app.app_version,
-                        disabled=1,
+                        readonly=1,
                     )
                 self.add_control(
                     "drl",
                     "Database type",
                     data=app_data["driver_logic"].lower(),
-                    disabled=1,
+                    readonly=1,
                     datalen=len(app_data["driver_logic"].strip()) + 5,
                 )
                 self.add_control(
                     "dtl",
                     "Database name ",
                     data=app_data["database_logic"],
-                    disabled=1,
+                    readonly=1,
                     datalen=len(app_data["database_logic"].strip()),
                 )
                 if app_data.get("host_logic"):
@@ -125,7 +125,7 @@ class AppManager(Q2Form):
                         "hl",
                         "Host",
                         data=app_data["host_logic"],
-                        disabled=1,
+                        readonly=1,
                         datalen=len(app_data["host_logic"].strip()),
                     )
                 if num(app_data.get("port_logic")):
@@ -133,12 +133,21 @@ class AppManager(Q2Form):
                         "pl",
                         "Port",
                         data=app_data["port_logic"],
-                        disabled=1,
+                        readonly=1,
                         datalen=len(app_data["port_logic"]) + 5,
                     )
                 self.add_control("/")
 
                 if self.add_control("/h", ""):
+                    self.add_control(
+                        "exts",
+                        "Extensions",
+                        control="button",
+                        # datalen=13,
+                        valid=q2app.q2_app.run_extensions,
+                    )
+
+                    self.add_control("/s")
                     if self.add_control("/h", "Export"):
                         self.add_control(
                             "save_app",
@@ -188,14 +197,14 @@ class AppManager(Q2Form):
                     "drd",
                     "Database type",
                     data=app_data["driver_data"].lower(),
-                    disabled=1,
+                    readonly=1,
                     datalen=len(app_data["driver_data"].strip()) + 5,
                 )
                 self.add_control(
                     "dtd",
                     "Database name ",
                     data=app_data["database_data"],
-                    disabled=1,
+                    readonly=1,
                     datalen=len(app_data["database_data"].strip()),
                 )
                 if app_data.get("host_data"):
@@ -203,7 +212,7 @@ class AppManager(Q2Form):
                         "hd",
                         "Host",
                         data=app_data["host_data"],
-                        disabled=1,
+                        readonly=1,
                         datalen=len(app_data["host_data"].strip()),
                     )
                 if num(app_data.get("port_data")):
@@ -211,7 +220,7 @@ class AppManager(Q2Form):
                         "pd",
                         "Port",
                         data=app_data["port_data"],
-                        disabled=1,
+                        readonly=1,
                         datalen=len(app_data["port_data"]) + 5,
                     )
                 self.add_control("/")
@@ -321,16 +330,23 @@ class AppManager(Q2Form):
                 json.dump(app_json, open(file, "w"), indent=1)
 
     def get_app_json(self):
+        return AppManager._get_app_json()
+
+    @staticmethod
+    def _get_app_json(prefix=""):
         db: Q2Db = q2app.q2_app.db_logic
         rez = {}
-        for x in db.get_tables():
-            if x not in app_tables:
+        for table in db.get_tables():
+            if table not in app_tables:
                 continue
-            if x.startswith("log_") or x == "sqlite_sequence":
+            if table.startswith("log_") or table == "sqlite_sequence":
                 continue
-            rez[x] = []
-            for row in db.table(x).records():
-                rez[x].append(row)
+            rez[table] = []
+            for row in db.table(table).records():
+                if prefix:
+                    if table != "packages" and not row.get("name").startswith(prefix):
+                        continue
+                rez[table].append(row)
         return rez
 
     def tables_selector(self, mode="export"):
@@ -440,7 +456,7 @@ class AppManager(Q2Form):
         self.q2_app.open_selected_app()
 
     @staticmethod
-    def import_json_app(data, db=None):
+    def import_json_app(data, db=None, prefix=""):
         if db is None:
             db: Q2Db = q2app.q2_app.db_logic
         db_tables = db.get_tables()
@@ -453,7 +469,10 @@ class AppManager(Q2Form):
                 continue
             wait_row = Q2WaitShow(len(data[table]))
             if table != "packages":
-                db.cursor(f'delete from `{table}` where substr(name,1,1) <> "_"')
+                if prefix:
+                    db.cursor(f'delete from `{table}` where substr(name,1,{len(prefix)}) = "{prefix}"')
+                else:
+                    db.cursor(f'delete from `{table}` where substr(name,1,1) <> "_"')
             if db.last_sql_error:
                 errors.append(db.last_sql_error)
             for row in data[table]:
@@ -464,8 +483,13 @@ class AppManager(Q2Form):
                         == row["package_name"]
                     ):
                         continue
-                if row.get("name", "").startswith("_"):
-                    continue
+                else:
+                    if prefix:
+                        if not row.get("name").startswith(prefix):
+                            continue
+                    else:
+                        if row.get("name", "").startswith("_"):
+                            continue
                 if not db.insert(table, row):
                     errors.append(db.last_sql_error)
                     errors.append(db.last_record)
