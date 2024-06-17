@@ -41,9 +41,10 @@ class Q2Market(Q2Form):
         data = json.loads(read_url(q2market_catalogue_url).decode("utf-8"))
         rez = []
         for x in data:
-            rec = data[x]
-            rec["app_url"] = x
-            rez.append(rec)
+            if "app_title" in data[x]:
+                rec = data[x]
+                rec["app_url"] = x
+                rez.append(rec)
         model = Q2Model()
         model.set_records(rez)
         self.set_model(model)

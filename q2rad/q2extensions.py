@@ -14,6 +14,7 @@
 
 
 import os
+from datetime import datetime
 from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel
 from q2gui.q2dialogs import q2Mess, q2AskYN, q2working
@@ -21,6 +22,7 @@ from q2gui.q2dialogs import q2Mess, q2AskYN, q2working
 from q2rad.q2utils import Q2Form
 from q2gui import q2app
 from q2rad.q2appmanager import AppManager
+from q2terminal.q2terminal import Q2Terminal
 import gettext
 import json
 
@@ -37,7 +39,7 @@ class Q2Extensions(Q2Form):
         self.db = q2app.q2_app.db_data
         self.add_control("prefix", _("Name"), datatype="char", datalen=50, pk="*")
         self.add_control("seq", _("Sequence number"), datatype="int")
-        self.add_control("datetime", _("Uploaded"), datatype="char", datalen=16, readonly=True)
+        self.add_control("version", _("Version"), datatype="char", datalen=16, readonly=True)
         self.add_control("checkupdates", _("Check for updatea"), control="check", datatype="char", datalen=1)
         self.add_control("comment", _("Comment"), datatype="text")
 
@@ -54,7 +56,7 @@ class Q2Extensions(Q2Form):
     def info(self):
         pass
 
-    def export_json(self, file):
+    def export_json(self, file=""):
         prefix = self.r.prefix
         filetype = "JSON(*.json)"
         if not file:
@@ -75,9 +77,6 @@ class Q2Extensions(Q2Form):
             if ext_json:
                 json.dump(ext_json, open(file, "w"), indent=1)
 
-    def export_q2market(self):
-        pass
-
     def import_json(self, file=""):
         prefix = self.r.prefix
         filetype = "JSON(*.json)"
@@ -94,5 +93,50 @@ class Q2Extensions(Q2Form):
             AppManager.import_json_app(data, prefix=prefix)
             self.q2_app.open_selected_app()
 
+    def export_q2market(self):
+        prefix = self.r.prefix
+        if not self.q2_app.app_url:
+            q2Mess("No App URL!")
+            return
+        if (
+            q2AskYN(
+                f"<p>You are about to export Extension ({prefix}) "
+                f"<p>into folder {os.path.abspath(self.q2_app.q2market_path)}"
+                "<p>Are you sure?"
+            )
+            != 2
+        ):
+            return
+
+        q2market_file = f"{self.q2_app.q2market_path}/q2market.json"
+        if os.path.isfile(q2market_file):
+            q2market = json.load(open(q2market_file))
+        else:
+            q2market = {}
+
+        version = datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
+        ext_url = f"{os.path.dirname(self.q2_app.app_url)}/{prefix}"
+        q2market[ext_url] = {
+            "ext_title": prefix,
+            "ext_version": version,
+            "ext_description": self.r.comment,
+        }
+        json.dump(q2market, open(q2market_file, "w"), indent=2)
+        open(f"{self.q2_app.q2market_path}/{prefix}.version", "w").write(version)
+        self.db.update("extensions", {"prefix": prefix, "version": version})
+
+        self.export_json(f"{self.q2_app.q2market_path}/{prefix}.json")
+
+        trm = Q2Terminal(callback=print)
+
+        def worker():
+            trm.run(f"cd {self.q2_app.q2market_path}")
+            trm.run("git add -A")
+            trm.run(f"""git commit -a -m"{version}"  """)
+
+        q2working(worker, "Commiting")
+        q2Mess(trm.run("""git push"""))
+        trm.close()
+
     def import_q2market(self):
-        pass
+        q2app.q2_app.check_ext_update(self.r.prefix, force_update=True)

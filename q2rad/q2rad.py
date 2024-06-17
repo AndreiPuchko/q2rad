@@ -314,6 +314,7 @@ class Q2RadApp(Q2App):
         if self.selected_application != {}:
             self.open_selected_app(True)
             self.check_app_update()
+            self.check_ext_update()
             self.on_new_tab()
         else:
             self.close()
@@ -911,6 +912,45 @@ class Q2RadApp(Q2App):
                     data = json.load(open_url(self.app_url + ".json"))  # noqa F405
                     AppManager.import_json_app(data)
                     self.open_selected_app()
+
+    def check_ext_update(self, prefix="", force_update=False):
+        if self.frozen:
+            return
+        if prefix:
+            cu = q2cursor(f"select * from extensions where prefix='{prefix}'")
+        else:
+            cu = q2cursor(f"select * from extensions order by seq")
+        for row in cu.records():
+            _prefix = row["prefix"]
+            ext_url = f"{os.path.dirname(self.app_url)}/{_prefix}"
+            ext_version = row["version"]
+            if not os.path.isdir(self.q2market_path) or force_update:
+                try:
+                    market_version = read_url(ext_url + ".version").decode("utf-8")  # noqa F405
+                except Exception as e:  # noqa F841
+                    self.show_statusbar_mess("An error occurred while checking for updates")
+                    return
+                if force_update or market_version and market_version != ext_version:
+                    if force_update:
+                        update_detected = (
+                            f"You are about to rewrite current Extension ({_prefix}) <b>{self.app_title}</b>!"
+                        )
+                    else:
+                        update_detected = (
+                            f"Update for Extension ({_prefix}) <b>{self.app_title}</b> detected!"
+                        )
+                    if (
+                        q2AskYN(
+                            f"{update_detected}"
+                            f"<p>Current version <b>{ext_version}</b>"
+                            f"<p>New version <b>{market_version}</b>"
+                            "<p>Download and install?"
+                        )
+                        == 2
+                    ):
+                        data = json.load(open_url(ext_url + ".json"))  # noqa F405
+                        AppManager.import_json_app(data, prefix=_prefix)
+        self.open_selected_app()
 
     def update_app_packages(self):
         if self.frozen:
