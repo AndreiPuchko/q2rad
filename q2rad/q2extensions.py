@@ -49,7 +49,8 @@ class Q2Extensions(Q2Form):
         self.set_model(model)
         self.add_action("/crud")
         self.add_action("Export|as JSON file", self.export_json, eof_disabled=True)
-        self.add_action("Export|to q2Market", self.export_q2market, eof_disabled=True)
+        if os.path.isdir(self.q2_app.q2market_path):
+            self.add_action("Export|to q2Market", self.export_q2market, eof_disabled=True)
         self.add_action("Import|from JSON file", self.import_json, eof_disabled=True)
         self.add_action("Import|from q2Market", self.import_q2market, eof_disabled=True)
 

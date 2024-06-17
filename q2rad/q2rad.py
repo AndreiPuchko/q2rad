@@ -919,7 +919,7 @@ class Q2RadApp(Q2App):
         if prefix:
             cu = q2cursor(f"select * from extensions where prefix='{prefix}'")
         else:
-            cu = q2cursor(f"select * from extensions order by seq")
+            cu = q2cursor(f"select * from extensions where checkupdates<>'' order by seq")
         for row in cu.records():
             _prefix = row["prefix"]
             ext_url = f"{os.path.dirname(self.app_url)}/{_prefix}"
@@ -1276,8 +1276,8 @@ class Q2RadApp(Q2App):
                 # import
                 if re.findall(r"^\s*import\W*.*", x):
                     module = x.split("import")[1].strip()
-                    # if self.db_logic.get("modules", f"name='{module}'", "name"):
-                    x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
+                    if self.db_logic.get("modules", f"name='{module}'", "name"):
+                        x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
 
                 new_script_lines.append(x)
             script = "\n".join(new_script_lines)
