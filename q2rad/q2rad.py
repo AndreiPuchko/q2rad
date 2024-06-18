@@ -762,7 +762,7 @@ class Q2RadApp(Q2App):
         upgraded = []
         w = Q2WaitShow(len(packages_list))
         for package in packages_list:
-            if w.step(package):
+            if w.step(f"{package if isinstance(package, str) else package[0]}"):
                 break
             latest_version, current_version = self.get_package_versions(package)
             # q2mess([package, latest_version, current_version])
@@ -859,6 +859,9 @@ class Q2RadApp(Q2App):
     def pip_install(self, package, latest_version):
         if self.frozen:
             return
+
+        if isinstance(package, tuple) or isinstance(package, list):
+            package = package[1] if package[1] else package[0]
 
         def pip_runner():
             trm = Q2Terminal(callback=print)
