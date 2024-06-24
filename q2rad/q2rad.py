@@ -111,7 +111,11 @@ def run_form(form_name, order="", where=""):
     return q2app.q2_app.run_form(form_name, order=order, where=where)
 
 
-def run_module(module_name=None, _globals={}, _locals=locals(), script="", import_only=False):
+def get_form(form_name, order="", where=""):
+    return q2app.q2_app.get_form(form_name, order=order, where=where)
+
+
+def run_module(module_name=None, _globals={}, _locals={}, script="", import_only=False):
     ext_modules = []
     if module_name is not None:
         script = q2app.q2_app.db_logic.get("modules", f"name = '{module_name}'", "script")
@@ -135,7 +139,7 @@ def run_module(module_name=None, _globals={}, _locals=locals(), script="", impor
             else:
                 __name__ = "__main__"
 
-            _locals.update(
+            _globals.update(
                 {
                     "RETURN": None,
                     "ReturnEvent": ReturnEvent,
@@ -146,10 +150,14 @@ def run_module(module_name=None, _globals={}, _locals=locals(), script="", impor
                 }
             )
             _globals.update(globals())
-            _globals.update(_locals)
             try:
-                exec(code["code"], _globals)
+                if _locals:
+                    exec(code["code"], _globals, _locals)
+                else:
+                    exec(code["code"], _globals)
             except ReturnEvent as error:
+                if _locals:
+                    _globals["RETURN"] = _locals["RETURN"]
                 pass
             except Exception as error:
                 explain_error()
@@ -161,8 +169,10 @@ def run_module(module_name=None, _globals={}, _locals=locals(), script="", impor
 
         if res is not None:
             return res
-
-    return _globals.get("RETURN")
+    res = _globals.get("RETURN")
+    if "RETURN" in _globals:
+        del _globals["RETURN"]
+    return res
 
 
 def explain_error(tb=None, errtype=None):
@@ -1149,7 +1159,8 @@ class Q2RadApp(Q2App):
             """
         cu: Q2Cursor = q2cursor(sql, self.db_logic)
 
-        form = Q2Form(form_dic["title"])
+        mem = form = Q2Form(form_dic["title"])
+        form._name = name
         form.no_view_action = False if form_dic["view_action"] else True
         form.ok_button = form_dic["ok_button"]
         form.cancel_button = form_dic["cancel_button"]
@@ -1181,6 +1192,7 @@ class Q2RadApp(Q2App):
                 x["show"] = self.code_runner(x["_show"], form)
             x["when"] = self.code_runner(x["_when"], form)
             form.add_control(**x)
+            run_module("_e_control", _locals=locals())
 
         # add datasource
         if form_dic["form_table"]:
@@ -1192,7 +1204,23 @@ class Q2RadApp(Q2App):
             form_model = Q2CursorModel(form_cursor)
             form.set_model(form_model)
         # add actions
-        sql = f"select * from actions where name = '{name}' order by seq"
+
+        ext_actions = []
+        for row in q2cursor("select prefix from extensions order by seq").records():
+            ext_name = row["prefix"]
+            if (
+                get("actions", f"name='{ext_name}{name}'", "name", q2app.q2_app.db_logic)
+                == f"{ext_name}{name}"
+            ):
+                ext_actions.append(
+                    f"""select * from (select * from actions 
+                                        where name = '{ext_name}{name}' order by seq) qq"""
+                )
+        if ext_actions:
+            ext_select = " union all  " + " union all  ".join(ext_actions)
+        else:
+            ext_select = ""
+        sql = f"select * from (select * from actions where name = '{name}' order by seq ) qq {ext_select}"
         cu = q2cursor(sql, self.db_logic)
         for x in cu.records():
             if x["action_mode"] == "1":
