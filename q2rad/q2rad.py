@@ -1107,7 +1107,8 @@ class Q2RadApp(Q2App):
         make_binary(self)
 
     def run_form(self, name, order="", where=""):
-        form = q2working(lambda: self.get_form(name, where=where, order=order), "Loading form...")
+        # form = q2working(lambda: self.get_form(name, where=where, order=order), "Loading form...")
+        form = self.get_form(name, where=where, order=order)
         form.run()
 
     def get_form(
@@ -1262,7 +1263,7 @@ class Q2RadApp(Q2App):
                         child_copy_mode=x["child_copy_mode"],
                         eof_disabled=x["eof_disabled"],
                     )
-
+            run_module("_e_action", _locals=locals())
         return form
 
     def code_compiler(self, script):
