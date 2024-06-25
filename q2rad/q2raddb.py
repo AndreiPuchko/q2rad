@@ -168,3 +168,8 @@ def rollback(q2_db=None):
 
 def today():
     return datetime.date.today()
+
+
+def ensure_empty_pk(table="", row={}, q2_db=None):
+    q2_db = get_default_db(q2_db)
+    q2_db.ensure_empty_pk(table, row)

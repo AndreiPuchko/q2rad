@@ -17,7 +17,7 @@ from q2db.cursor import Q2Cursor
 
 from q2gui.q2model import Q2CursorModel
 
-from q2gui.q2dialogs import q2mess
+from q2gui.q2dialogs import q2mess, q2ask
 from q2gui import q2app
 
 from q2rad.q2lines import Q2Lines
@@ -288,6 +288,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         super().after_crud_save()
         if self.crud_mode != "EDIT":
             if self.s.form_table:
+                ai = "*" if q2ask("Set AUTOINCREMENT for primary key?") else ""
                 self.db.insert(
                     "lines",
                     {
@@ -298,7 +299,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
                         "datatype": "int",
                         "migrate": "*",
                         "pk": "*",
-                        "ai": "*",
+                        "ai": ai,
                     },
                 )
                 self.db.insert(
