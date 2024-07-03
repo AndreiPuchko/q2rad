@@ -17,7 +17,7 @@ from q2db.cursor import Q2Cursor
 from q2gui.q2model import Q2CursorModel, Q2Model
 from q2gui.q2widget import Q2Widget
 from q2gui.q2app import Q2Actions
-from q2rad.q2utils import q2cursor, Q2_save_and_run
+from q2rad.q2utils import q2cursor, Q2_save_and_run, num
 from q2gui.q2utils import set_dict_default
 import json
 import gettext
@@ -244,6 +244,18 @@ class Q2QueryList(Q2Form):
         self.add_action("/crud")
         self.model.readonly = False
         self.last_current_row = -1
+
+    def after_form_show(self):
+        if self.crud_mode != "EDIT":
+            start_value = self.r.name
+            while True:
+                _pkvalue_list = re.split(r"([^\d]+)", start_value)
+                _base = "".join(_pkvalue_list[:-1])
+                _suffix = num(_pkvalue_list[-1]) + 1
+                start_value = f"{_base}{_suffix}"
+                if start_value not in [row["name"] for row in self.model.records]:
+                    break
+            self.s.name = start_value
 
     def set_content(self, content):
         self.model.reset()
