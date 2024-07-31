@@ -153,12 +153,20 @@ class Q2RadReport(Q2Report):
             co = 0
             name, ext = os.path.splitext(rez_name)
             while True:
-                lockfile = f"{os.path.dirname(rez_name)}/.~lock.{os.path.basename(rez_name)}#"
-                if os.path.isfile(lockfile):
-                    co += 1
-                    rez_name = f"{name}{co:03d}{ext}"
-                else:
-                    break
+                if os.path.isfile(rez_name):
+                    try:
+                        os.remove(rez_name)
+                    except Exception as e:
+                        co += 1
+                        rez_name = f"{name}{co:03d}{ext}"
+                        continue
+                # lockfile = f"{os.path.dirname(rez_name)}/.~lock.{os.path.basename(rez_name)}#"
+                # if os.path.isfile(lockfile):
+                #     co += 1
+                #     rez_name = f"{name}{co:03d}{ext}"
+                # else:
+                #     break
+                break
         return rez_name
 
     def data_start(self):

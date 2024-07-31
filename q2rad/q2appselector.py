@@ -97,7 +97,7 @@ class Q2AppSelect(Q2Form):
                     "Database",
                     gridlabel=_("Data storage"),
                     datatype="char",
-                    datalen=100,
+                    datalen=255,
                 )
                 self.add_control(
                     "select_data_storage_file",
@@ -142,7 +142,7 @@ class Q2AppSelect(Q2Form):
                     "Database",
                     gridlabel="Logic storage",
                     datatype="char",
-                    datalen=100,
+                    datalen=255,
                 )
                 self.add_control(
                     "select_app_storage_file",
