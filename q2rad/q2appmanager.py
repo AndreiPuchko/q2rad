@@ -173,10 +173,18 @@ class AppManager(Q2Form):
                             "load_app",
                             "From JSON file",
                             control="button",
+                            mess="Excluding _ prefixes",
                             # datalen=10,
                             valid=self.import_app,
                         )
-
+                        self.add_control(
+                            "load_app_all",
+                            "From JSON file *",
+                            mess="Import all, including _ prefixes",
+                            control="button",
+                            # datalen=10,
+                            valid=self.import_app_all,
+                        )
                         if self.q2_app.app_url:
                             self.add_control(
                                 "load_q2market_app",
@@ -455,6 +463,19 @@ class AppManager(Q2Form):
         # self.q2_app.migrate_db_data()
         self.q2_app.open_selected_app()
 
+    def import_app_all(self, file=""):
+        filetype = "JSON(*.json)"
+        if not file:
+            file, filetype = q2app.q2_app.get_open_file_dialoq("Import Application", filter=filetype)
+
+        if not file or not os.path.isfile(file):
+            return
+
+        data = json.load(open(file))
+        self.import_json_app(data, prefix="*")
+        # self.q2_app.migrate_db_data()
+        self.q2_app.open_selected_app()
+
     @staticmethod
     def import_json_app(data, db=None, prefix=""):
         if db is None:
@@ -469,7 +490,9 @@ class AppManager(Q2Form):
                 continue
             wait_row = Q2WaitShow(len(data[table]))
             if table != "packages":
-                if prefix:
+                if prefix == "*":
+                    db.cursor(f"delete from `{table}`")
+                elif prefix:
                     db.cursor(f'delete from `{table}` where substr(name,1,{len(prefix)}) = "{prefix}"')
                 else:
                     db.cursor(f'delete from `{table}` where substr(name,1,1) <> "_"')
@@ -484,7 +507,9 @@ class AppManager(Q2Form):
                     ):
                         continue
                 else:
-                    if prefix:
+                    if prefix == "*":
+                        pass
+                    elif prefix:
                         if not row.get("name").startswith(prefix):
                             continue
                     else:

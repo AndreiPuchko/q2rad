@@ -40,7 +40,9 @@ class Q2Extensions(Q2Form):
         self.add_control("prefix", _("Name"), datatype="char", datalen=50, pk="*")
         self.add_control("seq", _("Sequence number"), datatype="int")
         self.add_control("version", _("Version"), datatype="char", datalen=16, readonly=True)
-        self.add_control("checkupdates", _("Check for updatea"), control="check", datatype="char", datalen=1)
+        self.add_control("q2market_path", _("q2market folder"), datatype="char", datalen=255)
+        self.add_control("q2market_url", _("q2market url"), datatype="char", datalen=255)
+        self.add_control("checkupdates", _("Check for updates"), control="check", datatype="char", datalen=1)
         self.add_control("comment", _("Comment"), datatype="text")
 
         cursor: Q2Cursor = self.q2_app.db_data.table(table_name="extensions")
@@ -49,8 +51,8 @@ class Q2Extensions(Q2Form):
         self.set_model(model)
         self.add_action("/crud")
         self.add_action("Export|as JSON file", self.export_json, eof_disabled=True)
-        if os.path.isdir(self.q2_app.q2market_path):
-            self.add_action("Export|to q2Market", self.export_q2market, eof_disabled=True)
+        # if os.path.isdir(self.q2_app.q2market_path):
+        self.add_action("Export|to q2Market", self.export_q2market, eof_disabled=True)
         self.add_action("Import|from JSON file", self.import_json, eof_disabled=True)
         self.add_action("Import|from q2Market", self.import_q2market, eof_disabled=True)
 
@@ -96,42 +98,48 @@ class Q2Extensions(Q2Form):
 
     def export_q2market(self):
         prefix = self.r.prefix
-        if not self.q2_app.app_url:
+        q2market_path = self.r.q2market_path if self.r.q2market_path else self.q2_app.q2market_path
+        q2market_url = self.r.q2market_url if self.r.q2market_url else self.q2_app.q2market_url
+        if not os.path.isdir(q2market_path):
+            q2Mess("No q2market path!")
+            return
+        if not q2market_url:
             q2Mess("No App URL!")
             return
         if (
             q2AskYN(
                 f"<p>You are about to export Extension ({prefix}) "
-                f"<p>into folder {os.path.abspath(self.q2_app.q2market_path)}"
+                f"<p>into folder {os.path.abspath(q2market_path)}"
+                f"<p>and  upload into  {os.path.abspath(q2market_url)}"
                 "<p>Are you sure?"
             )
             != 2
         ):
             return
 
-        q2market_file = f"{self.q2_app.q2market_path}/q2market.json"
+        q2market_file = f"{q2market_path}/q2market.json"
         if os.path.isfile(q2market_file):
             q2market = json.load(open(q2market_file))
         else:
             q2market = {}
 
         version = datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
-        ext_url = f"{os.path.dirname(self.q2_app.app_url)}/{prefix}"
+        ext_url = f"{q2market_url}/{prefix}"
         q2market[ext_url] = {
             "ext_title": prefix,
             "ext_version": version,
             "ext_description": self.r.comment,
         }
         json.dump(q2market, open(q2market_file, "w"), indent=2)
-        open(f"{self.q2_app.q2market_path}/{prefix}.version", "w").write(version)
+        open(f"{q2market_path}/{prefix}.version", "w").write(version)
         self.db.update("extensions", {"prefix": prefix, "version": version})
 
-        self.export_json(f"{self.q2_app.q2market_path}/{prefix}.json")
+        self.export_json(f"{q2market_path}/{prefix}.json")
 
         trm = Q2Terminal(callback=print)
 
         def worker():
-            trm.run(f"cd {self.q2_app.q2market_path}")
+            trm.run(f"cd {q2market_path}")
             trm.run("git add -A")
             trm.run(f"""git commit -a -m"{version}"  """)
 
@@ -140,4 +148,8 @@ class Q2Extensions(Q2Form):
         trm.close()
 
     def import_q2market(self):
-        q2app.q2_app.check_ext_update(self.r.prefix, force_update=True)
+        q2market_url = self.r.q2market_url if self.r.q2market_url else self.q2_app.q2market_url
+        if q2market_url:
+            q2app.q2_app.check_ext_update(self.r.prefix, force_update=True)
+        else:
+            q2Mess("No App URL!")

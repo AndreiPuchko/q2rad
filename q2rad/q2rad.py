@@ -926,7 +926,7 @@ class Q2RadApp(Q2App):
                     AppManager.import_json_app(data)
                     self.open_selected_app()
 
-    def check_ext_update(self, prefix="", force_update=False):
+    def check_ext_update(self, prefix="", force_update=False, ext_url=""):
         if self.frozen:
             return
         if prefix:
@@ -935,7 +935,14 @@ class Q2RadApp(Q2App):
             cu = q2cursor(f"select * from extensions where checkupdates<>'' order by seq")
         for row in cu.records():
             _prefix = row["prefix"]
-            ext_url = f"{os.path.dirname(self.app_url)}/{_prefix}"
+
+            if ext_url:
+                ext_url = f"{ext_url}/{_prefix}"
+            elif self.app_url:
+                ext_url = f"{os.path.dirname(self.app_url)}/{_prefix}"
+            else:
+                ext_url = f"{self.q2market_url}/{_prefix}"
+
             ext_version = row["version"]
             if not os.path.isdir(self.q2market_path) or force_update:
                 try:
@@ -963,6 +970,7 @@ class Q2RadApp(Q2App):
                     ):
                         data = json.load(open_url(ext_url + ".json"))  # noqa F405
                         AppManager.import_json_app(data, prefix=_prefix)
+                        update("extensions", {"prefix":row["prefix"], "version":market_version})
         self.open_selected_app()
 
     def update_app_packages(self):
