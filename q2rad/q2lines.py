@@ -125,7 +125,8 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             if self.add_control("/h"):
                 self.add_control("stretch", _("Stretch factor"), datatype="int")
                 self.add_control("alignment", _("Alignment"), datatype="int", datalen=3)
-                self.add_control("tag", _("Tag"), datatype="char", datalen=100)
+                self.add_control("tag", _("Tag"), datatype="char", datalen=100, stretch=99)
+                self.add_control("/s")
                 self.add_control("/")
             if self.add_control("/h", _("Control type")):
                 self.add_control(

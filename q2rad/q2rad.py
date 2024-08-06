@@ -139,6 +139,7 @@ def run_module(module_name=None, _globals={}, _locals={}, script="", import_only
             else:
                 __name__ = "__main__"
 
+            _globals.update(globals())
             _globals.update(
                 {
                     "RETURN": None,
@@ -149,7 +150,6 @@ def run_module(module_name=None, _globals={}, _locals={}, script="", import_only
                     "__name__": __name__,
                 }
             )
-            _globals.update(globals())
             try:
                 if _locals:
                     exec(code["code"], _globals, _locals)
@@ -322,7 +322,7 @@ class Q2RadApp(Q2App):
         self.set_title("Open Application")
         Q2AppSelect().run(autoload_enabled)
         if self.selected_application != {}:
-            self.open_selected_app(True)
+            self.open_selected_app(True, migrate_db_data=False)
             self.check_app_update()
             self.check_ext_update()
             self.on_new_tab()
@@ -330,14 +330,18 @@ class Q2RadApp(Q2App):
             self.close()
         self.subwindow_count_changed()
 
-    def open_selected_app(self, go_to_q2market=False):
+    def open_selected_app(self, go_to_q2market=False, migrate_db_data=True):
         wait = Q2WaitShow(5, "Loading app> ")
         wait.step("Prepare")
         self.clear_app_info()
         wait.step("Migrate logic DB")
         self.migrate_db_logic(self.db_logic)
-        wait.step("Migrate data DB")
-        self.migrate_db_data()
+        if migrate_db_data:
+            wait.step("Migrate data DB")
+            self.migrate_db_data()
+        else:
+            wait.step("Create menus")
+            self.create_menu()
         wait.step("looking for updates")
         self.process_events()
         wait.step("Done!")
@@ -926,7 +930,7 @@ class Q2RadApp(Q2App):
                     AppManager.import_json_app(data)
                     self.open_selected_app()
 
-    def check_ext_update(self, prefix="", force_update=False, ext_url=""):
+    def check_ext_update(self, prefix="", force_update=False, _ext_url=""):
         if self.frozen:
             return
         if prefix:
@@ -936,8 +940,8 @@ class Q2RadApp(Q2App):
         for row in cu.records():
             _prefix = row["prefix"]
 
-            if ext_url:
-                ext_url = f"{ext_url}/{_prefix}"
+            if _ext_url:
+                ext_url = f"{_ext_url}/{_prefix}"
             elif self.app_url:
                 ext_url = f"{os.path.dirname(self.app_url)}/{_prefix}"
             else:

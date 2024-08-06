@@ -467,7 +467,7 @@ class Q2AppSelect(Q2Form):
             self.close()
             AppManager.import_json_app(json.load(response_app))
             self.q2_app.open_selected_app()
-            self.q2_app.migrate_db_data()
+            # self.q2_app.migrate_db_data()
             AppManager.import_json_data(json.load(response_data))
         else:
             q2Mess(_("Can't to load Demo App"))

@@ -104,7 +104,7 @@ class Q2Modules(Q2Form, Q2_save_and_run):
                 != 2
             ):
                 return False
-        self.s.last_line = self.w.script.current_line()+1
+        self.s.last_line = self.w.script.current_line() + 1
         # return super().before_crud_save()
 
     def before_form_show(self):
@@ -118,8 +118,12 @@ class Q2Modules(Q2Form, Q2_save_and_run):
             self.w.script.set_focus()
 
     def script_runner(self):
-        self.q2_app.code_runner(self.r.script)()
+        # self.q2_app.code_runner(self.r.script)()
+        from q2rad.q2rad import run_module
+        run_module(script=self.r.script)
 
     def editor_just_run(self):
-        self.q2_app.code_runner(self.s.script)()
+        # self.q2_app.code_runner(self.s.script)()
+        from q2rad.q2rad import run_module
+        run_module(script=self.s.script)
         self.w.script.set_focus()

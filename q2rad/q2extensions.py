@@ -25,6 +25,8 @@ from q2rad.q2appmanager import AppManager
 from q2terminal.q2terminal import Q2Terminal
 import gettext
 import json
+from q2rad.q2raddb import read_url
+from q2gui.q2model import Q2Model
 
 
 _ = gettext.gettext
@@ -55,6 +57,14 @@ class Q2Extensions(Q2Form):
         self.add_action("Export|to q2Market", self.export_q2market, eof_disabled=True)
         self.add_action("Import|from JSON file", self.import_json, eof_disabled=True)
         self.add_action("Import|from q2Market", self.import_q2market, eof_disabled=True)
+
+    def before_form_show(self):
+        if self.crud_mode == "NEW":
+            if q2AskYN("Would you like to download one from q2market?") == 2:
+                q2market = Q2MarketExt().run()
+                if q2market.heap._return:
+                    self.s.prefix = q2market.heap._return
+                    self.s.checkupdates = "*"
 
     def info(self):
         pass
@@ -153,3 +163,34 @@ class Q2Extensions(Q2Form):
             q2app.q2_app.check_ext_update(self.r.prefix, force_update=True)
         else:
             q2Mess("No App URL!")
+
+
+class Q2MarketExt(Q2Form):
+    def __init__(self, title=""):
+        super().__init__("q2Market")
+        self.no_view_action = True
+        self.heap._return = None
+
+    def on_init(self):
+        self.add_control("ext_title", _("Name"), datatype="char", datalen=100)
+        self.add_control("ext_version", _("Version"), datatype="char", datalen=100)
+        self.add_control("ext_description", _("Description"), control="text", datatype="char", datalen=100)
+        self.add_control("ext_url", _("Path"), datatype="char", datalen=100)
+
+        q2market_catalogue_url = f"{self.q2_app.q2market_url}/q2market.json"
+        data = json.loads(read_url(q2market_catalogue_url).decode("utf-8"))
+        rez = []
+        for x in data:
+            if "ext_title" in data[x]:
+                rec = data[x]
+                rec["ext_url"] = x
+                rez.append(rec)
+        model = Q2Model()
+        model.set_records(rez)
+        self.set_model(model)
+        self.add_action_view()
+        self.add_action("Select", self.select_row, tag="select", eof_disabled=1)
+
+    def select_row(self):
+        self.heap._return = self.r.ext_title
+        self.close()

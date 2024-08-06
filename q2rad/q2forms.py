@@ -288,7 +288,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         super().after_crud_save()
         if self.crud_mode != "EDIT":
             if self.s.form_table:
-                ai = "*" if q2ask("Set AUTOINCREMENT for primary key?") else ""
+                ai = "*" if q2ask("Set AUTOINCREMENT for primary key?") == 2 else ""
                 self.db.insert(
                     "lines",
                     {
