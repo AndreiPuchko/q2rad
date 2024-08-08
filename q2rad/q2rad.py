@@ -425,6 +425,16 @@ class Q2RadApp(Q2App):
                 data_schema.add(**x)
         db_logic.set_schema(data_schema)
 
+        data_schema = Q2DbSchema()
+        for form in (
+            Q2Constants(),
+            Q2Extensions(),
+        ):
+            for x in form.get_table_schema():
+                data_schema.add(**x)
+
+        self.db_data.set_schema(data_schema)
+
     def get_autocompletition_list(self):
         rez = []
         tables = self.db_data.db_schema.get_schema_tables()
