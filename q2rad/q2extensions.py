@@ -160,7 +160,8 @@ class Q2Extensions(Q2Form):
     def import_q2market(self):
         q2market_url = self.r.q2market_url if self.r.q2market_url else self.q2_app.q2market_url
         if q2market_url:
-            q2app.q2_app.check_ext_update(self.r.prefix, force_update=True)
+            if q2app.q2_app.check_ext_update(self.r.prefix, force_update=True):
+                q2app.q2_app.open_selected_app()
         else:
             q2Mess("No App URL!")
 

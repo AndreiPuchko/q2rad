@@ -323,8 +323,8 @@ class Q2RadApp(Q2App):
         Q2AppSelect().run(autoload_enabled)
         if self.selected_application != {}:
             self.open_selected_app(True, migrate_db_data=False)
-            self.check_app_update()
-            self.check_ext_update()
+            if self.check_app_update() or self.check_ext_update():
+                self.open_selected_app()
             self.on_new_tab()
         else:
             self.close()
@@ -558,9 +558,11 @@ class Q2RadApp(Q2App):
         if self.dev_mode:
             self.add_menu("Dev|Forms", self.run_forms)
             self.add_menu("Dev|Modules", self.run_modules)
-            self.add_menu("Dev|Querys", self.run_queries)
+            self.add_menu("Dev|Queres", self.run_queries)
             self.add_menu("Dev|Reports", self.run_reports)
             self.add_menu("Dev|Packages", self.run_packages)
+            self.add_menu("Dev|-")
+            self.add_menu("Dev|Finder", self.run_finder)
             if not self.frozen:
                 self.add_menu("Dev|-")
                 self.add_menu("Dev|Make binary", self.make_binary)
@@ -912,7 +914,7 @@ class Q2RadApp(Q2App):
             except Exception as e:  # noqa F841
                 self.show_statusbar_mess("An error occurred while checking for updates")
                 return
-            if force_update or market_version and market_version != self.app_version:
+            if force_update or (market_version and market_version > self.app_version):
                 if force_update:
                     update_detected = f"You are about to rewrite current App <b>{self.app_title}</b>!"
                 else:
@@ -928,7 +930,8 @@ class Q2RadApp(Q2App):
                 ):
                     data = json.load(open_url(self.app_url + ".json"))  # noqa F405
                     AppManager.import_json_app(data)
-                    self.open_selected_app()
+                    # self.open_selected_app()
+                    return True
 
     def check_ext_update(self, prefix="", force_update=False, _ext_url=""):
         if self.frozen:
@@ -937,6 +940,7 @@ class Q2RadApp(Q2App):
             cu = q2cursor(f"select * from extensions where prefix='{prefix}'")
         else:
             cu = q2cursor(f"select * from extensions where checkupdates<>'' order by seq")
+        updated = None
         for row in cu.records():
             _prefix = row["prefix"]
 
@@ -953,8 +957,8 @@ class Q2RadApp(Q2App):
                     market_version = read_url(ext_url + ".version").decode("utf-8")  # noqa F405
                 except Exception as e:  # noqa F841
                     self.show_statusbar_mess("An error occurred while checking for updates")
-                    return
-                if force_update or market_version and market_version != ext_version:
+                    continue
+                if force_update or (market_version and market_version > ext_version):
                     if force_update:
                         update_detected = (
                             f"You are about to rewrite current Extension ({_prefix}) <b>{self.app_title}</b>!"
@@ -974,8 +978,10 @@ class Q2RadApp(Q2App):
                     ):
                         data = json.load(open_url(ext_url + ".json"))  # noqa F405
                         AppManager.import_json_app(data, prefix=_prefix)
-                        update("extensions", {"prefix":row["prefix"], "version":market_version})
-        self.open_selected_app()
+                        update("extensions", {"prefix": row["prefix"], "version": market_version})
+                        updated = True
+        # self.open_selected_app()
+        return updated
 
     def update_app_packages(self):
         if self.frozen:
@@ -1115,6 +1121,71 @@ class Q2RadApp(Q2App):
     def run_extensions(self):
         Q2Extensions().run()
 
+    def run_finder(self):
+        class Q2Finder:
+            def __init__(self, find_string):
+                self.find_string = find_string
+
+            def get_columns_sql(self, table):
+                return "select {{}} from {} where concat({}) like".format(
+                    table,
+                    ", ".join([f"`{x}`" for x in q2app.q2_app.db_logic.get_database_columns(table).keys()]),
+                )
+
+            def show_lines(self, table="lines"):
+                sql = self.get_columns_sql(table).format("id") + " '%{}%'".format(self.find_string)
+                where = "id in ({})".format(
+                    ", ".join([x["id"] for x in q2cursor(sql, q2app.q2_app.db_logic).records()])
+                )
+                {"actions": Q2Actions, "lines": Q2Lines}[table]().run(where=where)
+
+            def show_other(self, table):
+                sql = self.get_columns_sql(table).format("name") + " '%{}%'".format(self.find_string)
+                where = "name in ({})".format(
+                    ", ".join(['"' + x["name"] + '"' for x in q2cursor(sql, q2app.q2_app.db_logic).records()])
+                )
+                {"forms": Q2Forms, "reports": Q2Reports, "modules": Q2Modules, "queries": Q2Queries}[
+                    table
+                ]().run(where=where)
+
+        finder = Q2Form("Finder")
+
+        finder.add_control("find_string", "Find string", datalen=150)
+        finder.add_control("/")
+        finder.add_control("/h", "in")
+        finder.add_control(
+            "button",
+            "Forms",
+            control="button",
+            valid=lambda: Q2Finder(finder.s.find_string).show_other("forms"),
+        )
+        finder.add_control(
+            "button",
+            "Lines",
+            control="button",
+            valid=lambda: Q2Finder(finder.s.find_string).show_lines("lines"),
+        )
+        finder.add_control(
+            "button",
+            "Actions",
+            control="button",
+            valid=lambda: Q2Finder(finder.s.find_string).show_lines("actions"),
+        )
+        finder.add_control(
+            "button",
+            "Modules",
+            control="button",
+            valid=lambda: Q2Finder(finder.s.find_string).show_other("modules"),
+        )
+        finder.add_control(
+            "button",
+            "Queries",
+            control="button",
+            valid=lambda: Q2Finder(finder.s.find_string).show_other("queries"),
+        )
+        finder.cancel_button = 1
+        finder.run()
+
     def make_binary(self):
         make_binary(self)
 
@@ -1199,12 +1270,12 @@ class Q2RadApp(Q2App):
         form.after_delete = self.code_runner(form_dic["after_delete"], form)
 
         # add controls
-        for x in cu.records():
-            x["valid"] = self.code_runner(x["valid"], form)
-            if x.get("_show"):
-                x["show"] = self.code_runner(x["_show"], form)
-            x["when"] = self.code_runner(x["_when"], form)
-            form.add_control(**x)
+        for control in cu.records():
+            control["valid"] = self.code_runner(control["valid"], form)
+            if control.get("_show"):
+                control["show"] = self.code_runner(control["_show"], form)
+            control["when"] = self.code_runner(control["_when"], form)
+            form.add_control(**control)
             run_module("_e_control", _locals=locals())
 
         # add datasource
@@ -1235,14 +1306,14 @@ class Q2RadApp(Q2App):
             ext_select = ""
         sql = f"select * from (select * from actions where name = '{name}' order by seq ) qq {ext_select}"
         cu = q2cursor(sql, self.db_logic)
-        for x in cu.records():
-            if x["action_mode"] == "1":
+        for action in cu.records():
+            if action["action_mode"] == "1":
                 form.add_action("/crud")
-            elif x["action_mode"] == "3":
+            elif action["action_mode"] == "3":
                 form.add_action("-")
             else:
-                if x["child_form"] and x["child_where"]:
-                    child_form_name = x["child_form"]
+                if action["child_form"] and action["child_where"]:
+                    child_form_name = action["child_form"]
 
                     def get_action_form(child_form_name):
                         def worker():
@@ -1251,29 +1322,33 @@ class Q2RadApp(Q2App):
                         return worker
 
                     form.add_action(
-                        x["action_text"],
-                        self.code_runner(x["action_worker"]) if x["action_worker"] else None,
+                        action["action_text"],
+                        self.code_runner(action["action_worker"]) if action["action_worker"] else None,
                         child_form=get_action_form(child_form_name),
-                        child_where=x["child_where"],
-                        hotkey=x["action_key"],
-                        mess=x["action_mess"],
-                        icon=x["action_icon"],
-                        tag=x["tag"],
-                        child_noshow=x["child_noshow"],
-                        child_copy_mode=x["child_copy_mode"],
+                        child_where=action["child_where"],
+                        hotkey=action["action_key"],
+                        mess=action["action_mess"],
+                        icon=action["action_icon"],
+                        tag=action["tag"],
+                        child_noshow=action["child_noshow"],
+                        child_copy_mode=action["child_copy_mode"],
                         eof_disabled=1,
                     )
                 else:
                     form.add_action(
-                        x["action_text"],
-                        self.code_runner(x["action_worker"], form=form) if x["action_worker"] else None,
-                        hotkey=x["action_key"],
-                        icon=x["action_icon"],
-                        mess=x["action_mess"],
-                        tag=x["tag"],
-                        child_noshow=x["child_noshow"],
-                        child_copy_mode=x["child_copy_mode"],
-                        eof_disabled=x["eof_disabled"],
+                        action["action_text"],
+                        (
+                            self.code_runner(action["action_worker"], form=form)
+                            if action["action_worker"]
+                            else None
+                        ),
+                        hotkey=action["action_key"],
+                        icon=action["action_icon"],
+                        mess=action["action_mess"],
+                        tag=action["tag"],
+                        child_noshow=action["child_noshow"],
+                        child_copy_mode=action["child_copy_mode"],
+                        eof_disabled=action["eof_disabled"],
                     )
             run_module("_e_action", _locals=locals())
         return form

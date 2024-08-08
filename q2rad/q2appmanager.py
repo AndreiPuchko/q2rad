@@ -448,7 +448,8 @@ class AppManager(Q2Form):
         return rez
 
     def import_q2market(self):
-        self.q2_app.check_app_update(force_update=True)
+        if self.q2_app.check_app_update(force_update=True):
+            self.q2_app.open_selected_app()
 
     def import_app(self, file=""):
         filetype = "JSON(*.json)"

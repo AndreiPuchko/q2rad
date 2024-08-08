@@ -300,7 +300,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             record = self.get_current_record()
             record["table"] = self.db.get("forms", f"name = '{self.prev_form.r.name}'", "form_table")
             if not q2app.q2_app.db_data.alter_column(record):
-                q2mess(self.db_data.migrate_error_list)
+                q2mess(self.q2_app.db_data.migrate_error_list)
 
     def copy_to(self):
         rows = self.get_grid_selected_rows()
