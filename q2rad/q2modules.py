@@ -56,7 +56,8 @@ class Q2Modules(Q2Form, Q2_save_and_run):
         self.add_control("/t", "Comment")
         self.add_control("comment", _("Comment"), control="text", dattype="text")
 
-        self.add_control("last_line", "Last line", datatype="int", noform=1, migrate=1)
+        self.add_control("last_line", "Last line", datatype="int", noform=1, migrate=1, nogrid=1)
+        self.add_control("q2_time", "Time", datatype="int", noform=1, alignment=7)
         self.add_control("/")
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="modules", order="name")

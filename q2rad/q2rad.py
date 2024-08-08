@@ -558,7 +558,7 @@ class Q2RadApp(Q2App):
         if self.dev_mode:
             self.add_menu("Dev|Forms", self.run_forms)
             self.add_menu("Dev|Modules", self.run_modules)
-            self.add_menu("Dev|Queres", self.run_queries)
+            self.add_menu("Dev|Queries", self.run_queries)
             self.add_menu("Dev|Reports", self.run_reports)
             self.add_menu("Dev|Packages", self.run_packages)
             self.add_menu("Dev|-")
@@ -1182,6 +1182,12 @@ class Q2RadApp(Q2App):
             "Queries",
             control="button",
             valid=lambda: Q2Finder(finder.s.find_string).show_other("queries"),
+        )
+        finder.add_control(
+            "button",
+            "Reports",
+            control="button",
+            valid=lambda: Q2Finder(finder.s.find_string).show_other("reports"),
         )
         finder.cancel_button = 1
         finder.run()

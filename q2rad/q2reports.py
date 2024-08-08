@@ -241,6 +241,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
             noform=1,
         )
         self.add_control("comment", _("Comment"), datatype="text", noform=1)
+        self.add_control("q2_time", "Time", datatype="int", noform=1, alignment=7)
         self._add_save_and_run(save_only=True)
         self._add_save_and_run_visible(save_only=True)
 

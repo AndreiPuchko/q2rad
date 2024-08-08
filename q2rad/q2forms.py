@@ -250,6 +250,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
                 control="code",
             )
         self.add_control("/")
+        self.add_control("q2_time", "Time", datatype="int", noform=1, alignment=7)
         self._add_save_and_run()
         self._add_save_and_run_visible()
 
