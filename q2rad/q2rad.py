@@ -1412,13 +1412,14 @@ class Q2RadApp(Q2App):
                 if re.findall(r"^\s*import\W*.*", x):
                     module = x.split("import")[1].strip()
                     if self.db_logic.get("modules", f"name='{module}'", "name"):
-                        x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
+                        # x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
+                        x = x.split("import")[0] + f"run_module('{module}', _globals=globals(), import_only=True)"
 
                 new_script_lines.append(x)
             script = "\n".join(new_script_lines)
         try:
             code = compile(script, f"<{script}>", "exec")
-            return {"code": code, "error": ""}
+            return {"code": code, "error": "", "script": script}
         except Exception:
             error = sys.exc_info()[1]
             msg = []

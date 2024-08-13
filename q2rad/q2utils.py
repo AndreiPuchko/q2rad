@@ -204,6 +204,7 @@ class Q2Form(_Q2Form):
                 q2app.q2app.ACTION_TOOLS_TEXT + "|" + "Changelog",
                 self.changelog,
                 icon="🕟",
+                eof_disabled=1,
             )
 
     def changelog(self):

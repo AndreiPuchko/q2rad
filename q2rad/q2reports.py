@@ -26,13 +26,18 @@ from q2rad.q2queries import Q2QueryEdit
 from q2rad.q2utils import q2cursor, Q2_save_and_run
 from q2gui import q2app
 from q2gui.q2dialogs import Q2WaitShow, q2WaitMax, q2WaitStep, q2working
+from q2rad.q2raddb import *
+from q2rad.q2utils import *
 import json
 import os
+import logging
+import threading
 import gettext
 
 from q2rad.q2utils import Q2Form
 
 _ = gettext.gettext
+_logger = logging.getLogger(__name__)
 
 # TODO: selected rows removing - bug
 
@@ -190,6 +195,10 @@ class Q2RadReport(Q2Report):
         q2app.q2_app.process_events()
 
     def run(self, output_file="temp/repo.html"):
+        from q2rad.q2rad import run_module, run_form, get_form , get_report
+        _globals = {}
+        _globals.update(locals())
+
         output_file = self.prepare_output_file(output_file)
         if not output_file:
             return
@@ -213,6 +222,27 @@ class Q2RadReport(Q2Report):
                     # print(q2app.q2_app.db_data.last_sql_error)
 
             return real_worker
+
+        if _module := self.report_content.get("module"):
+            code = q2app.q2_app.code_compiler(_module)
+            if code["code"]:
+                _globals.update(globals())
+                try:
+                    exec(code["code"], _globals)
+                    for key, value in _globals.items():
+                        self.set_data(value, key)
+                except Exception as error:
+                    from q2rad.q2rad import explain_error
+                    _logger.error(f"{error}")
+                    explain_error()
+            else:
+                msg = code["error"]
+                if threading.current_thread() is threading.main_thread():
+                    q2mess(f"{msg}".replace("\n", "<br>").replace(" ", "&nbsp;"))
+                print(f"{msg}")
+                print("-" * 25)
+                _logger.error(msg)
+                return
 
         q2working(worker(), "W o r k i n g")
 
@@ -364,8 +394,8 @@ class Q2ReportEdit(Q2Form):
         self.add_control("rl", "", widget=self.layout_edit, nogrid=1, migrate=0)
         self.add_control("/t", "Query")
         self.add_control("ql", "", widget=self.query_edit, nogrid=1, migrate=0)
-        self.add_control("/t", "Setup")
-        self.add_control("before_script", "", control="code")
+        # self.add_control("/t", "Setup")
+        # self.add_control("before_script", "", control="code")
         self.add_control("/t", "Module")
         self.add_control("module", "", control="code")
         self.add_control("/t", "Comment")
@@ -380,10 +410,12 @@ class Q2ReportEdit(Q2Form):
             content_json = content
         self.query_edit.set_content(content_json)
         self.layout_edit.set_content(content_json)
+        self.s.module = content_json.get("module", "#")
 
     def get_content(self, str_mode=True):
         content = self.query_edit.get_content(str_mode=False)
         content.update(self.layout_edit.get_content(str_mode=False))
+        content["module"] = self.s.module
         if str_mode:
             return json.dumps(content, indent=2)
         else:
