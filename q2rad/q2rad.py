@@ -123,6 +123,8 @@ def run_module(module_name=None, _globals={}, _locals={}, script="", import_only
             ext_module_name = row["prefix"] + module_name
             if get("modules", f"name='{ext_module_name}'", "name", q2app.q2_app.db_logic) == ext_module_name:
                 ext_modules.append(ext_module_name)
+    if get("modules", f"name='_{module_name}'", "name", q2app.q2_app.db_logic) == f"_{module_name}":
+        ext_modules.append(f"_{module_name}")
     if script:
         code = q2app.q2_app.code_compiler(script)
         if code["code"] is False:
@@ -1316,6 +1318,10 @@ class Q2RadApp(Q2App):
                     f"""select * from (select * from actions 
                                         where name = '{ext_name}{name}' order by seq) qq"""
                 )
+        ext_actions.append(
+            f"""select * from (select * from actions 
+                                        where name = '_{name}' order by seq) qq"""
+        )
         if ext_actions:
             ext_select = " union all  " + " union all  ".join(ext_actions)
         else:
@@ -1413,7 +1419,10 @@ class Q2RadApp(Q2App):
                     module = x.split("import")[1].strip()
                     if self.db_logic.get("modules", f"name='{module}'", "name"):
                         # x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
-                        x = x.split("import")[0] + f"run_module('{module}', _globals=globals(), import_only=True)"
+                        x = (
+                            x.split("import")[0]
+                            + f"run_module('{module}', _globals=globals(), import_only=True)"
+                        )
 
                 new_script_lines.append(x)
             script = "\n".join(new_script_lines)

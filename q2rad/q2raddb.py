@@ -21,7 +21,10 @@ from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import int_, num
 from q2gui import q2app
 from q2gui.q2dialogs import q2Mess, Q2WaitShow
-import html
+# import html
+import datetime
+import calendar
+
 
 from q2rad import Q2Form
 from q2gui.q2form import NEW, COPY
@@ -33,7 +36,6 @@ if "darwin" in sys.platform:
     import ssl
 
     ssl._create_default_https_context = ssl._create_unverified_context
-import datetime
 
 # import errno
 
@@ -173,3 +175,23 @@ def today():
 def ensure_empty_pk(table="", row={}, q2_db=None):
     q2_db = get_default_db(q2_db)
     q2_db.ensure_empty_pk(table, row)
+
+
+def dtoc(date, format_from="%Y-%m-%d", format_to="%d.%m.%Y"):
+    return datetime.datetime.strptime(date, format_from).strftime(format_to)
+
+
+def ctod(date, format_from="%d.%m.%Y", format_to="%Y-%m-%d"):
+    return dtoc(date, format_from, format_to)
+
+
+def first_day_of_month(date):
+    _date = datetime.datetime.strptime(date, "%Y-%m-%d")
+    _date = _date.replace(day=1)
+    return _date.strftime("%Y-%m-%d")
+
+
+def last_day_of_month(date):
+    _date = datetime.datetime.strptime(date, "%Y-%m-%d")
+    _date = _date.replace(day=calendar.monthrange(_date.year, _date.month)[1])
+    return _date.strftime("%Y-%m-%d")
