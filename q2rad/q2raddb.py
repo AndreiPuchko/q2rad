@@ -21,6 +21,7 @@ from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import int_, num
 from q2gui import q2app
 from q2gui.q2dialogs import q2Mess, Q2WaitShow
+
 # import html
 import datetime
 import calendar
@@ -195,3 +196,24 @@ def last_day_of_month(date):
     _date = datetime.datetime.strptime(date, "%Y-%m-%d")
     _date = _date.replace(day=calendar.monthrange(_date.year, _date.month)[1])
     return _date.strftime("%Y-%m-%d")
+
+
+def ffinder(module_name="module", function_name="fname"):
+    from q2rad.q2rad import run_module
+    run_module(module_name, import_only=True)
+    try:
+        is_callable = eval(f"callable({function_name})")
+    except Exception:
+        is_callable = False
+
+    if not is_callable:
+
+        def empty_function(*args, **kwargs):
+            pass
+
+        return empty_function
+    else:
+        try:
+            return locals()[function_name]
+        except:
+            return globals()[function_name]

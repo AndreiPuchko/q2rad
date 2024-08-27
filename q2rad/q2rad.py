@@ -1208,7 +1208,7 @@ class Q2RadApp(Q2App):
         make_binary(self)
 
     def run_form(self, name, order="", where=""):
-        # form = q2working(lambda: self.get_form(name, where=where, order=order), "Loading form...")
+        # print(">>", len(set(self.QApplication.allWidgets())))
         form = self.get_form(name, where=where, order=order)
         form.run()
 
@@ -1373,6 +1373,7 @@ class Q2RadApp(Q2App):
                         eof_disabled=action["eof_disabled"],
                     )
             run_module("_e_action", _locals=locals())
+        self.code_runner(form_dic["after_form_load"], form)()
         return form
 
     def code_compiler(self, script):
