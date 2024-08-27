@@ -179,23 +179,35 @@ def ensure_empty_pk(table="", row={}, q2_db=None):
 
 
 def dtoc(date, format_from="%Y-%m-%d", format_to="%d.%m.%Y"):
-    return datetime.datetime.strptime(date, format_from).strftime(format_to)
+    try:
+        return datetime.datetime.strptime(date, format_from).strftime(format_to)
+    except Exception:
+        return ""
 
 
 def ctod(date, format_from="%d.%m.%Y", format_to="%Y-%m-%d"):
-    return dtoc(date, format_from, format_to)
+    try:
+        return dtoc(date, format_from, format_to)
+    except Exception:
+        return ""
 
 
 def first_day_of_month(date):
-    _date = datetime.datetime.strptime(date, "%Y-%m-%d")
-    _date = _date.replace(day=1)
-    return _date.strftime("%Y-%m-%d")
+    try:
+        _date = datetime.datetime.strptime(date, "%Y-%m-%d")
+        _date = _date.replace(day=1)
+        return _date.strftime("%Y-%m-%d")
+    except Exception:
+        return date
 
 
 def last_day_of_month(date):
-    _date = datetime.datetime.strptime(date, "%Y-%m-%d")
-    _date = _date.replace(day=calendar.monthrange(_date.year, _date.month)[1])
-    return _date.strftime("%Y-%m-%d")
+    try:
+        _date = datetime.datetime.strptime(date, "%Y-%m-%d")
+        _date = _date.replace(day=calendar.monthrange(_date.year, _date.month)[1])
+        return _date.strftime("%Y-%m-%d")
+    except Exception:
+        return date
 
 
 def ffinder(module_name="module", function_name="fname"):
