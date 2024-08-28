@@ -212,20 +212,12 @@ def last_day_of_month(date):
 
 def ffinder(module_name="module", function_name="fname"):
     from q2rad.q2rad import run_module
-    run_module(module_name, import_only=True)
-    try:
-        is_callable = eval(f"callable({function_name})")
-    except Exception:
-        is_callable = False
-
-    if not is_callable:
-
+    glo = {}
+    glo.update(globals())
+    run_module(module_name, import_only=True, _globals = glo)
+    if function_name in glo:
+        return glo[function_name]
+    else:
         def empty_function(*args, **kwargs):
             pass
-
         return empty_function
-    else:
-        try:
-            return locals()[function_name]
-        except:
-            return globals()[function_name]

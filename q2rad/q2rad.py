@@ -17,6 +17,7 @@ import os
 import re
 import threading
 from packaging import version
+import webbrowser
 
 if __name__ == "__main__":
     sys.path.insert(0, ".")
@@ -575,6 +576,8 @@ class Q2RadApp(Q2App):
             self.add_menu("Dev|Packages", self.run_packages)
             self.add_menu("Dev|-")
             self.add_menu("Dev|Finder", self.run_finder)
+            self.add_menu("Dev|-")
+            self.add_menu("Dev|Documentation", self.read_the_docs)
             if not self.frozen:
                 self.add_menu("Dev|-")
                 self.add_menu("Dev|Make binary", self.make_binary)
@@ -1203,6 +1206,9 @@ class Q2RadApp(Q2App):
         )
         finder.cancel_button = 1
         finder.run()
+
+    def read_the_docs(self):
+        webbrowser.open_new_tab("https://github.com/AndreiPuchko/q2rad/blob/main/docs/index.md")
 
     def make_binary(self):
         make_binary(self)

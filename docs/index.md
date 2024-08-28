@@ -1,5 +1,6 @@
 # Quick start
 [Install & Run - see README.md](../README.md)  
+[Cookbook](cookbook.md)  
 [Run Demo App](run_demo.md)  
 [Create first App](first_app.md)  
 # Go deeper
