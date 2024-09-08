@@ -1,3 +1,12 @@
+* autorun - create constant
+```python
+const.check("constant_name", "Description", "value")
+```
+* autorun - ensure empty primary key
+```python
+ensure_empty_pk("table_name")
+```
+
 * Form/Grid - selected rows
 ```python
 rows = form.get_grid_selected_rows()
@@ -6,6 +15,19 @@ for x in rows:
 	# Do smth with row
 	# update(form.model.get_table_name(), row)
 form.refresh()
+```
+
+* Inserting data into database table, with progress bar
+```python
+contacts = [{...}, {...}, ..., {...}]
+w = q2wait(len(contacts), "Inserting records")
+transaction()
+for row in contacts:
+    w.step(100)  # update progress bar, every 100 msec
+    if not insert("contacts", row):
+        q2wait(f"Error while inserting records into table <b>Contacts</b>- {last_error()}!")
+w.close()
+commit()
 ```
 
 * Get something defined in module (function, class, variable) by `module_name` and  `name`

@@ -18,6 +18,7 @@ import re
 import threading
 from packaging import version
 import webbrowser
+from functools import partial
 
 if __name__ == "__main__":
     sys.path.insert(0, ".")
@@ -1112,7 +1113,8 @@ class Q2RadApp(Q2App):
 
             self.add_menu(
                 menu_path,
-                worker=menu_worker(x["name"]),
+                # worker=menu_worker(x["name"]),
+                worker=partial(self.run_form, x["name"]),
                 toolbar=x["toolbar"],
                 before=x["menu_before"],
                 icon=x["menu_icon"],

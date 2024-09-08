@@ -118,7 +118,7 @@ class Q2Extensions(Q2Form):
             return
         if (
             q2AskYN(
-                f"<p>You are about to export Extension ({prefix}) "
+                f"<p>You are about to export Extension (<b>{prefix}</b>) "
                 f"<p>into folder {os.path.abspath(q2market_path)}"
                 f"<p>and  upload into  {os.path.abspath(q2market_url)}"
                 "<p>Are you sure?"
