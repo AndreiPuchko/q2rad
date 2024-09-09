@@ -42,8 +42,8 @@ _module_function()
 ## _e_control 
 * Adding extra columns (controls) into form `_dbanken_kontobewegung` after control `date`
 ```python
-if name == "_dbanken_kontobewegung":
-    if control["column"] == "date":
+if name == "_dbanken_kontobewegung": # check form name by mem._name (or just name)
+    if control["column"] == "date": # check desirable column by mem.controls (or control)
         cu = q2cursor("""
                     select *
                     from `lines`
@@ -53,6 +53,12 @@ if name == "_dbanken_kontobewegung":
             form.add_control(**x)
 ```
 
+* Adding extra columns (controls) into form `_dbanken_kontobewegung` after control `date`
+```python
+if mem._name == "sheet_keys": # check form name by mem._name (or just name)
+    if mem.controls[-1].get("column") == "key_value": # check desirable column by mem.controls (or control)
+        mem.controls.extend(get_form("_test_sheet_keys").controls) # add extra columns
+```
 ## _e_action - 
 * Adding extra grid action into form name 
 ```python

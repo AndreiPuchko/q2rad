@@ -326,7 +326,7 @@ class Q2RadApp(Q2App):
         self.set_title("Open Application")
         Q2AppSelect().run(autoload_enabled)
         if self.selected_application != {}:
-            self.open_selected_app(True, migrate_db_data=False)
+            self.open_selected_app(True, migrate_db_data=True)
             if self.check_app_update() or self.check_ext_update():
                 self.open_selected_app()
             self.on_new_tab()
