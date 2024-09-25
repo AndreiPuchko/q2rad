@@ -554,52 +554,7 @@ class auto_filter:
     def valid(self):
         where = []
         for x in self.filter_columns:
-            where.append(self.prepare_where(x))
+            where.append(self.mem.prepare_where(x))
         where_string = " and ".join([x for x in where if x])
         q2app.q2_app.run_form(self.form_name, where=where_string)
         return False
-
-    def prepare_where(self, column=None, control1=None, control2=None):
-        mem_widgets = self.mem.widgets().keys()
-        if control1 is None:
-            if column in mem_widgets:
-                control1 = column
-            elif column + "____1" in mem_widgets:
-                control1 = column + "____1"
-        if control1 not in mem_widgets:
-            return ""
-
-        if not self.mem.w.__getattr__(control1).is_checked():
-            return ""
-
-        date_control = self.mem.controls.c.__getattr__(control1)["datatype"] == "date"
-        num_control = self.mem.controls.c.__getattr__(control1).get("num")
-        control1_value = self.mem.s.__getattr__(control1)
-        if control2 is None:
-            if control1.endswith("____1"):
-                control2 = control1[:-5] + "____2"
-                control2_value = self.mem.s.__getattr__(control2)
-            else:
-                control2_value = None
-        if date_control:
-            if control1_value == "0000-00-00":
-                control1_value = ""
-            if control2_value == "0000-00-00":
-                control2_value = ""
-        elif num_control:
-            control1_value = num(control1_value)
-            if control2_value:
-                control2_value = num(control2_value)
-
-        if (control2_value is None) or control1_value == control2_value:
-            if date_control or num_control:
-                return f"{column} = '{control1_value}'"
-            else:
-                return f"{column} like '%{control1_value}%'"
-        elif (control1_value and not control2_value) or (control2_value and control1_value > control2_value):
-            return f"{column} >= '{control1_value}'"
-        elif not control1_value and control2_value:
-            return f"{column} <= '{control2_value}'"
-        elif control1_value and control2_value:
-            return f"{column} >= '{control1_value}' and {column}<='{control2_value}'"
-        return ""

@@ -1,3 +1,15 @@
+* open document or folder
+```python
+open_document("name.pdf")
+open_folder("name.pdf")
+open_folder("folder name")
+```
+
+* autorun - ensure empty primary key
+```python
+ensure_empty_pk("table_name")
+```
+
 * autorun - create constant
 ```python
 const.check("constant_name", "Description", "value")
@@ -15,6 +27,10 @@ for x in rows:
 	# Do smth with row
 	# update(form.model.get_table_name(), row)
 form.refresh()
+```
+* Form/grid - get current row
+```python
+form.get_current_record()
 ```
 
 * Inserting data into database table, with progress bar
