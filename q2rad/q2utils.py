@@ -361,7 +361,11 @@ def q2choice(records=[], title="Make your choice", column_title=["Column"]):
 
 def choice_table():
     return q2choice(
-        [{"table": x} for x in q2app.q2_app.db_data.db_schema.get_schema_tables() if not x.startswith("log_")],
+        [
+            {"table": x}
+            for x in q2app.q2_app.db_data.db_schema.get_schema_tables()
+            if not x.startswith("log_")
+        ],
         title="Select table",
         column_title="Table",
     )
@@ -531,8 +535,17 @@ class auto_filter:
                 col["control"] = "line"
             col = Q2Controls.validate(col)
             self.filter_columns.append(cu.r.column)
-
-            if col["datatype"] in ["date"] or (col.get("num") and col.get("to_form", "") == ""):
+            if col["datatype"] in ["date"] or (
+                col.get("num")
+                and col.get("to_form", "") == ""
+                and col.get("control", "")
+                not in (
+                    "radio",
+                    "vradio",
+                    "list",
+                    "combo",
+                )
+            ):
                 self.mem.add_control("/h", cu.r.label, check=1)
                 col["label"] = "from"
                 co = col["column"]
@@ -543,6 +556,8 @@ class auto_filter:
                 self.mem.add_control(**col)
                 self.mem.add_control("/s")
                 self.mem.add_control("/")
+            # elif col.get("control", "") == "check":
+            #     pass
             else:
                 col["label"] = cu.r.label
                 col["check"] = 1

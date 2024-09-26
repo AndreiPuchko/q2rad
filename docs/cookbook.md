@@ -1,3 +1,13 @@
+* auto_filter form
+```python
+#  in Build script
+auto_filter("sales", mem)
+#  in Before Form Show script - initiate control value and turn it on
+mem.s.date____1=const.date1  # _*4
+mem.s.date____2 = const.date2
+mem.w.date____1.set_checked()
+```
+
 * open document or folder
 ```python
 open_document("name.pdf")
