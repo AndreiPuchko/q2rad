@@ -27,7 +27,7 @@ from q2gui.q2model import Q2Model
 from q2gui.q2dialogs import q2ask
 from q2gui.q2model import Q2CursorModel
 from q2gui import q2app
-from q2gui.q2dialogs import q2working, q2Mess
+from q2gui.q2dialogs import q2working, q2Mess, q2wait
 from q2gui.q2app import Q2Actions
 from q2gui.q2app import Q2Controls
 from q2gui.q2utils import int_
@@ -36,6 +36,9 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 
 import gettext
+
+import math
+from ftplib import FTP
 
 
 _ = gettext.gettext
@@ -573,3 +576,24 @@ class auto_filter:
         where_string = " and ".join([x for x in where if x])
         q2app.q2_app.run_form(self.form_name, where=where_string)
         return False
+
+
+def ftp_upload(files=[], server="", workdir="", login="", password=""):
+    chunks = sum([math.ceil(os.path.getsize(x) / 1000) for x in files])
+    w = q2wait(chunks)
+    connection = FTP(server)
+    connection.login(login, password)
+    connection.cwd(workdir)
+
+    def send_call_back(w=w):
+        def realDo(chunk):
+            w.step()
+
+        return realDo
+
+    for x in files:
+        localfile = open(x, "rb")
+        connection.storbinary(f"STOR {os.path.basename(x)}", localfile, 1024, send_call_back())
+        localfile.close()
+    connection.quit()
+    w.close()

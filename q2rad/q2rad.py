@@ -924,7 +924,7 @@ class Q2RadApp(Q2App):
         if self.frozen:
             return
 
-        if not os.path.isdir(self.q2market_path) and self.app_url and self.app_version or force_update:
+        if not os.path.isdir(self.q2market_path) and self.app_url or force_update:
             try:
                 market_version = read_url(self.app_url + ".version").decode("utf-8")  # noqa F405
             except Exception as e:  # noqa F841

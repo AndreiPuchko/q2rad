@@ -22,6 +22,8 @@ from q2rad import Q2Form
 from q2terminal.q2terminal import Q2Terminal
 from q2rad.q2raddb import insert, update, get
 from datetime import datetime
+from urllib.parse import urlparse
+from q2rad.q2utils import ftp_upload
 
 import json
 import os
@@ -313,16 +315,46 @@ class AppManager(Q2Form):
         if app_name == "demo_app":
             self.export_data(f"{self.q2_app.q2market_path}/demo_data.json")
 
-        trm = Q2Terminal(callback=print)
+        if os.path.isdir(f"{self.q2_app.q2market_path}/.git"):
+            trm = Q2Terminal(callback=print)
 
-        def worker():
-            trm.run(f"cd {self.q2_app.q2market_path}")
-            trm.run("git add -A")
-            trm.run(f"""git commit -a -m"{version}"  """)
+            def worker():
+                trm.run(f"cd {self.q2_app.q2market_path}")
+                trm.run("git add -A")
+                trm.run(f"""git commit -a -m"{version}"  """)
 
-        q2working(worker, "Commiting")
-        q2Mess(trm.run("""git push"""))
-        trm.close()
+            q2working(worker, "Commiting")
+            q2Mess(trm.run("""git push"""))
+            trm.close()
+        else:  # try FTP
+            if os.path.isfile(".ftp"):
+                login, password = open(".ftp").read().split("\n")
+            else:
+                login, password = (
+                    "",
+                    "",
+                )
+
+            app_file = f"{self.q2_app.q2market_path}/{os.path.basename(self.q2_app.app_url)}"
+            app_file_json = f"{app_file}.json"
+            app_file_version = f"{app_file}.version"
+            server = urlparse(self.q2_app.app_url).netloc
+            if server in self.q2_app.app_url:
+                workdir = os.path.dirname(self.q2_app.app_url.split(server)[1])
+            else:
+                workdir = ""
+            ftp_creds = Q2Form("FTP credentials")
+            ftp_creds.add_control("server", "Server", datalen=100, data=server)
+            ftp_creds.add_control("login", "Login", datalen=100, data=login)
+            ftp_creds.add_control("password", "Password", pic="*", datalen=100, data=password)
+            ftp_creds.ok_button = 1
+            ftp_creds.cancel_button = 1
+            ftp_creds.run()
+            if ftp_creds.ok_pressed:
+                try:
+                    ftp_upload([app_file_json, app_file_version], server, workdir, login, password)
+                except Exception as error:
+                    q2Mess(f"Error while uploading: {error}")
 
     def export_app(self, file="", app_json=None):
         filetype = "JSON(*.json)"
