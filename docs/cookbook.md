@@ -1,3 +1,47 @@
+* progressbar & error
+```python
+import time
+try:
+    w = q2wait(2)
+    time.sleep(1)
+    w.step()
+    1+""
+    time.sleep(1)
+    w.step()
+except Exception as e:
+    q2mess(f"{e}")
+finally:
+    w.close()
+```
+
+* select file and encode in base64 ascii
+```python
+import base64
+filename, filetype = myapp.get_open_file_dialoq("Select file", 
+    filter="PDF(*.pdf);;DOCX(*.docx);;All files(*.*)")
+if filename:
+    doc_base64  = base64.b64encode(open(filename,"rb").read()).decode("ascii")
+```
+
+* add control from another form
+```python
+form.add_control(**myapp.get_form("another_form_name").c.control_name)
+```
+
+* constant editing form
+```python
+#  in Before Form Show script
+for x in mem.controls:
+    column = x["column"]
+    if column:
+        mem.s.__setattr__(column, const.__getattr__(column))
+#  in Valid script
+for x in mem.controls:
+    column = x["column"]
+    if column:
+        const.__setattr__(column, mem.s.__getattr__(column))
+```
+
 * auto_filter form
 ```python
 #  in Build script
