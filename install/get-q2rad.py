@@ -80,6 +80,7 @@ except Exception as e:
                 "--upgrade",
                 "--no-cache-dir",
                 "virtualenv",
+                "--break-system-packages",
             ],
             shell=True if "win32" in sys.platform else False,
         )
