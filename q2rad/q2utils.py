@@ -536,6 +536,7 @@ class auto_filter:
                 self.mem.add_control("/f")
             if col["control"] == "text":
                 col["control"] = "line"
+                col["datatype"] = "char"
             col = Q2Controls.validate(col)
             self.filter_columns.append(cu.r.column)
             if col["datatype"] in ["date"] or (
@@ -567,10 +568,13 @@ class auto_filter:
 
                 self.mem.add_control(**col)
         self.mem.add_control("/")
+        self._valid = self.mem.valid
         self.mem.valid = self.valid
 
     def valid(self):
         where = []
+        if custom_whr := self._valid():
+            where.append(custom_whr)
         for x in self.filter_columns:
             where.append(self.mem.prepare_where(x))
         where_string = " and ".join([x for x in where if x])

@@ -699,11 +699,11 @@ class Q2RadApp(Q2App):
                     else "q2rad/bin/q2rad\n"
                 ),
             )
-        elif os.path.isdir("python.loc"):
+        elif os.path.isdir(f"python.loc.{sys.version.split()[0]}"):
             self.write_restore_file(
                 "run_q2rad",
                 ("" if "win32" in sys.platform else "#!/bin/bash\n")
-                + ("python.loc\\scripts\\q2rad" if "win32" in sys.platform else "python.loc/bin/q2rad\n"),
+                + (f"python.loc.{sys.version.split()[0]}\\scripts\\q2rad" if "win32" in sys.platform else f"python.loc.{sys.version.split()[0]}/bin/q2rad\n"),
             )
         else:
             self.write_restore_file(
@@ -713,10 +713,16 @@ class Q2RadApp(Q2App):
             )
 
         if "win32" in sys.platform:
-            open("run_q2rad.vbs", "w").write(
-                'WScript.CreateObject("WScript.Shell").Run '
-                '"q2rad\\scripts\\pythonw.exe -m q2rad", 0, false'
-            )
+            if os.path.isdir(f"python.loc.{sys.version.split()[0]}"):
+                open("run_q2rad.vbs", "w").write(
+                    'WScript.CreateObject("WScript.Shell").Run '
+                    f'"python.loc.{sys.version.split()[0]}\\pythonw.exe -m q2rad", 1, false'
+                )
+            else:  # venv
+                open("run_q2rad.vbs", "w").write(
+                    'WScript.CreateObject("WScript.Shell").Run '
+                    '"q2rad\\scripts\\pythonw.exe -m q2rad", 1, false'
+                )
 
             open("make_shortcut.vbs", "w").write(
                 'Set oWS = WScript.CreateObject("WScript.Shell")\n'
@@ -733,10 +739,10 @@ class Q2RadApp(Q2App):
     def write_reinstall_files(self):
         if sys.prefix != sys.base_prefix:  # in virtualenv
             pip_command = (
-                "q2rad\\scripts\\python -m " if "win32" in sys.platform else "q2rad/script/python -m "
+                "q2rad\\scripts\\python -m " if "win32" in sys.platform else "q2rad/bin/python -m "
             )
-        elif os.path.isdir("python.loc"):
-            pip_command = "python.loc\\python  -m " if "win32" in sys.platform else "python.loc/python -m "
+        elif os.path.isdir(f"python.loc.{sys.version.split()[0]}"):
+            pip_command = f"python.loc.{sys.version.split()[0]}\\python  -m " if "win32" in sys.platform else f"python.loc{sys.version.split()[0]}/python -m "
         else:
             pip_command = "python  -m " if "win32" in sys.platform else "python  -m "
 

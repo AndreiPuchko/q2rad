@@ -78,6 +78,10 @@ ensure_empty_pk("table_name")
 rows = form.get_grid_selected_rows()
 for x in rows:
 	row = form.model.get_record(x)
+    # or
+    # form.set_grid_index(x)
+    # row = form.get_current_record()
+
 	# Do smth with row
 	# update(form.model.get_table_name(), row)
 form.refresh()
