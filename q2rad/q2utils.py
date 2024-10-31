@@ -503,10 +503,11 @@ class Q2_save_and_run:
 
 
 class auto_filter:
-    def __init__(self, form_name, mem, lines_per_tab=10):
+    def __init__(self, form_name, mem, lines_per_tab=10, exclude=[]):
         self.form_name = form_name
         self.mem = mem
         self.filter_columns = []
+        self.exclude = exclude
         self.mem.ok_button = True
         self.mem.cancel_button = True
         self.mem.add_ok_cancel_buttons()
@@ -515,6 +516,12 @@ class auto_filter:
         self.auto_filter()
 
     def auto_filter(self):
+        if len(self.exclude) > 0:
+            exclude_columns = " and column not in ("
+            exclude_columns += ",".join([f'"{x}"' for x in self.exclude]) + ")"
+        else:
+            exclude_columns = ""
+
         cu = q2cursor(
             f"""
                 select *
@@ -523,16 +530,20 @@ class auto_filter:
                     and migrate<>''
                     and (label <>'' or gridlabel <> '')
                     and noform = ''
+                    {exclude_columns}
                 order by seq
             """,
             self.mem.q2_app.db_logic,
         )
+        manual_controls_count = len(self.mem.controls)
         make_tabs = cu.row_count() > self.lines_per_tab
         if not make_tabs:
             self.mem.add_control("/f")
         for col in cu.records():
+            if col["column"] in self.exclude:
+                continue
             if make_tabs and cu.current_row() % self.lines_per_tab == 0:
-                self.mem.add_control("/t", f"Tab #{1+ cu.current_row() // self.lines_per_tab}")
+                self.mem.add_control("/t", f"={1+ cu.current_row() // self.lines_per_tab}")
                 self.mem.add_control("/f")
             if col["control"] == "text":
                 col["control"] = "line"
@@ -567,7 +578,10 @@ class auto_filter:
                 col["check"] = 1
 
                 self.mem.add_control(**col)
-        self.mem.add_control("/")
+        # self.mem.add_control("/")
+        if manual_controls_count > 0:
+            for x in range(manual_controls_count):
+                self.mem.controls.append(self.mem.controls.pop(0))
         self._valid = self.mem.valid
         self.mem.valid = self.valid
 

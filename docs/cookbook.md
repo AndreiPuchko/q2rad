@@ -76,7 +76,9 @@ ensure_empty_pk("table_name")
 * Form/Grid - selected rows
 ```python
 rows = form.get_grid_selected_rows()
+w = q2wait(len(rows), "Some text")
 for x in rows:
+    w.step()
 	row = form.model.get_record(x)
     # or
     # form.set_grid_index(x)
@@ -84,8 +86,10 @@ for x in rows:
 
 	# Do smth with row
 	# update(form.model.get_table_name(), row)
+w.close()
 form.refresh()
 ```
+
 * Form/grid - get current row
 ```python
 form.get_current_record()
