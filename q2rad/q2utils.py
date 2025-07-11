@@ -578,7 +578,7 @@ class auto_filter:
                 col["check"] = 1
 
                 self.mem.add_control(**col)
-        # self.mem.add_control("/")
+        self.mem.add_control("/")
         if manual_controls_count > 0:
             for x in range(manual_controls_count):
                 self.mem.controls.append(self.mem.controls.pop(0))

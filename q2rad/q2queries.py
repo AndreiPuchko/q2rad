@@ -176,6 +176,7 @@ class Q2QueryEdit(Q2Form):
         self.actions = Q2Actions()
         self._db = None
         self.actions.add_action("Run F4", self.query_list.sql_runner, hotkey="F4")
+        self.actions.add_action("All as JSON", self.query_list.all_json)
 
         self.actions.show_main_button = 0
         self.actions.show_actions = 0
@@ -183,12 +184,23 @@ class Q2QueryEdit(Q2Form):
         self.add_control("hot_key_action", actions=self.actions, control="toolbar")
         if self.add_control("/vs", tag="qev"):
             self.add_control("ql", "", widget=self.query_list, nogrid=1, migrate=0)
-            self.add_control(
-                "run_query_button",
-                "Run (F4)",
-                valid=self.query_list.sql_runner,
-                control="button",
-            )
+            if self.add_control("/h"):
+                self.add_control("/s")
+                self.add_control(
+                    "run_query_button",
+                    "Run (F4)",
+                    valid=self.query_list.sql_runner,
+                    control="button",
+                )
+                self.add_control("/s")
+                self.add_control(
+                    "show_sjson",
+                    "All as JSON",
+                    valid=self.query_list.all_json,
+                    control="button",
+                )
+                self.add_control("/s")
+            self.add_control("/")
             self.add_control("pl", "", widget=self.param_list, nogrid=1, migrate=0)
             self.add_control("/")
         self.add_control("code", control="codesql", nogrid=1, valid=self.sql_changed)
@@ -274,6 +286,31 @@ class Q2QueryList(Q2Form):
             else:
                 sql = sql.replace(x, f"'{value}'")
         q2cursor(sql, q2_db=self.query_editor_form._db).browse()
+
+    def all_json(self):
+        all_json = {"params": {}}
+        for query in self.model.get_records():
+            sql = query["sql"]
+            params = re_find_param.findall(sql)
+            for x in params:
+                value = self.query_editor_form.param_list.get_param(x)
+                all_json["params"][x] = value
+                if x[1] == "_":
+                    sql = sql.replace(x, f"{value}")
+                else:
+                    sql = sql.replace(x, f"'{value}'")
+            cu = q2cursor(sql, q2_db=self.query_editor_form._db)
+            rez = []
+            for x in cu.records():
+                rez.append(x)
+            all_json[query["name"]] = rez
+
+        if all_json:
+            json_form = Q2Form()
+            import json
+            json_form.add_control("json", "", control="codejson", data=json.dumps(all_json, indent=2))
+            json_form.ok_button = True
+            json_form.show_form("JSON datasets")
 
     def sql_to_model(self, sql):
         self.model.update({"sql": sql}, self.current_row, refresh=False)
