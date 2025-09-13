@@ -176,7 +176,8 @@ class Q2QueryEdit(Q2Form):
         self.actions = Q2Actions()
         self._db = None
         self.actions.add_action("Run F4", self.query_list.sql_runner, hotkey="F4")
-        self.actions.add_action("All as JSON", self.query_list.all_json)
+        self.actions.add_action("Dataset|Show as JSON", self.query_list.show_dataset_json)
+        self.actions.add_action("Dataset|Save as JSON", self.query_list.save_dataset_json)
 
         self.actions.show_main_button = 0
         self.actions.show_actions = 0
@@ -194,9 +195,16 @@ class Q2QueryEdit(Q2Form):
                 )
                 self.add_control("/s")
                 self.add_control(
-                    "show_sjson",
-                    "All as JSON",
-                    valid=self.query_list.all_json,
+                    "show_json",
+                    "Show as JSON",
+                    valid=self.query_list.show_dataset_json,
+                    control="button",
+                )
+                self.add_control("/s")
+                self.add_control(
+                    "save_json",
+                    "Save as JSON",
+                    valid=self.query_list.save_dataset_json,
                     control="button",
                 )
                 self.add_control("/s")
@@ -287,14 +295,14 @@ class Q2QueryList(Q2Form):
                 sql = sql.replace(x, f"'{value}'")
         q2cursor(sql, q2_db=self.query_editor_form._db).browse()
 
-    def all_json(self):
-        all_json = {"params": {}}
+    def prepare_dataset_json(self):
+        dataset_json = {"params": {}}
         for query in self.model.get_records():
             sql = query["sql"]
             params = re_find_param.findall(sql)
             for x in params:
                 value = self.query_editor_form.param_list.get_param(x)
-                all_json["params"][x] = value
+                dataset_json["params"][x] = value
                 if x[1] == "_":
                     sql = sql.replace(x, f"{value}")
                 else:
@@ -303,14 +311,26 @@ class Q2QueryList(Q2Form):
             rez = []
             for x in cu.records():
                 rez.append(x)
-            all_json[query["name"]] = rez
+            dataset_json[query["name"]] = rez
+        return dataset_json
 
-        if all_json:
+    def show_dataset_json(self):
+        dataset_json = self.prepare_dataset_json()
+
+        if dataset_json:
             json_form = Q2Form()
-            import json
-            json_form.add_control("json", "", control="codejson", data=json.dumps(all_json, indent=2))
+            json_form.add_control("json", "", control="codejson", data=json.dumps(dataset_json, indent=2))
             json_form.ok_button = True
             json_form.show_form("JSON datasets")
+
+    def save_dataset_json(self):
+        dataset_json = self.prepare_dataset_json()
+
+        if dataset_json:
+            json_file_name = self.q2_app.get_save_file_dialoq(filter="JSON(*.json)")[0]
+            if json_file_name:
+                json_file_name = self.validate_impexp_file_name(json_file_name, "json")
+                open(json_file_name, "w", encoding="utf8").write(json.dumps(dataset_json, indent=2))
 
     def sql_to_model(self, sql):
         self.model.update({"sql": sql}, self.current_row, refresh=False)
