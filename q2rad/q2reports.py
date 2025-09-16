@@ -195,7 +195,8 @@ class Q2RadReport(Q2Report):
         q2app.q2_app.process_events()
 
     def run(self, output_file="temp/repo.html"):
-        from q2rad.q2rad import run_module, run_form, get_form , get_report
+        from q2rad.q2rad import run_module, run_form, get_form, get_report
+
         _globals = {}
         _globals.update(locals())
 
@@ -233,6 +234,7 @@ class Q2RadReport(Q2Report):
                         self.set_data(value, key)
                 except Exception as error:
                     from q2rad.q2rad import explain_error
+
                     _logger.error(f"{error}")
                     explain_error()
             else:
@@ -426,12 +428,68 @@ class Q2ReportEdit(Q2Form):
         pass
 
 
+class Q2ContentEditor(Q2Form):
+    def __init__(self, title=""):
+        super().__init__(title)
+        if self.add_control("/h", tag="blank", alignment="7"):
+            self.add_control("blank", " ", control="label")
+            self.add_control("/")
+        if self.add_control("/h", tag="rows_panel", alignment="7"):
+            roles = "free;table;header;footer"
+            self.add_control("role", "Role", pic=roles, control="combo", datalen=10)
+            self.add_control("groupby", "GroupBy", datalen=10)
+            self.add_control("data_source", "Source", pic="1;2;3", control="combo", datalen=10)
+            self.add_control("print_when", "Print when")
+            self.add_control("print_after", "calc after")
+            self.add_control("print_after", "calc after")
+            self.add_control("new_page_before", "On new page", control="check")
+            self.add_control("new_page_after", "New page after", control="check")
+            self.add_control("/s")
+            self.add_control("/")
+        if self.add_control("/h", tag="width_panel", alignment="7"):
+            self.add_control("width", "Width", datalen=6, datadec=2, datatype="num", control="doublespin")
+            self.add_control("pz", "%", control="check")
+            self.add_control("/s")
+            self.add_control("/")
+        if self.add_control("/h", tag="height_panel", alignment="7"):
+            self.add_control("h", "Height", control="label")
+            self.add_control("h0", "minimal", datalen=6, datadec=2, datatype="num", control="doublespin")
+            self.add_control("h1", "maximal", datalen=6, datadec=2, datatype="num", control="doublespin")
+            self.add_control("/s")
+            self.add_control("/")
+        if self.add_control("/h", tag="cell_panel", alignment="7"):
+            self.add_control("data", "Cell content", stretch=10)
+            self.add_control("format", "Format", stretch=1)
+            self.add_control("name", "Name", stretch=1)
+            self.add_control("/s")
+            self.add_control("/")
+
+    def hide_all(self):
+        self.hide_rows()
+        self.hide_width()
+        self.hide_height()
+        self.hide_cell()
+
+    def hide_rows(self):
+        self.w.rows_panel.hide()
+
+    def hide_width(self):
+        self.w.width_panel.hide()
+
+    def hide_height(self):
+        self.w.height_panel.hide()
+
+    def hide_cell(self):
+        self.w.cell_panel.hide()
+
+
 class Q2ReportReport(Q2Form):
     def __init__(self, report_edit_form_form):
         super().__init__("Report Layout")
         self.i_am_child = True
         self.report_edit_form = report_edit_form_form
         self.anchor = None
+        self.anchor2 = None
         self.ratio = 45
         self.report_report_form = self
         self.current_propertys = {}
@@ -459,6 +517,7 @@ class Q2ReportReport(Q2Form):
                 """
 
         self.current_focus = None
+        self.content_editor = None
 
         if 1:  # Actions
             actions = Q2Actions()
@@ -467,6 +526,9 @@ class Q2ReportReport(Q2Form):
             actions.add_action("XLSX", lambda: self.run_report("xlsx"))
             actions.show_main_button = 0
 
+        if self.add_control("/h"):
+            self.add_control("anchor2", "**", control="label", nogrid=1)
+            self.add_control("/")
         if self.add_control("/h"):
             if self.add_control("/v"):
                 self.add_control("/h")
@@ -856,7 +918,20 @@ class Q2ReportReport(Q2Form):
             return content
 
     def after_form_show(self):
-        self.w.style_panel.set_size_policy("maximum", "preffered")
+        self.anchor2: Q2Widget = self.w.anchor2
+        if self.anchor2 is not None:
+            self.anchor2.set_visible(False)
+
+            self.content_editor = Q2ContentEditor()
+            w = self.content_editor.get_widget()
+            self.widgets()["report_report"] = w
+            self.content_editor.form_stack = [w]
+            self.anchor2.add_widget_below(w)
+            w.show()
+            # self.content_editor.s.width = "2.25"
+            self.content_editor.hide_all()
+            self.w.style_panel.set_size_policy("maximum", "preffered")
+
         self.w.font_weight.set_title("Bold")
         ReportForm.set_style_button(self, "Report")
         self.w.style_button.set_focus()
