@@ -431,8 +431,9 @@ class Q2ReportEdit(Q2Form):
 class Q2ContentEditor(Q2Form):
     def __init__(self, title=""):
         super().__init__(title)
-        if self.add_control("/h", tag="blank", alignment="7"):
-            self.add_control("blank", " ", control="label")
+        self.add_control("/h", tag="root")
+        if self.add_control("/h", tag="blank_panel", alignment="7"):
+            self.add_control("blank", "", control="label")
             self.add_control("/")
         if self.add_control("/h", tag="rows_panel", alignment="7"):
             roles = "free;table;header;footer"
@@ -447,22 +448,50 @@ class Q2ContentEditor(Q2Form):
             self.add_control("/s")
             self.add_control("/")
         if self.add_control("/h", tag="width_panel", alignment="7"):
-            self.add_control("width", "Width", datalen=6, datadec=2, datatype="num", control="doublespin")
-            self.add_control("pz", "%", control="check")
+            self.add_control(
+                "width",
+                "Width",
+                datalen=6,
+                datadec=2,
+                datatype="num",
+                control="doublespin",
+                changed=self.changed_width,
+            )
+            self.add_control("pz", "%", control="check", changed=self.changed_width)
             self.add_control("/s")
             self.add_control("/")
         if self.add_control("/h", tag="height_panel", alignment="7"):
             self.add_control("h", "Height", control="label")
-            self.add_control("h0", "minimal", datalen=6, datadec=2, datatype="num", control="doublespin")
-            self.add_control("h1", "maximal", datalen=6, datadec=2, datatype="num", control="doublespin")
+            self.add_control(
+                "h0",
+                "minimal",
+                datalen=6,
+                datadec=2,
+                datatype="num",
+                control="doublespin",
+                changed=self.changed_height,
+            )
+            self.add_control(
+                "h1",
+                "maximal",
+                datalen=6,
+                datadec=2,
+                datatype="num",
+                control="doublespin",
+                changed=self.changed_height,
+            )
             self.add_control("/s")
             self.add_control("/")
         if self.add_control("/h", tag="cell_panel", alignment="7"):
-            self.add_control("data", "Cell content", stretch=10)
-            self.add_control("format", "Format", stretch=1)
-            self.add_control("name", "Name", stretch=1)
+            self.add_control("data", "Cell content", stretch=10, changed=self.changed_cell)
+            self.add_control("format", "Format", stretch=1, changed=self.changed_cell)
+            self.add_control("name", "Name", stretch=1, changed=self.changed_cell)
             self.add_control("/s")
             self.add_control("/")
+        self.add_control("/")
+        self.width_callback = None
+        self.height_callback = None
+        self.cell_callback = None
 
     def hide_all(self):
         self.hide_rows()
@@ -470,17 +499,61 @@ class Q2ContentEditor(Q2Form):
         self.hide_height()
         self.hide_cell()
 
+    def hide_blank(self):
+        self.w.blan_panel.hide()
+
     def hide_rows(self):
-        self.w.rows_panel.hide()
+        if self.w.rows_panel:
+            self.w.rows_panel.hide()
 
     def hide_width(self):
-        self.w.width_panel.hide()
+        if self.w.width_panel:
+            self.w.width_panel.hide()
+        self.width_callback = None
+
+    def show_width(self, width, callback):
+        self.hide_all()
+        self.width_callback = callback
+        self.w.width_panel.show()
+        self.s.width = num(width.replace("%", ""))
+        self.s.pz = "*" if "%" in width else ""
+
+    def changed_width(self, text):
+        if self.width_callback:
+            self.width_callback(self.s.width, self.s.pz)
 
     def hide_height(self):
-        self.w.height_panel.hide()
+        if self.w.height_panel:
+            self.w.height_panel.hide()
+        self.width_callback = None
+
+    def show_height(self, height, callback):
+        self.hide_all()
+        self.height_callback = callback
+        self.w.height_panel.show()
+        self.s.h0 = num(height.split("-")[0])
+        self.s.h1 = num(height.split("-")[1])
+
+    def changed_height(self, text):
+        if self.height_callback:
+            self.height_callback(self.s.h0, self.s.h1)
 
     def hide_cell(self):
-        self.w.cell_panel.hide()
+        if self.w.cell_panel:
+            self.w.cell_panel.hide()
+        self.cell_callback = None
+
+    def show_cell(self, data, format, name, callback):
+        self.hide_all()
+        self.cell_callback = callback
+        self.w.cell_panel.show()
+        self.s.data = data
+        self.s.format = format
+        self.s.name = name
+
+    def changed_cell(self, text):
+        if self.cell_callback:
+            self.cell_callback(self.s.data, self.s.format, self.s.name)
 
 
 class Q2ReportReport(Q2Form):
@@ -699,14 +772,14 @@ class Q2ReportReport(Q2Form):
                 )
                 self.add_control("/")
 
-            if self.add_control("/f", "Cell"):
-                # self.add_control("", _("Name"))
-                # self.add_control("", _("Format"))
-                self.add_control("name", _("Name"), control="line", disabled=1)
-                self.add_control("format", _("Format"), control="line", disabled=1)
-                self.add_control("data", _("Data"), control="text", disabled=1)
-                self.add_control("/")
-            self.add_control("/s")
+            # if self.add_control("/f", "Cell"):
+            #     # self.add_control("", _("Name"))
+            #     # self.add_control("", _("Format"))
+            #     self.add_control("name", _("Name"), control="line", disabled=1)
+            #     self.add_control("format", _("Format"), control="line", disabled=1)
+            #     self.add_control("data", _("Data"), control="text", disabled=1)
+            #     self.add_control("/")
+            # self.add_control("/s")
 
         self.set_content()
 
@@ -814,8 +887,8 @@ class Q2ReportReport(Q2Form):
             return []
 
     def style_button_pressed(self):
+        self.report_report_form.content_editor.hide_all()
         self.focus_changed(self.w.style_button)
-
         self.report_report_form.update_style_bar(self.get_style(), self.report_data.style)
 
     def focus_changed(self, widget):
@@ -875,7 +948,7 @@ class Q2ReportReport(Q2Form):
             w = self.widgets().get(x.replace("-", "_"))
             if w:
                 w.check.set_text(True)
-        self.show_cell_content(cell_data)
+        # self.show_cell_content(cell_data)
         self.lock_status_bar = False
 
     def show_cell_content(self, cell_data):
@@ -927,9 +1000,8 @@ class Q2ReportReport(Q2Form):
             self.widgets()["report_report"] = w
             self.content_editor.form_stack = [w]
             self.anchor2.add_widget_below(w)
-            w.show()
-            # self.content_editor.s.width = "2.25"
             self.content_editor.hide_all()
+            w.show()
             self.w.style_panel.set_size_policy("maximum", "preffered")
 
         self.w.font_weight.set_title("Bold")
@@ -1071,6 +1143,7 @@ class Q2ReportPage(Q2Form, ReportForm):
         self._repaint()
 
     def style_button_pressed(self):
+        self.report_report_form.content_editor.hide_all()
         self.report_report_form.focus_changed(self.w.style_button)
         self.report_report_form.update_style_bar(self.get_style(), self.page_data.style)
 
@@ -1205,7 +1278,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
             control="sheet",
             actions=self.col_actions,
             valid=self.column_sheet_focus_changed,
-            when=self.column_sheet_focus_changed,
+            # when=self.column_sheet_focus_changed,
             dblclick=self.cell_double_clicked,
             eat_enter=1,
         )
@@ -1312,12 +1385,20 @@ class Q2ReportColumns(Q2Form, ReportForm):
             self._repaint()
 
     def style_button_pressed(self):
+        self.report_report_form.content_editor.hide_all()
         self.report_report_form.focus_changed(self.w.style_button)
         self.report_report_form.update_style_bar(self.get_style(), self.columns_data.style)
 
     def column_sheet_focus_changed(self):
         # self.report_report_form.focus_changed(self.columns_sheet.get_current_widget())
+        self.report_report_form.content_editor.show_width(
+            self.columns_sheet.get_text(), self.update_column_width
+        )
         self.report_report_form.focus_changed(self.columns_sheet)
+
+    def update_column_width(self, width, pz):
+        self.columns_data.widths[self.columns_sheet.current_column()] = f"{width}{'%' if pz == '*' else ''}"
+        self._repaint()
 
     def get_column_count(self):
         return len(self.columns_data.widths)
@@ -1524,7 +1605,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             control="sheet",
             actions=self.row_actions,
             when=self.rows_sheet_focus_in,
-            valid=self.rows_sheet_focus_out,
+            # valid=self.rows_sheet_focus_out,
             dblclick=self.cell_double_clicked,
             eat_enter=1,
         )
@@ -1762,7 +1843,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             cell_data["name"] = form.s.name
             self.rows_sheet.set_text(form.s.content)
             self._repaint()
-            self.report_report_form.show_cell_content(cell_data)
+            # self.report_report_form.show_cell_content(cell_data)
 
     def edit_row_height(self):
         height = self.rows_sheet.get_cell_text(
@@ -1997,6 +2078,42 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.report_report_form.update_style_bar(
                 all_style, self.rows_data.cells[cell_key]["style"], self.rows_data.cells[cell_key]
             )
+
+        if self.focus_widget() == self.w.style_button:
+            self.report_report_form.content_editor.hide_all()
+            self.edit_data_role()
+        elif column == self.report_columns_form.get_column_count():
+            self.report_report_form.content_editor.show_height(
+                self.rows_sheet.get_cell_text(
+                    row=self.rows_sheet.current_row(),
+                    column=self.report_columns_form.get_column_count(),
+                ),
+                self.update_row_height,
+            )
+        else:
+            key = f"{self.rows_sheet.current_row()},{self.rows_sheet.current_column()}"
+            cell_data = self.rows_data.cells.get(key, {})
+            self.report_report_form.content_editor.show_cell(
+                self.rows_sheet.get_text(),
+                cell_data.get("format", ""),
+                cell_data.get("name", ""),
+                self.update_cell,
+            )
+
+    def update_row_height(self, h0, h1):
+        h0 = 0 if num(h0) == 0 else num(h0)
+        h1 = 0 if num(h1) == 0 else num(h1)
+        self.rows_data.heights[self.rows_sheet.current_row()] = f"{h0}-{h1}"
+        self._repaint()
+
+    def update_cell(self, data, format, name):
+        key = f"{self.rows_sheet.current_row()},{self.rows_sheet.current_column()}"
+        cell_data = self.rows_data.cells.get(key, {})
+        cell_data["data"] = data
+        cell_data["format"] = format
+        cell_data["name"] = name
+        self.rows_sheet.set_text(data)
+        self._repaint()
 
     def rows_sheet_focus_out(self):
         pass
