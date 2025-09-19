@@ -523,7 +523,7 @@ class Q2ContentEditor(Q2Form):
         self.s.width = num(width.replace("%", ""))
         self.s.pz = "*" if "%" in width else ""
 
-    def changed_width(self, text):
+    def changed_width(self):
         if self.width_callback:
             self.width_callback(self.s.width, self.s.pz)
 
