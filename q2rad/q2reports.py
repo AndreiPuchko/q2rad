@@ -656,11 +656,27 @@ class Q2ReportReport(Q2Form):
                 )
                 self.add_control(
                     "font_weight",
-                    "Font weight",
+                    "Weight",
                     control="check",
                     check=1,
                     valid=self.prop_font_weight,
                     when=self.prop_font_weight,
+                )
+                self.add_control(
+                    "font_italic",
+                    "Italic",
+                    control="check",
+                    check=1,
+                    # valid=self.prop_font_weight,
+                    # when=self.prop_font_weight,
+                )
+                self.add_control(
+                    "font_underline",
+                    "Underline",
+                    control="check",
+                    check=1,
+                    # valid=self.prop_font_weight,
+                    # when=self.prop_font_weight,
                 )
             self.add_control("/")
             if self.add_control("/v", "-"):
@@ -776,6 +792,33 @@ class Q2ReportReport(Q2Form):
                     when=self.prop_vertical_align,
                 )
                 self.add_control("/")
+            if self.add_control("/f", "Colors"):  # Colors
+                self.add_control(
+                    "color",
+                    _("Font"),
+                    control="color",
+                    check="*",
+                    # valid=self.prop_text_align,
+                    # when=self.prop_text_align,
+                )
+                self.add_control(
+                    "background",
+                    _("Background"),
+                    control="color",
+                    check="*",
+                    # valid=self.prop_text_align,
+                    # when=self.prop_text_align,
+                )
+                self.add_control(
+                    "border_color",
+                    _("Borders"),
+                    control="color",
+                    check="*",
+                    # valid=self.prop_text_align,
+                    # when=self.prop_text_align,
+                )
+                self.add_control("/")
+            
 
             # if self.add_control("/f", "Cell"):
             #     # self.add_control("", _("Name"))
