@@ -191,7 +191,8 @@ class Q2RadReport(Q2Report):
         if self.waitbar:
             self.waitbar.close()
             self.waitbar = None
-        self.last_focus_widget.set_focus()
+        if hasattr(self.last_focus_widget, "set_focus"):
+            self.last_focus_widget.set_focus()
         q2app.q2_app.process_events()
 
     def run(self, output_file="temp/repo.html"):
@@ -220,7 +221,6 @@ class Q2RadReport(Q2Report):
                     self.data_cursors[x] = q2cursor(sql)
                     data[x] = self.data_cursors[x].records()
                     data[x] = [row for row in self.data_cursors[x].records()]
-                    # print(q2app.q2_app.db_data.last_sql_error)
 
             return real_worker
 
@@ -661,22 +661,25 @@ class Q2ReportReport(Q2Form):
                     check=1,
                     valid=self.prop_font_weight,
                     when=self.prop_font_weight,
+                    changed=self.prop_font_weight,
                 )
                 self.add_control(
-                    "font_italic",
+                    "font_style",
                     "Italic",
                     control="check",
                     check=1,
-                    # valid=self.prop_font_weight,
-                    # when=self.prop_font_weight,
+                    valid=self.prop_font_style,
+                    when=self.prop_font_style,
+                    changed=self.prop_font_style,
                 )
                 self.add_control(
-                    "font_underline",
+                    "text_decoration",
                     "Underline",
                     control="check",
                     check=1,
-                    # valid=self.prop_font_weight,
-                    # when=self.prop_font_weight,
+                    valid=self.prop_text_decoration,
+                    when=self.prop_text_decoration,
+                    changed=self.prop_text_decoration,
                 )
             self.add_control("/")
             if self.add_control("/v", "-"):
@@ -798,27 +801,29 @@ class Q2ReportReport(Q2Form):
                     _("Font"),
                     control="color",
                     check="*",
-                    # valid=self.prop_text_align,
-                    # when=self.prop_text_align,
+                    valid=self.prop_color,
+                    when=self.prop_color,
+                    changed=self.prop_color,
                 )
                 self.add_control(
                     "background",
                     _("Background"),
                     control="color",
                     check="*",
-                    # valid=self.prop_text_align,
-                    # when=self.prop_text_align,
+                    valid=self.prop_background,
+                    when=self.prop_background,
+                    changed=self.prop_background,
                 )
                 self.add_control(
                     "border_color",
                     _("Borders"),
                     control="color",
                     check="*",
-                    # valid=self.prop_text_align,
-                    # when=self.prop_text_align,
+                    valid=self.prop_border_color,
+                    when=self.prop_border_color,
+                    changed=self.prop_border_color,
                 )
                 self.add_control("/")
-            
 
             # if self.add_control("/f", "Cell"):
             #     # self.add_control("", _("Name"))
@@ -851,12 +856,15 @@ class Q2ReportReport(Q2Form):
         set_dict_default(self.report_data.style, "font-family", "Arial")
         set_dict_default(self.report_data.style, "font-size", "8pt")
         set_dict_default(self.report_data.style, "font-weight", "normal")
+        set_dict_default(self.report_data.style, "font-style", "")
+        set_dict_default(self.report_data.style, "text-decoration", "")
 
         set_dict_default(self.report_data.style, "border-width", "0 0 0 0")
         set_dict_default(self.report_data.style, "padding", "0.05cm 0.05cm 0.05cm 0.05cm")
 
-        # set_dict_default(self.report_data.style, "background-color", "white")
-        # set_dict_default(self.report_data.style, "color", "black")
+        set_dict_default(self.report_data.style, "background", "#FFFFFF")
+        set_dict_default(self.report_data.style, "color", "#000000")
+        set_dict_default(self.report_data.style, "border-color", "#000000")
 
         set_dict_default(self.report_data.style, "text-align", "left")
         set_dict_default(self.report_data.style, "vertical-align", "top")
@@ -867,8 +875,14 @@ class Q2ReportReport(Q2Form):
     def prop_font_family(self):
         self.property_changed("font_family", f"{self.s.font_family}")
 
-    def prop_font_weight(self):
+    def prop_font_weight(self, _=""):
         self.property_changed("font_weight", f"{'bold' if self.s.font_weight else 'normal'}")
+
+    def prop_font_style(self):
+        self.property_changed("font_style", f"{'italic' if self.s.font_style else ''}")
+
+    def prop_text_decoration(self):
+        self.property_changed("text_decoration", f"{'underline' if self.s.text_decoration else ''}")
 
     def prop_border(self):
         self.property_changed(
@@ -901,6 +915,15 @@ class Q2ReportReport(Q2Form):
 
     def prop_vertical_align(self):
         self.property_changed("vertical_align", f"{self.s.vertical_align}")
+
+    def prop_color(self):
+        self.property_changed("color", f"{self.s.color}")
+
+    def prop_background(self):
+        self.property_changed("background", f"{self.s.background}")
+
+    def prop_border_color(self):
+        self.property_changed("border_color", f"{self.s.border_color}")
 
     def property_changed(self, prop_name, prop_value):
         if self.lock_status_bar:
@@ -965,12 +988,17 @@ class Q2ReportReport(Q2Form):
         self.lock_status_bar = True
         self.current_propertys = selected_style
         for x in parent_style:
-            w = self.widgets().get(x.replace("-", "_"))
+            widget_name = x.replace("-", "_")
+            w = self.widgets().get(widget_name)
             if w:
                 w.check.set_enabled(self.current_focus.meta["form"] != self)
                 w.check.set_text("")
                 if x == "font-weight":
                     w.set_text("*" if parent_style[x] == "bold" else "")
+                elif x == "font-style":
+                    w.set_text("*" if parent_style[x] == "italic" else "")
+                elif x == "text-decoration":
+                    w.set_text("*" if parent_style[x] == "underline" else "")
                 elif x == "border-width":
                     style_value = self.make_4(parent_style[x])
                     self.s.border_top = style_value[0]
@@ -999,15 +1027,15 @@ class Q2ReportReport(Q2Form):
         # self.show_cell_content(cell_data)
         self.lock_status_bar = False
 
-    def show_cell_content(self, cell_data):
-        if cell_data:
-            self.s.data = cell_data.get("data", "")
-            self.s.format = cell_data.get("format", "")
-            self.s.name = cell_data.get("name", "")
-        else:
-            self.s.data = ""
-            self.s.format = ""
-            self.s.name = ""
+    # def show_cell_content(self, cell_data):
+    #     if cell_data:
+    #         self.s.data = cell_data.get("data", "")
+    #         self.s.format = cell_data.get("format", "")
+    #         self.s.name = cell_data.get("name", "")
+    #     else:
+    #         self.s.data = ""
+    #         self.s.format = ""
+    #         self.s.name = ""
 
     def set_style_button_text(self, text):
         ReportForm.set_style_button_text(self, text)
@@ -1048,9 +1076,10 @@ class Q2ReportReport(Q2Form):
             self.widgets()["report_report"] = w
             self.content_editor.form_stack = [w]
             self.anchor2.add_widget_below(w)
-            self.content_editor.hide_all()
             w.show()
+            self.content_editor.hide_all()
             self.w.style_panel.set_size_policy("maximum", "preffered")
+            # self.style_button_pressed()
 
         self.w.font_weight.set_title("Bold")
         ReportForm.set_style_button(self, "Report")
@@ -1078,6 +1107,7 @@ class Q2ReportReport(Q2Form):
             self.anchor.set_visible(False)
             for page in self.report_data["pages"]:
                 self.anchor.add_widget_below(Q2ReportPage(self, page).get_widget(), -1)
+        self.style_button_pressed()
 
 
 class Q2ReportPage(Q2Form, ReportForm):
@@ -2129,7 +2159,7 @@ class Q2ReportRows(Q2Form, ReportForm):
 
         if self.focus_widget() == self.w.style_button:
             self.report_report_form.content_editor.hide_all()
-            self.edit_data_role()
+            # self.edit_data_role()
         elif column == self.report_columns_form.get_column_count():
             self.report_report_form.content_editor.show_height(
                 self.rows_sheet.get_cell_text(
@@ -2291,9 +2321,9 @@ class Q2ReportRows(Q2Form, ReportForm):
                 cell_data = self.rows_data.cells.get(f"{row},{column}", {})
 
                 self.rows_sheet.cell_styles[f"{row},{column}"] = cell_data.get("style", {})
-                self.rows_sheet.cell_styles[f"{row},{column}"]["border-color"] = (
-                    "white" if self.q2_app.q2style.color_mode == "dark" else "black"
-                )
+                # self.rows_sheet.cell_styles[f"{row},{column}"]["border-color"] = (
+                #     "white" if self.q2_app.q2style.color_mode == "dark" else "black"
+                # )
                 rowspan = cell_data.get("rowspan", 1)
                 colspan = cell_data.get("colspan", 1)
                 if rowspan > 1 or colspan > 1:
