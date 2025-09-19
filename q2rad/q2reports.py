@@ -2032,16 +2032,18 @@ class Q2ReportRows(Q2Form, ReportForm):
         if form.ok_pressed:
             # proceed = False23
             last_role = self.rows_data.role
-            if self.rows_data.role == "table" and form.s.role != "table":
+            new_role = form.s.role
+            if self.rows_data.role == "table" and new_role != "table":
                 proceed = q2AskYN(_("It will remove all siblings! Proceed?")) == 2
-                proceed = True
                 if proceed:
                     form.s.data_source = ""
                     for x in self.children_rows:
                         x.widget().remove()
+                else:
+                    new_role = last_role
 
             if last_role in roles_list.split(";"):  # skip table children
-                self.rows_data.role = form.s.role
+                self.rows_data.role = new_role
                 self.rows_data.data_source = form.s.data_source
 
             if self.group_mate:
@@ -2054,7 +2056,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.rows_data.new_page_before = form.s.new_page_before
             self.rows_data.new_page_after = form.s.new_page_after
 
-            if last_role != "table" and form.s.role == "table":  # is is table now
+            if last_role != "table" and new_role == "table":  # is is table now
                 self.add_table_header()
                 self.add_table_footer()
 
