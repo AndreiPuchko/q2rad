@@ -492,8 +492,13 @@ class Q2ContentEditor(Q2Form):
         self.width_callback = None
         self.height_callback = None
         self.cell_callback = None
+        self.first_run = True
 
     def hide_all(self):
+        if self.first_run and self.w.root:
+            self.first_run = None
+            print()
+            self.w.root.setFixedHeight(self.w.root.height())
         self.hide_rows()
         self.hide_width()
         self.hide_height()
@@ -1277,8 +1282,8 @@ class Q2ReportColumns(Q2Form, ReportForm):
             "columns_sheet",
             control="sheet",
             actions=self.col_actions,
-            valid=self.column_sheet_focus_changed,
-            # when=self.column_sheet_focus_changed,
+            # valid=self.column_sheet_focus_changed,
+            when=self.column_sheet_focus_changed,
             dblclick=self.cell_double_clicked,
             eat_enter=1,
         )
