@@ -620,20 +620,24 @@ class Q2RadApp(Q2App):
         q2Mess("<br>".join(about))
 
     def asset_file_loader(self, name):
-        asset_url = f"{self.assets_url}/{name}"
+        if name.endswith(".svg"):
+            asset_url = f"https://unpkg.com/lucide-static@latest/icons/{name}"
+        else:
+            asset_url = f"{self.assets_url}/{name}"
         try:
             asset_content = read_url(asset_url)  # noqa F405
             if not asset_content:
+                _logger.info(f"Asset not found {asset_url}")
                 return False
         except Exception:
-            print(f"Error reading {asset_url}")
+            _logger.info(f"Error reading {asset_url}")
             return False
 
         try:
             open(f"assets/{name}", "wb").write(asset_content)
             return True
         except Exception:
-            print(f"Error writing asset/{name}")
+            _logger.info(f"Error writing asset/{name}")
             return False
 
     def write_restore_file(self, name, content):
