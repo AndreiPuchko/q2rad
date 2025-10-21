@@ -1226,7 +1226,6 @@ class Q2RadApp(Q2App):
         make_binary(self)
 
     def run_form(self, name, order="", where=""):
-        # print(">>", len(set(self.QApplication.allWidgets())))
         form = self.get_form(name, where=where, order=order)
         form.run()
 
