@@ -194,20 +194,6 @@ class Q2QueryEdit(Q2Form):
                     control="button",
                 )
                 self.add_control("/s")
-                self.add_control(
-                    "show_json",
-                    "Show as JSON",
-                    valid=self.query_list.show_dataset_json,
-                    control="button",
-                )
-                self.add_control("/s")
-                self.add_control(
-                    "save_json",
-                    "Save as JSON",
-                    valid=self.query_list.save_dataset_json,
-                    control="button",
-                )
-                self.add_control("/s")
             self.add_control("/")
             self.add_control("pl", "", widget=self.param_list, nogrid=1, migrate=0)
             self.add_control("/")
@@ -263,6 +249,10 @@ class Q2QueryList(Q2Form):
         self.add_control("/")
         self.set_model(Q2Model())
         self.add_action("/crud")
+        self.add_action("-")
+        self.add_action("Dataset|Show as JSON", self.show_dataset_json)
+        self.add_action("Dataset|Save as JSON", self.save_dataset_json)
+        
         self.model.readonly = False
         self.last_current_row = -1
 
