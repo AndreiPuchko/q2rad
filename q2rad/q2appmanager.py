@@ -165,7 +165,7 @@ class AppManager(Q2Form):
                                 control="button",
                                 # datalen=14,
                                 valid=self.export_q2market,
-                                style="background:LightCoral",
+                                style="background:LightCoral; ; font-weight:bold",
                             )
                         self.add_control("/")
 
@@ -187,7 +187,7 @@ class AppManager(Q2Form):
                             control="button",
                             # datalen=10,
                             valid=self.import_app_all,
-                            style="background:red",
+                            style="background:#FF6666; font-weight:bold",
                         )
                         if self.q2_app.app_url:
                             self.add_control(
