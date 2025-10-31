@@ -208,7 +208,7 @@ class Q2Form(_Q2Form):
             actions.add_action(
                 q2app.q2app.ACTION_TOOLS_TEXT + "|" + "Changelog",
                 self.changelog,
-                icon="🕟",
+                icon="time",
                 eof_disabled=1,
             )
 
