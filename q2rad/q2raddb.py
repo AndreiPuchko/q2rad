@@ -178,6 +178,11 @@ def ensure_empty_pk(table="", row={}, q2_db=None):
     q2_db.ensure_empty_pk(table, row)
 
 
+def ensure_record(table_name="", where="", record={}, q2_db=None):
+    q2_db = get_default_db(q2_db)
+    q2_db.ensure_record(table_name, where, record)
+
+
 def dtoc(date, format_from="%Y-%m-%d", format_to="%d.%m.%Y"):
     try:
         return datetime.datetime.strptime(date, format_from).strftime(format_to)
