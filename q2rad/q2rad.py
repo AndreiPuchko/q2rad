@@ -707,7 +707,11 @@ class Q2RadApp(Q2App):
             self.write_restore_file(
                 "run_q2rad",
                 ("" if "win32" in sys.platform else "#!/bin/bash\n")
-                + (f"python.loc.{sys.version.split()[0]}\\scripts\\q2rad" if "win32" in sys.platform else f"python.loc.{sys.version.split()[0]}/bin/q2rad\n"),
+                + (
+                    f"python.loc.{sys.version.split()[0]}\\scripts\\q2rad"
+                    if "win32" in sys.platform
+                    else f"python.loc.{sys.version.split()[0]}/bin/q2rad\n"
+                ),
             )
         else:
             self.write_restore_file(
@@ -742,11 +746,13 @@ class Q2RadApp(Q2App):
 
     def write_reinstall_files(self):
         if sys.prefix != sys.base_prefix:  # in virtualenv
-            pip_command = (
-                "q2rad\\scripts\\python -m " if "win32" in sys.platform else "q2rad/bin/python -m "
-            )
+            pip_command = "q2rad\\scripts\\python -m " if "win32" in sys.platform else "q2rad/bin/python -m "
         elif os.path.isdir(f"python.loc.{sys.version.split()[0]}"):
-            pip_command = f"python.loc.{sys.version.split()[0]}\\python  -m " if "win32" in sys.platform else f"python.loc{sys.version.split()[0]}/python -m "
+            pip_command = (
+                f"python.loc.{sys.version.split()[0]}\\python  -m "
+                if "win32" in sys.platform
+                else f"python.loc{sys.version.split()[0]}/python -m "
+            )
         else:
             pip_command = "python  -m " if "win32" in sys.platform else "python  -m "
 
@@ -1394,75 +1400,122 @@ class Q2RadApp(Q2App):
         return form
 
     def code_compiler(self, script):
-        def count_leading_spaces(string):
-            count = 0
-            for char in string:
-                if char == " ":
-                    count += 1
-                else:
-                    break
-            return count
+        import ast
 
-        if "return" in script or "?" in script or "import" in script:
-            # modify script for
-            new_script_lines = []
-            in_def = False
-            in_def_indent = -1
-            for x in script.split("\n"):
-                if x.strip() == "":
-                    new_script_lines.append("")
-                    continue
-                spaces_count = count_leading_spaces(x)
-                # when in_def is True  - do not modify return
-                if re.findall(r"^\s*def|^\s*class", x):
-                    if in_def is False:
-                        in_def = True
-                        in_def_indent = spaces_count
-                elif spaces_count <= in_def_indent:
-                    in_def = False
-                    in_def_indent = -1
-                # return
-                if in_def is False and re.findall(r"^\s*return\W*.*|;\s*return\W*.*", x):
-                    if x.strip() == "return":
-                        x = x.replace("return", "raise ReturnEvent")
-                    else:
-                        x = x.replace("\n", "").replace("\r", "")
-                        x = x.replace("return", "RETURN =")
-                        x += ";raise ReturnEvent"
-                if re.findall(r"^\s*\?\W*.*", x):
-                    # lets print it
-                    x = x.split("?")[0] + "print(" + "".join(x.split("?")[1:]) + ")"
-                # import
-                if re.findall(r"^\s*import\W*.*", x):
-                    module = x.split("import")[1].strip()
-                    if self.db_logic.get("modules", f"name='{module}'", "name"):
-                        # x = x.split("import")[0] + f"run_module('{module}', import_only=True)"
-                        x = (
-                            x.split("import")[0]
-                            + f"run_module('{module}', _globals=globals(), import_only=True)"
+        # help: determine if module is internal (in DB)
+        def is_internal_module(name):
+            return bool(self.db_logic.get("modules", f"name='{name}'", "name"))
+
+        class Transformer(ast.NodeTransformer):
+            def __init__(self):
+                self.in_def = 0
+
+            # --- def / class depth tracking ---
+            def visit_FunctionDef(self, node):
+                self.in_def += 1
+                self.generic_visit(node)
+                self.in_def -= 1
+                return node
+
+            def visit_AsyncFunctionDef(self, node):
+                return self.visit_FunctionDef(node)
+
+            def visit_ClassDef(self, node):
+                self.in_def += 1
+                self.generic_visit(node)
+                self.in_def -= 1
+                return node
+
+            # --- convert top-level "return" ---
+            def visit_Return(self, node):
+                if self.in_def > 0:
+                    return node  # inside def → OK
+
+                # top-level → convert
+                return [
+                    ast.Assign(
+                        targets=[ast.Name(id="RETURN", ctx=ast.Store())],
+                        value=node.value or ast.Constant(None)
+                    ),
+                    ast.Raise(
+                        exc=ast.Call(
+                            func=ast.Name(id="ReturnEvent", ctx=ast.Load()),
+                            args=[], keywords=[]
+                        ),
+                        cause=None
+                    )
+                ]
+
+            # --- convert "?expr" into print(expr) ---
+            def visit_Expr(self, node):
+                # We encoded ?expr into a Call("__q2print__", expr) below
+                if isinstance(node.value, ast.Call) and getattr(node.value.func, "id", "") == "__q2print__":
+                    return ast.Expr(
+                        value=ast.Call(
+                            func=ast.Name(id="print", ctx=ast.Load()), args=node.value.args, keywords=[]
                         )
+                    )
+                return node
 
-                new_script_lines.append(x)
-            script = "\n".join(new_script_lines)
+            # --- convert imports of internal modules ---
+            def visit_Import(self, node):
+                new_nodes = []
+                for alias in node.names:
+                    name = alias.name
+                    if is_internal_module(name):
+                        # replace import with run_module("name", import_only=True)
+                        call = ast.Expr(
+                            value=ast.Call(
+                                func=ast.Name(id="run_module", ctx=ast.Load()),
+                                args=[ast.Constant(name)],
+                                keywords=[
+                                    ast.keyword(arg="import_only", value=ast.Constant(True)),
+                                ],
+                            )
+                        )
+                        new_nodes.append(call)
+                    else:
+                        # keep standard module import
+                        new_nodes.append(ast.Import(names=[alias]))
+                return new_nodes
+
+            # from-import support
+            def visit_ImportFrom(self, node):
+                # ignore "__future__"
+                if node.module and is_internal_module(node.module):
+                    # internal module → load module first
+                    load = ast.Expr(
+                        value=ast.Call(
+                            func=ast.Name(id="run_module", ctx=ast.Load()),
+                            args=[ast.Constant(node.module)],
+                            keywords=[ast.keyword(arg="import_only", value=ast.Constant(True))],
+                        )
+                    )
+                    # then import names normally (they should now exist in globals)
+                    return [load, node]
+                return node
+
+        # --- Pre-process "?" operator (Python can't parse it) ---
+        fixed_lines = []
+        for line in script.split("\n"):
+            striped = line.lstrip()
+            indent = line[: len(line) - len(striped)]
+            if striped.startswith("?"):
+                # convert "?x" to "__q2print__(x)"
+                expr = striped[1:].strip()
+                line = f"{indent}__q2print__({expr})"
+            fixed_lines.append(line)
+        script = "\n".join(fixed_lines)
+
+        # --- parse & transform ---
         try:
-            code = compile(script, f"<{script}>", "exec")
+            tree = ast.parse(script)
+            tree = Transformer().visit(tree)
+            ast.fix_missing_locations(tree)
+            code = compile(tree, "<script>", "exec")
             return {"code": code, "error": "", "script": script}
-        except Exception:
-            error = sys.exc_info()[1]
-            msg = []
-            msg.append("Compile error:")
-            msg.append(error.msg)
-            msg.append(f"Line:{error.lineno}:{error.text}")
-            msg.append("Code:")
-            msg.append("-" * 25)
-            msg.append(error.filename[1:-1])
-            msg.append("-" * 25)
-            msg = "\n".join(msg)
-            _logger.error(msg)
-            return {
-                "code": False,
-                "error": msg,
-            }
+        except Exception as e:
+            return {"code": False, "error": str(e)}
 
     def code_runner(self, script, form=None, __name__="__main__"):
         _form = form
@@ -1472,6 +1525,8 @@ class Q2RadApp(Q2App):
             __locals_dict = {
                 "RETURN": None,
                 "ReturnEvent": ReturnEvent,
+                "num": num,
+                "_logger": _logger,
                 "mem": _form,
                 "form": _form,
                 "self": self,
