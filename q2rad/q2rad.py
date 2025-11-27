@@ -49,7 +49,7 @@ from q2rad.q2actions import Q2Actions
 from q2rad.q2raddb import *  # noqa:F403
 
 from q2gui import q2app
-from q2rad.q2utils import q2cursor
+from q2rad.q2utils import q2cursor, round_
 from q2rad.q2appmanager import AppManager
 from q2rad.q2stylesettings import AppStyleSettings
 from q2terminal.q2terminal import Q2Terminal
@@ -1399,123 +1399,247 @@ class Q2RadApp(Q2App):
         self.code_runner(form_dic["after_form_load"], form)()
         return form
 
-    def code_compiler(self, script):
+    def code_compiler(self, script: str):
+        """
+        Compile & preprocess script:
+        - ?expr  -> print(expr)
+        - top-level return -> RETURN = expr; raise ReturnEvent()
+        - import <name> for internal modules -> runtime code that runs run_module(...),
+        creates types.ModuleType(name), fills it and registers in sys.modules, then binds name.
+        - from <name> import ... for internal modules -> same: ensure sys.modules[name] exists, then keep original ImportFrom.
+        Returns {"code": codeobj or False, "error": msg, "script": processed_script}
+        """
         import ast
+        import traceback
 
-        # help: determine if module is internal (in DB)
-        def is_internal_module(name):
-            return bool(self.db_logic.get("modules", f"name='{name}'", "name"))
+        # helper: check DB for internal module
+        def is_internal_module(name: str) -> bool:
+            # only check top-level module name (before dot)
+            base = name.split(".")[0]
+            try:
+                return bool(self.db_logic.get("modules", f"name='{base}'", "name"))
+            except Exception:
+                return False
 
+        # Step 1: quick pre-pass to convert leading ?expr -> __q2print__(expr)
+        # We only convert when ? is the first non-space character on the line.
+        lines = []
+        for raw in script.splitlines():
+            stripped = raw.lstrip()
+            if stripped.startswith("?"):
+                indent = raw[: len(raw) - len(stripped)]
+                expr = stripped[1:].lstrip()
+                # wrap into a recognizable call; AST transformer will replace it with print(...)
+                lines.append(f"{indent}__q2print__({expr})")
+            else:
+                lines.append(raw)
+        preprocessed = "\n".join(lines)
+
+        # Step 2: AST transformer
         class Transformer(ast.NodeTransformer):
             def __init__(self):
-                self.in_def = 0
+                super().__init__()
+                self.def_level = 0  # >0 when inside function/class
 
-            # --- def / class depth tracking ---
+            # track functions/classes depth
             def visit_FunctionDef(self, node):
-                self.in_def += 1
+                self.def_level += 1
                 self.generic_visit(node)
-                self.in_def -= 1
+                self.def_level -= 1
                 return node
 
             def visit_AsyncFunctionDef(self, node):
-                return self.visit_FunctionDef(node)
+                self.def_level += 1
+                self.generic_visit(node)
+                self.def_level -= 1
+                return node
 
             def visit_ClassDef(self, node):
-                self.in_def += 1
+                self.def_level += 1
                 self.generic_visit(node)
-                self.in_def -= 1
+                self.def_level -= 1
                 return node
 
-            # --- convert top-level "return" ---
-            def visit_Return(self, node):
-                if self.in_def > 0:
-                    return node  # inside def → OK
+            # replace top-level Return nodes with [Assign(RETURN=...), Raise(ReturnEvent())]
+            def visit_Return(self, node: ast.Return):
+                if self.def_level > 0:
+                    return node  # inside def/class -> keep return
+                # top-level return -> produce two statements
+                value_node = node.value if node.value is not None else ast.Constant(value=None)
+                assign = ast.Assign(
+                    targets=[ast.Name(id="RETURN", ctx=ast.Store())],
+                    value=value_node
+                )
+                raise_exc = ast.Raise(
+                    exc=ast.Call(func=ast.Name(id="ReturnEvent", ctx=ast.Load()), args=[], keywords=[]),
+                    cause=None
+                )
+                # return a list of nodes — NodeTransformer will splice them in place
+                return [assign, raise_exc]
 
-                # top-level → convert
-                return [
-                    ast.Assign(
-                        targets=[ast.Name(id="RETURN", ctx=ast.Store())],
-                        value=node.value or ast.Constant(None)
-                    ),
-                    ast.Raise(
-                        exc=ast.Call(
-                            func=ast.Name(id="ReturnEvent", ctx=ast.Load()),
-                            args=[], keywords=[]
-                        ),
-                        cause=None
-                    )
-                ]
+            # replace our marker call __q2print__(...) to actual print(...)
+            def visit_Expr(self, node: ast.Expr):
+                # detect Call to Name '__q2print__'
+                if isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name) and node.value.func.id == "__q2print__":
+                    # reconstruct print(...) call
+                    newcall = ast.Call(func=ast.Name(id="print", ctx=ast.Load()), args=node.value.args, keywords=[])
+                    return ast.Expr(value=newcall)
+                return self.generic_visit(node)
 
-            # --- convert "?expr" into print(expr) ---
-            def visit_Expr(self, node):
-                # We encoded ?expr into a Call("__q2print__", expr) below
-                if isinstance(node.value, ast.Call) and getattr(node.value.func, "id", "") == "__q2print__":
-                    return ast.Expr(
-                        value=ast.Call(
-                            func=ast.Name(id="print", ctx=ast.Load()), args=node.value.args, keywords=[]
-                        )
-                    )
-                return node
-
-            # --- convert imports of internal modules ---
-            def visit_Import(self, node):
+            # handle import statements
+            def visit_Import(self, node: ast.Import):
+                # For each alias: if internal module -> replace import with code that:
+                #  _mod_ns = run_module('modname', import_only=True)
+                #  if isinstance(_mod_ns, dict):
+                #      import types, sys
+                #      _mod = types.ModuleType('modname')
+                #      for k,v in _mod_ns.items(): setattr(_mod, k, v)
+                #      sys.modules['modname'] = _mod
+                #      globals()['<bindname>'] = _mod
+                # else: keep original import (standard module)
                 new_nodes = []
                 for alias in node.names:
-                    name = alias.name
-                    if is_internal_module(name):
-                        # replace import with run_module("name", import_only=True)
-                        call = ast.Expr(
+                    modname = alias.name  # e.g. 'time' or 'w1'
+                    asname = alias.asname or modname.split(".")[0]
+
+                    if is_internal_module(modname):
+                        # _mod_ns = run_module('modname', import_only=True)
+                        assign_ns = ast.Assign(
+                            targets=[ast.Name(id="_mod_ns", ctx=ast.Store())],
                             value=ast.Call(
                                 func=ast.Name(id="run_module", ctx=ast.Load()),
-                                args=[ast.Constant(name)],
-                                keywords=[
-                                    ast.keyword(arg="import_only", value=ast.Constant(True)),
-                                ],
+                                args=[ast.Constant(value=modname)],
+                                keywords=[ast.keyword(arg="import_only", value=ast.Constant(value=True))]
                             )
                         )
-                        new_nodes.append(call)
+                        new_nodes.append(assign_ns)
+
+                        # if isinstance(_mod_ns, dict):
+                        #   import types, sys
+                        #   _mod = types.ModuleType('modname')
+                        #   for k,v in _mod_ns.items(): setattr(_mod, k, v)
+                        #   sys.modules['modname'] = _mod
+                        #   globals()['asname'] = _mod
+                        isinstance_check = ast.If(
+                            test=ast.Call(
+                                func=ast.Name(id="isinstance", ctx=ast.Load()),
+                                args=[ast.Name(id="_mod_ns", ctx=ast.Load()), ast.Name(id="dict", ctx=ast.Load())],
+                                keywords=[]
+                            ),
+                            body=[
+                                # import types, sys
+                                ast.Import(names=[ast.alias(name="types", asname=None), ast.alias(name="sys", asname=None)]),
+                                # _mod = types.ModuleType('modname')
+                                ast.Assign(
+                                    targets=[ast.Name(id="_mod", ctx=ast.Store())],
+                                    value=ast.Call(
+                                        func=ast.Attribute(value=ast.Name(id="types", ctx=ast.Load()), attr="ModuleType", ctx=ast.Load()),
+                                        args=[ast.Constant(value=modname)],
+                                        keywords=[]
+                                    )
+                                ),
+                                # for k,v in _mod_ns.items(): setattr(_mod,k,v)
+                                ast.For(
+                                    target=ast.Tuple(elts=[ast.Name(id="k", ctx=ast.Store()), ast.Name(id="v", ctx=ast.Store())], ctx=ast.Store()),
+                                    iter=ast.Call(func=ast.Attribute(value=ast.Name(id="_mod_ns", ctx=ast.Load()), attr="items", ctx=ast.Load()), args=[], keywords=[]),
+                                    body=[
+                                        ast.Expr(
+                                            value=ast.Call(
+                                                func=ast.Name(id="setattr", ctx=ast.Load()),
+                                                args=[ast.Name(id="_mod", ctx=ast.Load()), ast.Name(id="k", ctx=ast.Load()), ast.Name(id="v", ctx=ast.Load())],
+                                                keywords=[]
+                                            )
+                                        )
+                                    ],
+                                    orelse=[]
+                                ),
+                                # sys.modules['modname'] = _mod
+                                ast.Assign(
+                                    targets=[ast.Subscript(value=ast.Attribute(value=ast.Name(id="sys", ctx=ast.Load()), attr="modules", ctx=ast.Load()),
+                                                        slice=ast.Index(value=ast.Constant(value=modname)),
+                                                        ctx=ast.Store())],
+                                    value=ast.Name(id="_mod", ctx=ast.Load())
+                                ),
+                                # globals()['asname'] = _mod
+                                ast.Assign(
+                                    targets=[ast.Subscript(value=ast.Call(func=ast.Name(id="globals", ctx=ast.Load()), args=[], keywords=[]),
+                                                        slice=ast.Index(value=ast.Constant(value=asname)),
+                                                        ctx=ast.Store())],
+                                    value=ast.Name(id="_mod", ctx=ast.Load())
+                                ),
+                            ],
+                            orelse=[]
+                        )
+                        new_nodes.append(isinstance_check)
+                        # cleanup: del _mod_ns, _mod (optional) -- we can omit to keep traceability
                     else:
-                        # keep standard module import
-                        new_nodes.append(ast.Import(names=[alias]))
+                        # keep original import for standard module
+                        new_nodes.append(ast.Import(names=[ast.alias(name=modname, asname=alias.asname)]))
                 return new_nodes
 
-            # from-import support
-            def visit_ImportFrom(self, node):
-                # ignore "__future__"
-                if node.module and is_internal_module(node.module):
-                    # internal module → load module first
-                    load = ast.Expr(
+            # handle from ... import ...
+            def visit_ImportFrom(self, node: ast.ImportFrom):
+                # if node.module is internal -> insert run_module(...) before the ImportFrom,
+                # then keep the original ImportFrom (Python will import from sys.modules[...] we created)
+                mod = node.module
+                if mod and is_internal_module(mod):
+                    prep = ast.Assign(
+                        targets=[ast.Name(id="_mod_ns", ctx=ast.Store())],
                         value=ast.Call(
                             func=ast.Name(id="run_module", ctx=ast.Load()),
-                            args=[ast.Constant(node.module)],
-                            keywords=[ast.keyword(arg="import_only", value=ast.Constant(True))],
+                            args=[ast.Constant(value=mod)],
+                            keywords=[ast.keyword(arg="import_only", value=ast.Constant(value=True))]
                         )
                     )
-                    # then import names normally (they should now exist in globals)
-                    return [load, node]
+                    # create module object if _mod_ns is dict (same as above)
+                    setup = ast.If(
+                        test=ast.Call(func=ast.Name(id="isinstance", ctx=ast.Load()),
+                                    args=[ast.Name(id="_mod_ns", ctx=ast.Load()), ast.Name(id="dict", ctx=ast.Load())],
+                                    keywords=[]),
+                        body=[
+                            ast.Import(names=[ast.alias(name="types", asname=None), ast.alias(name="sys", asname=None)]),
+                            ast.Assign(
+                                targets=[ast.Name(id="_mod", ctx=ast.Store())],
+                                value=ast.Call(func=ast.Attribute(value=ast.Name(id="types", ctx=ast.Load()), attr="ModuleType", ctx=ast.Load()),
+                                            args=[ast.Constant(value=mod)], keywords=[])
+                            ),
+                            ast.For(
+                                target=ast.Tuple(elts=[ast.Name(id="k", ctx=ast.Store()), ast.Name(id="v", ctx=ast.Store())], ctx=ast.Store()),
+                                iter=ast.Call(func=ast.Attribute(value=ast.Name(id="_mod_ns", ctx=ast.Load()), attr="items", ctx=ast.Load()), args=[], keywords=[]),
+                                body=[ast.Expr(value=ast.Call(func=ast.Name(id="setattr", ctx=ast.Load()),
+                                                            args=[ast.Name(id="_mod", ctx=ast.Load()), ast.Name(id="k", ctx=ast.Load()), ast.Name(id="v", ctx=ast.Load())],
+                                                            keywords=[]))],
+                                orelse=[]
+                            ),
+                            ast.Assign(
+                                targets=[ast.Subscript(value=ast.Attribute(value=ast.Name(id="sys", ctx=ast.Load()), attr="modules", ctx=ast.Load()),
+                                                    slice=ast.Index(value=ast.Constant(value=mod)),
+                                                    ctx=ast.Store())],
+                                value=ast.Name(id="_mod", ctx=ast.Load())
+                            ),
+                        ],
+                        orelse=[]
+                    )
+                    return [prep, setup, node]
                 return node
 
-        # --- Pre-process "?" operator (Python can't parse it) ---
-        fixed_lines = []
-        for line in script.split("\n"):
-            striped = line.lstrip()
-            indent = line[: len(line) - len(striped)]
-            if striped.startswith("?"):
-                # convert "?x" to "__q2print__(x)"
-                expr = striped[1:].strip()
-                line = f"{indent}__q2print__({expr})"
-            fixed_lines.append(line)
-        script = "\n".join(fixed_lines)
-
-        # --- parse & transform ---
+        # Step 3: parse AST, transform, compile
         try:
-            tree = ast.parse(script)
-            tree = Transformer().visit(tree)
+            tree = ast.parse(preprocessed)
+            trans = Transformer()
+            tree = trans.visit(tree)
             ast.fix_missing_locations(tree)
-            code = compile(tree, "<script>", "exec")
-            return {"code": code, "error": "", "script": script}
+            codeobj = compile(tree, "<db_script>", "exec")
+            return {"code": codeobj, "error": "", "script": preprocessed}
         except Exception as e:
-            return {"code": False, "error": str(e)}
+            tb = traceback.format_exc()
+            err = f"Code compile error: {e}\n{tb}"
+            try:
+                self._logger.error(err)
+            except Exception:
+                pass
+            return {"code": False, "error": err, "script": preprocessed}
+
 
     def code_runner(self, script, form=None, __name__="__main__"):
         _form = form

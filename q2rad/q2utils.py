@@ -23,6 +23,7 @@ import html
 from q2rad import Q2Form as _Q2Form
 from q2db.cursor import Q2Cursor
 from q2rad.q2raddb import num
+from decimal import ROUND_HALF_UP
 from q2gui.q2model import Q2Model
 from q2gui.q2dialogs import q2ask
 from q2gui.q2model import Q2CursorModel
@@ -42,6 +43,15 @@ from ftplib import FTP
 
 
 _ = gettext.gettext
+
+
+def round_(number, ndigits=2):
+    if ndigits >= 0:
+        return num(number).quantize(
+            num("1." + "0" * ndigits) if ndigits != 0 else num(0), rounding=ROUND_HALF_UP
+        )
+    else:
+        return round_(num(number) / num(10 ** abs(ndigits)), 0) * num(10 ** abs(ndigits))
 
 
 class Q2Form(_Q2Form):
