@@ -64,7 +64,7 @@ class Q2Modules(Q2Form, Q2_save_and_run):
         model = Q2CursorModel(cursor)
         self.set_model(model)
         self.add_action("/crud")
-        self.add_action("Run", self.script_runner, hotkey="F4", eof_disabled=1)
+        self.add_action("Run", self.script_runner, hotkey="F4", eof_disabled=1, tag="orange")
         self._add_save_and_run()
         self._add_save_and_run_visible()
         self.dev_actions.add_action("Just run", self.editor_just_run, hotkey="F5")

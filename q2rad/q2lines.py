@@ -90,7 +90,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         self.add_action("/crud")
         # self.add_seq_actions()
 
-        self.add_action("Run", self.form_runner, hotkey="F4")
+        self.add_action("Run", self.form_runner, hotkey="F4", tag="orange")
         self.add_action("Fill from DB", self.filler)
         self.add_action("Fill from CSV", self.csv_filler)
         self.add_action("-")
@@ -268,6 +268,14 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             _("Script When"),
             control="code",
             nogrid="*",
+            mess="""if mode=="grid":
+    record = mem.model.get_record(row)
+    quantity = record.get("quantity", 0)
+    price = record.get("net_price", 0)
+else:
+    quantity = mem.s.quantity
+    price = mem.s.net_price
+return round_(num(price)*num(quantity), 0)""",
             datatype="longtext",
         )
         self.add_control("/t", _("Script Valid"))

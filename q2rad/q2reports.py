@@ -282,7 +282,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         model.set_order("name").refresh()
         self.set_model(model)
         self.add_action("/crud")
-        self.add_action("Run", self.run_report, hotkey="F4", eof_disabled=1)
+        self.add_action("Run", self.run_report, hotkey="F4", eof_disabled=1, tag="orange")
         self.add_action("-")
         self.add_action("JSON", self.edit_json, eof_disabled=1)
 

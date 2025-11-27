@@ -63,7 +63,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         # self.add_seq_actions()
 
         self.add_action("Migrate", self.q2_app.migrate_db_data, eof_disabled=1)
-        self.add_action("Run", self.form_runner, hotkey="F4", eof_disabled=1)
+        self.add_action("Run", self.form_runner, hotkey="F4", eof_disabled=1, tag="orange")
 
     def create_form(self):
         self.add_control("name", _("Name"), datatype="char", datalen=100, pk="*")

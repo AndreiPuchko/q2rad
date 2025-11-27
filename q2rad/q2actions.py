@@ -41,7 +41,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
 
         self.add_action("/crud")
         # self.add_seq_actions()
-        self.add_action("Run", self.form_runner, hotkey="F4")
+        self.add_action("Run", self.form_runner, hotkey="F4", tag="orange")
         self.add_action("Copy to", icon="❖", worker=self.copy_to)
 
     def create_form(self):
