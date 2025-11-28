@@ -483,7 +483,7 @@ class Q2ContentEditor(Q2Form):
             self.add_control("/s")
             self.add_control("/")
         if self.add_control("/h", tag="cell_panel", alignment="7"):
-            self.add_control("data", "Cell content", stretch=10, changed=self.changed_cell)
+            self.add_control("data", "Cell content", stretch=10, datalen=999, changed=self.changed_cell)
             self.add_control("format", "Format", stretch=1, changed=self.changed_cell)
             self.add_control("name", "Name", stretch=1, changed=self.changed_cell)
             self.add_control("/s")
