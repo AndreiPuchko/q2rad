@@ -101,6 +101,14 @@ class Q2RadReport(Q2Report):
             form.add_control("/s")
             form.add_control("/v")
             form.add_control(
+                "pdf",
+                "PDF",
+                control="button",
+                datalen=10,
+                valid=lambda: repo_valid("pdf"),
+                eat_enter=1,
+            )            
+            form.add_control(
                 "xlsx",
                 "XLSX",
                 control="button",
@@ -599,9 +607,10 @@ class Q2ReportReport(Q2Form):
 
         if 1:  # Actions
             actions = Q2Actions()
-            actions.add_action("HTML", lambda: self.run_report("html"))
-            actions.add_action("DOCX", lambda: self.run_report("docx"))
+            actions.add_action("PDF", lambda: self.run_report("pdf"))
             actions.add_action("XLSX", lambda: self.run_report("xlsx"))
+            actions.add_action("DOCX", lambda: self.run_report("docx"))
+            actions.add_action("HTML", lambda: self.run_report("html"))
             actions.show_main_button = 0
 
         if self.add_control("/h"):
