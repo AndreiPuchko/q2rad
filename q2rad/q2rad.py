@@ -771,7 +771,8 @@ class Q2RadApp(Q2App):
             pipname = package[1]
             package = package[0]
         response = open_url(
-            f"https://pypi.python.org/pypi/{pipname if pipname else package}/json"
+            f"https://pypi.python.org/pypi/{pipname if pipname else package}/json",
+            timeout=1
         )  # noqa F405
         if response:
             latest_version = json.load(response)["info"]["version"]
