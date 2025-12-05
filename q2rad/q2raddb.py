@@ -41,9 +41,9 @@ if "darwin" in sys.platform:
 # import errno
 
 
-def open_url(url):
+def open_url(url, timeout=5):
     try:
-        response = urllib.request.urlopen(url, timeout=5)
+        response = urllib.request.urlopen(url, timeout=timeout)
     except SocketError:
         response = None
     return response
