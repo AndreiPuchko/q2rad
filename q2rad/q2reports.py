@@ -256,7 +256,7 @@ class Q2RadReport(Q2Report):
 
         q2working(worker(), "W o r k i n g")
 
-        super().run(output_file, data=data)
+        return super().run(output_file, data=data)
 
 
 class Q2Reports(Q2Form, Q2_save_and_run):
@@ -402,14 +402,15 @@ class Q2ReportEdit(Q2Form):
         self.layout_edit = Q2ReportReport(self)
         self.add_control("/t", "Layout")
         self.add_control("rl", "", widget=self.layout_edit, nogrid=1, migrate=0)
-        self.add_control("/t", "Query")
-        self.add_control("ql", "", widget=self.query_edit, nogrid=1, migrate=0)
-        # self.add_control("/t", "Setup")
-        # self.add_control("before_script", "", control="code")
-        self.add_control("/t", "Module")
-        self.add_control("module", "", control="code")
-        self.add_control("/t", "Comment")
-        self.add_control("comment", _("Comment"), datatype="text")
+        if q2app.q2_app.dev_mode:
+            self.add_control("/t", "Query")
+            self.add_control("ql", "", widget=self.query_edit, nogrid=1, migrate=0)
+            # self.add_control("/t", "Setup")
+            # self.add_control("before_script", "", control="code")
+            self.add_control("/t", "Module")
+            self.add_control("module", "", control="code")
+            self.add_control("/t", "Comment")
+            self.add_control("comment", _("Comment"), datatype="text")
 
     def set_content(self, content):
         if content == "":
@@ -1132,7 +1133,7 @@ class Q2ReportPage(Q2Form, ReportForm):
         set_dict_default(self.page_data, "style", {})
 
         set_dict_default(self.page_data, "page_width", 21.0)
-        set_dict_default(self.page_data, "page_height", 29.0)
+        set_dict_default(self.page_data, "page_height", 29.7)
         set_dict_default(self.page_data, "page_margin_left", 2.0)
         set_dict_default(self.page_data, "page_margin_top", 2.0)
         set_dict_default(self.page_data, "page_margin_right", 1.0)
@@ -1168,7 +1169,7 @@ class Q2ReportPage(Q2Form, ReportForm):
             datalen=5,
             datadec=2,
             data=self.page_data.page_width,
-            valid=self.page_size_changed,
+            changed=self.page_size_changed,
         )
         self.add_control(
             "height",
@@ -1177,7 +1178,7 @@ class Q2ReportPage(Q2Form, ReportForm):
             datalen=5,
             datadec=2,
             data=self.page_data.page_height,
-            valid=self.page_size_changed,
+            changed=self.page_size_changed,
         )
         self.add_control(
             "left",
@@ -1186,7 +1187,7 @@ class Q2ReportPage(Q2Form, ReportForm):
             datalen=5,
             datadec=2,
             data=self.page_data.page_margin_left,
-            valid=self.page_size_changed,
+            changed=self.page_size_changed,
         )
         self.add_control(
             "right",
@@ -1195,7 +1196,7 @@ class Q2ReportPage(Q2Form, ReportForm):
             datalen=5,
             datadec=2,
             data=self.page_data.page_margin_right,
-            valid=self.page_size_changed,
+            changed=self.page_size_changed,
         )
         self.add_control(
             "top",
@@ -1204,7 +1205,7 @@ class Q2ReportPage(Q2Form, ReportForm):
             datalen=5,
             datadec=2,
             data=self.page_data.page_margin_top,
-            valid=self.page_size_changed,
+            changed=self.page_size_changed,
         )
         self.add_control(
             "bottom",
@@ -1213,7 +1214,7 @@ class Q2ReportPage(Q2Form, ReportForm):
             datalen=5,
             datadec=2,
             data=self.page_data.page_margin_bottom,
-            valid=self.page_size_changed,
+            changed=self.page_size_changed,
         )
         self.add_control("/s")
         self.add_control("/")
@@ -1221,13 +1222,14 @@ class Q2ReportPage(Q2Form, ReportForm):
         self.add_control("anchor", "**", control="label")
 
     def page_size_changed(self):
-        self.page_data.page_width = self.s.width
-        self.page_data.page_height = self.s.height
-        self.page_data.page_margin_top = self.s.top
-        self.page_data.page_margin_bottom = self.s.bottom
-        self.page_data.page_margin_left = self.s.left
-        self.page_data.page_margin_right = self.s.right
-        self._repaint()
+        if self.form_stack:
+            self.page_data.page_width = self.s.width
+            self.page_data.page_height = self.s.height
+            self.page_data.page_margin_top = self.s.top
+            self.page_data.page_margin_bottom = self.s.bottom
+            self.page_data.page_margin_left = self.s.left
+            self.page_data.page_margin_right = self.s.right
+            self._repaint()
 
     def style_button_pressed(self):
         self.report_report_form.content_editor.hide_all()
