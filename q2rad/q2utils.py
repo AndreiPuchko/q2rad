@@ -515,7 +515,7 @@ class Q2_save_and_run:
 
 
 class auto_filter:
-    def __init__(self, form_name, mem, lines_per_tab=10, exclude=[]):
+    def __init__(self, form_name, mem, lines_per_tab=10, exclude=[], dev=False):
         self.form_name = form_name
         self.mem = mem
         self.filter_columns = []
@@ -524,7 +524,7 @@ class auto_filter:
         self.mem.cancel_button = True
         self.mem.add_ok_cancel_buttons()
         self.lines_per_tab = lines_per_tab
-
+        self.dev = dev
         self.auto_filter()
 
     def auto_filter(self):
@@ -547,10 +547,12 @@ class auto_filter:
             """,
             self.mem.q2_app.db_logic,
         )
+
         manual_controls_count = len(self.mem.controls)
         make_tabs = cu.row_count() > self.lines_per_tab
         if not make_tabs:
             self.mem.add_control("/f")
+        self.mem.add_control("dev", "Dev", control="button", valid=self._dev)
         for col in cu.records():
             if col["column"] in self.exclude:
                 continue
@@ -596,6 +598,37 @@ class auto_filter:
                 self.mem.controls.append(self.mem.controls.pop(0))
         self._valid = self.mem.valid
         self.mem.valid = self.valid
+
+    def _dev(self):
+        controls = [
+            {
+                key: value
+                for key, value in x.items()
+                if not f"{value}".startswith("<") and key not in ["migrate", "args", "margins", "_control"]
+            }
+            for x in self.mem.controls
+            if not x["column"].startswith("dev")
+        ]
+        for idx, value in enumerate(controls):
+            if value["datatype"] == "text":
+                controls[idx]["datatype"] = "char"
+                controls[idx]["control"] = "line"
+                controls[idx]["datalen"] = "100"
+        import json
+
+        json_data = json.dumps(controls, indent=2, ensure_ascii=True)
+        where_code = ["where_list = []"]
+        for x in self.filter_columns:
+            where_code.extend(self.mem.prepare_where(x, dev=True))
+        where_code.append("")
+        where_code.append('where_string = " and ".join(where_list)')
+        where_code.append(f'q2_app.run_form("{self.form_name}", where=where_string)')
+        where_code.append("return False")
+        f = Q2Form("Dev")
+        f.add_control("/v")
+        f.add_control("lines", "Lines", control="codejson", data=json_data)
+        f.add_control("where", "Where", control="codepython", data="\n".join(where_code))
+        f.run()
 
     def valid(self):
         where = []
