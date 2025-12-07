@@ -59,3 +59,45 @@ $version = ($version | Select-String "__version__\s*=\s*""(.+)""").Matches[0].Gr
 
 Write-Host "Package name: $parentFolderName"
 Write-Host "Version: $version"
+
+
+
+$tag = "v$newVersion"
+
+git tag $tag
+git push
+git push origin $tag
+
+# -----------------------------
+# 10. make Release Notes из git log
+# -----------------------------
+
+$prevTag = git tag --sort=-v:refname | Select-Object -Skip 1 -First 1
+
+if ($prevTag) {
+    $releaseNotes = git log "$prevTag..$tag" --pretty=format:"- %s"
+} else {
+    $releaseNotes = git log $tag --pretty=format:"- %s"
+}
+
+if (-not $releaseNotes) {
+    $releaseNotes = "- Initial release"
+}
+
+$releaseFile = "release_notes.txt"
+Set-Content $releaseFile $releaseNotes -Encoding UTF8
+
+Write-Host "✅ Release notes generated"
+
+# -----------------------------
+# 11. GitHub Release
+# -----------------------------
+
+gh release create $tag `
+    dist/* `
+    --title "Release $tag" `
+    --notes-file $releaseFile
+
+Remove-Item $releaseFile
+
+Write-Host "✅✅✅ Release $tag created and uploaded for $ProjectName!" -ForegroundColor Green
