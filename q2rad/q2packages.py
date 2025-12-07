@@ -55,9 +55,7 @@ class Q2Packages(Q2Form):
 
     def uninstall(self):
         if q2AskYN(f"You are about tu uninstall package: {self.r.package_name}") == 2:
-            self.q2_app.pip_uninstall(
-                self.r.package_name if self.r.package_pipname == "" else self.r.package_pipname
-            )
+            self.q2_app.pip_uninstall(self.r.package_name)
 
     def install(self):
         version = (

@@ -78,6 +78,7 @@ import subprocess
 import shutil
 import pkgutil
 from importlib.metadata import version as version2
+from importlib.metadata import distributions
 import logging
 import traceback
 
@@ -194,7 +195,9 @@ def explain_error(tb=None, errtype=None):
         script = tb.tb_frame.f_code.co_filename[1:-1].split("\n")
         if line_no - 1 < len(script):
             errline = script[line_no - 1]
-            script[line_no - 1] = f"{err_char*10}\n{err_char*2}" + script[line_no - 1] + f"\n{err_char*10}"
+            script[line_no - 1] = (
+                f"{err_char * 10}\n{err_char * 2}" + script[line_no - 1] + f"\n{err_char * 10}"
+            )
             error["script"] = "\n".join(script)
         else:
             errline = traceback.format_tb(tb)[-1]
@@ -609,7 +612,7 @@ class Q2RadApp(Q2App):
             latest_version, current_version = rez[package]
             if latest_version:
                 if current_version != latest_version:
-                    latest_version_text = f"({latest_version })"
+                    latest_version_text = f"({latest_version})"
                 else:
                     latest_version_text = ""
             else:
@@ -766,19 +769,24 @@ class Q2RadApp(Q2App):
             + f"&&{pip_command} pip install --upgrade --force-reinstall q2rad",
         )
 
+    def get_github_package_release_version(self, git_package):
+        response = read_url(f"{git_package}/releases/latest/download/version.py").decode("utf-8-sig").strip()
+        release_path = ""
+        if response:
+            latest_version = re.findall(r"\d*\.\d*\.\d*", response)[0]
+            release_path = read_url(f"{git_package}/releases/latest/download/latest")
+            release_path = (
+                f"{git_package}/releases/latest/download/{release_path.decode('utf-8-sig').strip()}"
+            )
+        else:
+            latest_version = None
+        return latest_version, release_path
+
     def get_package_versions(self, package, pipname=None):
         if not isinstance(package, str):
             pipname = package[1]
             package = package[0]
-        response = open_url(
-            f"https://pypi.python.org/pypi/{pipname if pipname else package}/json",
-            timeout=1
-        )  # noqa F405
-        if response:
-            latest_version = json.load(response)["info"]["version"]
-        else:
-            latest_version = None
-        installed_packages = [x.name for x in pkgutil.iter_modules()]
+        installed_packages = [f"{d.metadata['Name']}" for d in distributions()]
         if package in installed_packages:
             try:
                 current_version = version2(package)
@@ -792,12 +800,26 @@ class Q2RadApp(Q2App):
                     )()
                 except Exception as error:
                     _logger.error(f"Error checking version of {package}: {error}")
-            if current_version is None:
-                q2mess(f"Error checking curent version of {package}!")
+            # if current_version is None:
+            #     q2mess(f"Error checking curent version of {package}!")
         else:
             current_version = None
 
-        return latest_version, current_version
+        # get latest version
+        if re.findall(r"https://github.com/.*", pipname):  # git release
+            latest_version, release_path = self.get_github_package_release_version(pipname)
+            return latest_version, current_version
+        else:
+            response = open_url(
+                f"https://pypi.python.org/pypi/{pipname if pipname else package}/json",
+                timeout=1,
+            )  # noqa F405
+            if response:
+                latest_version = json.load(response)["info"]["version"]
+            else:
+                latest_version = None
+
+            return latest_version, current_version
 
     def get_git_package_version(git_package):
         package_name = os.path.basename(git_package)
@@ -811,14 +833,18 @@ class Q2RadApp(Q2App):
         upgraded = []
         w = Q2WaitShow(len(packages_list))
         for package in packages_list:
-            if w.step(f"{package if isinstance(package, str) else package[0]}"):
+            _package = package if isinstance(package, str) else package[0]
+            if w.step(f"{_package}"):
                 break
             latest_version, current_version = self.get_package_versions(package)
+            if isinstance(package, (list, tuple)) and len(package) > 1:
+                if re.findall(r"https://github.com/.*", package[1]):  # git release
+                    _, package = self.get_github_package_release_version(package[1])
             # q2mess([package, latest_version, current_version])
             if self.db_logic is not None and package not in q2_modules:
                 pkg_ver = get(
                     "packages",
-                    f"package_name='{package if isinstance(package, str) else package[0]}'",
+                    f"package_name='{_package}'",
                     "package_version",
                     q2_db=self.db_logic,
                 )
@@ -844,19 +870,13 @@ class Q2RadApp(Q2App):
                         logging.warning(f"pip update {package} error:{error}")
                     # latest_version, new_current_version = self.get_package_versions(package)
                 if latest_version:
-                    upgraded.append(
-                        f"{package if isinstance(package, str) else package[0]} - "
-                        f"<b>{current_version}</b> => "
-                        f"<b>{latest_version}</b>"
-                    )
+                    upgraded.append(f"{_package} - <b>{current_version}</b> => <b>{latest_version}</b>")
                 else:
-                    upgraded.append(
-                        "Error occured while updating package "
-                        f"<b>{package if isinstance(package, str) else package[0]}</b>!"
-                    )
+                    upgraded.append(f"Error occured while updating package <b>{_package}</b>!")
         w.close()
+
         if upgraded:
-            mess = ("Upgrading complete!<p>" "The program will be restarted!" "<p><p>") + "<p>".join(upgraded)
+            mess = ("Upgrading complete!<p>The program will be restarted!<p><p>") + "<p>".join(upgraded)
         else:
             mess = "Updates not found!<p>"
         q2mess(mess)
@@ -911,19 +931,20 @@ class Q2RadApp(Q2App):
 
         if isinstance(package, tuple) or isinstance(package, list):
             package = package[1] if package[1] else package[0]
+        if re.findall(r"https://github.com/.*", package):
+            latest_version = ""
+        latest_version = f"=={latest_version}" if latest_version else ""
 
         def pip_runner():
             trm = Q2Terminal(callback=print)
             trm.run(
                 f'"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
-                f"--upgrade --no-cache-dir {package if isinstance(package, str) else package[1]}"
-                f"=={latest_version}"
+                f"--upgrade --no-cache-dir {package}"
+                f"{latest_version}"
             )
             trm.close()
 
-        q2working(
-            pip_runner, _("Installing package %s...") % package if isinstance(package, str) else package[1]
-        )
+        q2working(pip_runner, _("Installing package %s...") % package)
 
     def pip_uninstall(self, package):
         if self.frozen:
@@ -1467,13 +1488,14 @@ class Q2RadApp(Q2App):
                     return node  # inside def/class -> keep return
                 # top-level return -> produce two statements
                 value_node = node.value if node.value is not None else ast.Constant(value=None)
-                assign = ast.Assign(
-                    targets=[ast.Name(id="RETURN", ctx=ast.Store())],
-                    value=value_node
-                )
+                assign = ast.Assign(targets=[ast.Name(id="RETURN", ctx=ast.Store())], value=value_node)
                 raise_exc = ast.Raise(
-                    exc=ast.Call(func=ast.Name(id="ReturnEvent", ctx=ast.Load()), args=[], keywords=[]),
-                    cause=None
+                    exc=ast.Call(
+                        func=ast.Name(id="ReturnEvent", ctx=ast.Load()),
+                        args=[],
+                        keywords=[],
+                    ),
+                    cause=None,
                 )
                 # return a list of nodes — NodeTransformer will splice them in place
                 return [assign, raise_exc]
@@ -1481,9 +1503,17 @@ class Q2RadApp(Q2App):
             # replace our marker call __q2print__(...) to actual print(...)
             def visit_Expr(self, node: ast.Expr):
                 # detect Call to Name '__q2print__'
-                if isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name) and node.value.func.id == "__q2print__":
+                if (
+                    isinstance(node.value, ast.Call)
+                    and isinstance(node.value.func, ast.Name)
+                    and node.value.func.id == "__q2print__"
+                ):
                     # reconstruct print(...) call
-                    newcall = ast.Call(func=ast.Name(id="print", ctx=ast.Load()), args=node.value.args, keywords=[])
+                    newcall = ast.Call(
+                        func=ast.Name(id="print", ctx=ast.Load()),
+                        args=node.value.args,
+                        keywords=[],
+                    )
                     return ast.Expr(value=newcall)
                 return self.generic_visit(node)
 
@@ -1510,8 +1540,13 @@ class Q2RadApp(Q2App):
                             value=ast.Call(
                                 func=ast.Name(id="run_module", ctx=ast.Load()),
                                 args=[ast.Constant(value=modname)],
-                                keywords=[ast.keyword(arg="import_only", value=ast.Constant(value=True))]
-                            )
+                                keywords=[
+                                    ast.keyword(
+                                        arg="import_only",
+                                        value=ast.Constant(value=True),
+                                    )
+                                ],
+                            ),
                         )
                         new_nodes.append(assign_ns)
 
@@ -1524,52 +1559,98 @@ class Q2RadApp(Q2App):
                         isinstance_check = ast.If(
                             test=ast.Call(
                                 func=ast.Name(id="isinstance", ctx=ast.Load()),
-                                args=[ast.Name(id="_mod_ns", ctx=ast.Load()), ast.Name(id="dict", ctx=ast.Load())],
-                                keywords=[]
+                                args=[
+                                    ast.Name(id="_mod_ns", ctx=ast.Load()),
+                                    ast.Name(id="dict", ctx=ast.Load()),
+                                ],
+                                keywords=[],
                             ),
                             body=[
                                 # import types, sys
-                                ast.Import(names=[ast.alias(name="types", asname=None), ast.alias(name="sys", asname=None)]),
+                                ast.Import(
+                                    names=[
+                                        ast.alias(name="types", asname=None),
+                                        ast.alias(name="sys", asname=None),
+                                    ]
+                                ),
                                 # _mod = types.ModuleType('modname')
                                 ast.Assign(
                                     targets=[ast.Name(id="_mod", ctx=ast.Store())],
                                     value=ast.Call(
-                                        func=ast.Attribute(value=ast.Name(id="types", ctx=ast.Load()), attr="ModuleType", ctx=ast.Load()),
+                                        func=ast.Attribute(
+                                            value=ast.Name(id="types", ctx=ast.Load()),
+                                            attr="ModuleType",
+                                            ctx=ast.Load(),
+                                        ),
                                         args=[ast.Constant(value=modname)],
-                                        keywords=[]
-                                    )
+                                        keywords=[],
+                                    ),
                                 ),
                                 # for k,v in _mod_ns.items(): setattr(_mod,k,v)
                                 ast.For(
-                                    target=ast.Tuple(elts=[ast.Name(id="k", ctx=ast.Store()), ast.Name(id="v", ctx=ast.Store())], ctx=ast.Store()),
-                                    iter=ast.Call(func=ast.Attribute(value=ast.Name(id="_mod_ns", ctx=ast.Load()), attr="items", ctx=ast.Load()), args=[], keywords=[]),
+                                    target=ast.Tuple(
+                                        elts=[
+                                            ast.Name(id="k", ctx=ast.Store()),
+                                            ast.Name(id="v", ctx=ast.Store()),
+                                        ],
+                                        ctx=ast.Store(),
+                                    ),
+                                    iter=ast.Call(
+                                        func=ast.Attribute(
+                                            value=ast.Name(id="_mod_ns", ctx=ast.Load()),
+                                            attr="items",
+                                            ctx=ast.Load(),
+                                        ),
+                                        args=[],
+                                        keywords=[],
+                                    ),
                                     body=[
                                         ast.Expr(
                                             value=ast.Call(
                                                 func=ast.Name(id="setattr", ctx=ast.Load()),
-                                                args=[ast.Name(id="_mod", ctx=ast.Load()), ast.Name(id="k", ctx=ast.Load()), ast.Name(id="v", ctx=ast.Load())],
-                                                keywords=[]
+                                                args=[
+                                                    ast.Name(id="_mod", ctx=ast.Load()),
+                                                    ast.Name(id="k", ctx=ast.Load()),
+                                                    ast.Name(id="v", ctx=ast.Load()),
+                                                ],
+                                                keywords=[],
                                             )
                                         )
                                     ],
-                                    orelse=[]
+                                    orelse=[],
                                 ),
                                 # sys.modules['modname'] = _mod
                                 ast.Assign(
-                                    targets=[ast.Subscript(value=ast.Attribute(value=ast.Name(id="sys", ctx=ast.Load()), attr="modules", ctx=ast.Load()),
-                                                        slice=ast.Index(value=ast.Constant(value=modname)),
-                                                        ctx=ast.Store())],
-                                    value=ast.Name(id="_mod", ctx=ast.Load())
+                                    targets=[
+                                        ast.Subscript(
+                                            value=ast.Attribute(
+                                                value=ast.Name(id="sys", ctx=ast.Load()),
+                                                attr="modules",
+                                                ctx=ast.Load(),
+                                            ),
+                                            slice=ast.Index(value=ast.Constant(value=modname)),
+                                            ctx=ast.Store(),
+                                        )
+                                    ],
+                                    value=ast.Name(id="_mod", ctx=ast.Load()),
                                 ),
                                 # globals()['asname'] = _mod
                                 ast.Assign(
-                                    targets=[ast.Subscript(value=ast.Call(func=ast.Name(id="globals", ctx=ast.Load()), args=[], keywords=[]),
-                                                        slice=ast.Index(value=ast.Constant(value=asname)),
-                                                        ctx=ast.Store())],
-                                    value=ast.Name(id="_mod", ctx=ast.Load())
+                                    targets=[
+                                        ast.Subscript(
+                                            value=ast.Call(
+                                                func=ast.Name(id="globals", ctx=ast.Load()),
+                                                args=[],
+                                                keywords=[],
+                                            ),
+                                            slice=ast.Index(value=ast.Constant(value=asname)),
+                                            ctx=ast.Store(),
+                                        )
+                                    ],
+                                    value=ast.Name(id="_mod", ctx=ast.Load()),
                                 ),
                             ],
-                            orelse=[]
+                            orelse=[],
                         )
                         new_nodes.append(isinstance_check)
                         # cleanup: del _mod_ns, _mod (optional) -- we can omit to keep traceability
@@ -1589,37 +1670,86 @@ class Q2RadApp(Q2App):
                         value=ast.Call(
                             func=ast.Name(id="run_module", ctx=ast.Load()),
                             args=[ast.Constant(value=mod)],
-                            keywords=[ast.keyword(arg="import_only", value=ast.Constant(value=True))]
-                        )
+                            keywords=[ast.keyword(arg="import_only", value=ast.Constant(value=True))],
+                        ),
                     )
                     # create module object if _mod_ns is dict (same as above)
                     setup = ast.If(
-                        test=ast.Call(func=ast.Name(id="isinstance", ctx=ast.Load()),
-                                    args=[ast.Name(id="_mod_ns", ctx=ast.Load()), ast.Name(id="dict", ctx=ast.Load())],
-                                    keywords=[]),
+                        test=ast.Call(
+                            func=ast.Name(id="isinstance", ctx=ast.Load()),
+                            args=[
+                                ast.Name(id="_mod_ns", ctx=ast.Load()),
+                                ast.Name(id="dict", ctx=ast.Load()),
+                            ],
+                            keywords=[],
+                        ),
                         body=[
-                            ast.Import(names=[ast.alias(name="types", asname=None), ast.alias(name="sys", asname=None)]),
+                            ast.Import(
+                                names=[
+                                    ast.alias(name="types", asname=None),
+                                    ast.alias(name="sys", asname=None),
+                                ]
+                            ),
                             ast.Assign(
                                 targets=[ast.Name(id="_mod", ctx=ast.Store())],
-                                value=ast.Call(func=ast.Attribute(value=ast.Name(id="types", ctx=ast.Load()), attr="ModuleType", ctx=ast.Load()),
-                                            args=[ast.Constant(value=mod)], keywords=[])
+                                value=ast.Call(
+                                    func=ast.Attribute(
+                                        value=ast.Name(id="types", ctx=ast.Load()),
+                                        attr="ModuleType",
+                                        ctx=ast.Load(),
+                                    ),
+                                    args=[ast.Constant(value=mod)],
+                                    keywords=[],
+                                ),
                             ),
                             ast.For(
-                                target=ast.Tuple(elts=[ast.Name(id="k", ctx=ast.Store()), ast.Name(id="v", ctx=ast.Store())], ctx=ast.Store()),
-                                iter=ast.Call(func=ast.Attribute(value=ast.Name(id="_mod_ns", ctx=ast.Load()), attr="items", ctx=ast.Load()), args=[], keywords=[]),
-                                body=[ast.Expr(value=ast.Call(func=ast.Name(id="setattr", ctx=ast.Load()),
-                                                            args=[ast.Name(id="_mod", ctx=ast.Load()), ast.Name(id="k", ctx=ast.Load()), ast.Name(id="v", ctx=ast.Load())],
-                                                            keywords=[]))],
-                                orelse=[]
+                                target=ast.Tuple(
+                                    elts=[
+                                        ast.Name(id="k", ctx=ast.Store()),
+                                        ast.Name(id="v", ctx=ast.Store()),
+                                    ],
+                                    ctx=ast.Store(),
+                                ),
+                                iter=ast.Call(
+                                    func=ast.Attribute(
+                                        value=ast.Name(id="_mod_ns", ctx=ast.Load()),
+                                        attr="items",
+                                        ctx=ast.Load(),
+                                    ),
+                                    args=[],
+                                    keywords=[],
+                                ),
+                                body=[
+                                    ast.Expr(
+                                        value=ast.Call(
+                                            func=ast.Name(id="setattr", ctx=ast.Load()),
+                                            args=[
+                                                ast.Name(id="_mod", ctx=ast.Load()),
+                                                ast.Name(id="k", ctx=ast.Load()),
+                                                ast.Name(id="v", ctx=ast.Load()),
+                                            ],
+                                            keywords=[],
+                                        )
+                                    )
+                                ],
+                                orelse=[],
                             ),
                             ast.Assign(
-                                targets=[ast.Subscript(value=ast.Attribute(value=ast.Name(id="sys", ctx=ast.Load()), attr="modules", ctx=ast.Load()),
-                                                    slice=ast.Index(value=ast.Constant(value=mod)),
-                                                    ctx=ast.Store())],
-                                value=ast.Name(id="_mod", ctx=ast.Load())
+                                targets=[
+                                    ast.Subscript(
+                                        value=ast.Attribute(
+                                            value=ast.Name(id="sys", ctx=ast.Load()),
+                                            attr="modules",
+                                            ctx=ast.Load(),
+                                        ),
+                                        slice=ast.Index(value=ast.Constant(value=mod)),
+                                        ctx=ast.Store(),
+                                    )
+                                ],
+                                value=ast.Name(id="_mod", ctx=ast.Load()),
                             ),
                         ],
-                        orelse=[]
+                        orelse=[],
                     )
                     return [prep, setup, node]
                 return node
@@ -1640,7 +1770,6 @@ class Q2RadApp(Q2App):
             except Exception:
                 pass
             return {"code": False, "error": err, "script": preprocessed}
-
 
     def code_runner(self, script, form=None, __name__="__main__"):
         _form = form
