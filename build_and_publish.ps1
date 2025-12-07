@@ -1,3 +1,11 @@
+# 0. check git-status
+$gitStatus = git status --porcelain
+if ($gitStatus) {
+    Write-Error "❌ The working directory is not clean! Commit or revert the changes:"
+    git status -s
+    exit 1
+}
+
 # --- 1. Bump version ---
 $versionFile = "pyproject.toml"
 $content = Get-Content $versionFile -Raw
@@ -76,7 +84,8 @@ $prevTag = git tag --sort=-v:refname | Select-Object -Skip 1 -First 1
 
 if ($prevTag) {
     $releaseNotes = git log "$prevTag..$tag" --pretty=format:"- %s"
-} else {
+}
+else {
     $releaseNotes = git log $tag --pretty=format:"- %s"
 }
 
@@ -93,11 +102,26 @@ Write-Host "✅ Release notes generated"
 # 11. GitHub Release
 # -----------------------------
 
-gh release create $tag `
-    dist/* `
+# Ensure $ProjectName is set
+$ProjectName = Split-Path (Get-Location) -Leaf
+
+# Collect all dist files
+$assets = Get-ChildItem -Path "dist" -File | ForEach-Object { $_.FullName }
+
+if ($assets.Count -eq 0) {
+    Write-Error "❌ No files found in dist/ for release!"
+    exit 1
+}
+
+Write-Host "Release assets:"
+$assets | ForEach-Object { Write-Host " - $_" }
+
+# Create GitHub release
+gh release create $tag $assets `
     --title "Release $tag" `
     --notes-file $releaseFile
 
-Remove-Item $releaseFile
-
 Write-Host "✅✅✅ Release $tag created and uploaded for $ProjectName!" -ForegroundColor Green
+
+# Cleanup
+Remove-Item $releaseFile
