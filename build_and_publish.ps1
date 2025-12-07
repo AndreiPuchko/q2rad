@@ -52,6 +52,12 @@ $versionPyContent = "__version__ = ""$newVersion"""
 
 Write-Host "version.py generated: $versionPyPath"
 
+# -----------------------------
+# 6. Git commit
+# -----------------------------
+git add pyproject.toml $VersionPyPath
+git commit -m "chore: bump version to v$newVersion"
+
 # --- 2. Build & Publish to PyPI ---
 poetry build
 poetry publish
