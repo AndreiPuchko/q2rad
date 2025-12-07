@@ -118,8 +118,10 @@ if ($others.Count -gt 0)  { $releaseNotes += "### Other`n"   + ($others -join "`
 
 $assets = Get-ChildItem dist -File | ForEach-Object { $_.FullName }
 
+$assets = Get-ChildItem dist -File | Where-Object { $_.Name -match [regex]::Escape($newVersion) } | ForEach-Object { $_.FullName }
+
 if ($assets.Count -eq 0) {
-    Write-Error "❌ No files found in dist/ for release!"
+    Write-Error "❌ No files found in dist/ for version $newVersion!"
     exit 1
 }
 
