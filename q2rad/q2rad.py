@@ -786,6 +786,8 @@ class Q2RadApp(Q2App):
         if not isinstance(package, str):
             pipname = package[1]
             package = package[0]
+        if pipname is None:
+            pipname = package
         installed_packages = [f"{d.metadata['Name']}" for d in distributions()]
         if package in installed_packages:
             try:
