@@ -21,13 +21,13 @@ q2rad = "q2rad.q2rad:main"
 [tool.poetry.group.dev.dependencies]
 pytest = "^5.2"
 flake8 = "^6.0.0"
-black = {version = "^22.3.0", allow-prereleases = true}
 q2gui = { path = "../q2gui/", develop = true }
 q2db = { path = "../q2db/", develop = true }
 q2report = { path = "../q2report/", develop = true }
 q2terminal = { path = "../q2terminal/", develop = true }
 q2data2docx = { path = "../q2data2docx/", develop = true }
 q2googledrive = { path = "../q2googledrive/", develop = true }
+ruff = "^0.14.8"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -35,3 +35,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length=110
+
+[tool.ruff]
+line-length = 110
