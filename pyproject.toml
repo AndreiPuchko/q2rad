@@ -1,4 +1,4 @@
-﻿[tool.poetry]
+[tool.poetry]
 name = "q2rad"
 version = "0.1.245"
 description = "RAD - database, GUI, reports"
