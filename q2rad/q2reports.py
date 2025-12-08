@@ -203,7 +203,7 @@ class Q2RadReport(Q2Report):
             self.last_focus_widget.set_focus()
         q2app.q2_app.process_events()
 
-    def run(self, output_file="temp/repo.html"):
+    def run(self, output_file="temp/repo.html", open_output_file=True):
         from q2rad.q2rad import run_module, run_form, get_form, get_report
 
         _globals = {}
@@ -256,7 +256,7 @@ class Q2RadReport(Q2Report):
 
         q2working(worker(), "W o r k i n g")
 
-        return super().run(output_file, data=data)
+        return super().run(output_file, data=data, open_output_file=open_output_file)
 
 
 class Q2Reports(Q2Form, Q2_save_and_run):
