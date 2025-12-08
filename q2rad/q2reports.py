@@ -42,6 +42,21 @@ _logger = logging.getLogger(__name__)
 # TODO: selected rows removing - bug
 
 
+def expand_spans_with_size(span_dict):
+    """
+    span_dict: {(top_r, top_c): (rowSpan, colSpan)}
+    returns:   {(r, c): (top_r, top_c)}
+    """
+    res = {}
+    for node, span in span_dict.items():
+        node_row, node_col = node
+        span_row, span_col = span
+        for r in range(node_row, node_row + span_row):
+            for c in range(node_col, node_col + span_col):
+                res[(r, c)] = node
+    return res
+
+
 class Q2RadReport(Q2Report):
     def __init__(self, content="", style={}):
         super().__init__()
@@ -107,7 +122,7 @@ class Q2RadReport(Q2Report):
                 datalen=10,
                 valid=lambda: repo_valid("pdf"),
                 eat_enter=1,
-            )            
+            )
             form.add_control(
                 "xlsx",
                 "XLSX",
@@ -1657,6 +1672,11 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.row_actions.add_action("-")
             self.row_actions.add_action("Merge selection", self.merge)
             self.row_actions.add_action("Unmerge", self.unmerge)
+            self.row_actions.add_action("-")
+            self.row_actions.add_action("Move Cell|Move Up", self.move_cell_up, hotkey="Ctrl+Up")
+            self.row_actions.add_action("Move Cell|Move Right", self.move_cell_right, hotkey="Ctrl+Right")
+            self.row_actions.add_action("Move Cell|Move Down", self.move_cell_down, hotkey="Ctrl+Down")
+            self.row_actions.add_action("Move Cell|Move Left", self.move_cell_left, hotkey="Ctrl+Left")
 
             self.row_actions.show_actions = 0
             self.row_actions.show_main_button = 0
@@ -1698,6 +1718,65 @@ class Q2ReportRows(Q2Form, ReportForm):
             dblclick=self.cell_double_clicked,
             eat_enter=1,
         )
+
+    def move_cell_up(self):
+        current_column = self.rows_sheet.current_column()
+        current_row = self.rows_sheet.current_row()
+        self.swap_cells(current_row, current_column, current_row - 1, current_column)
+
+    def move_cell_right(self):
+        current_column = self.rows_sheet.current_column()
+        current_row = self.rows_sheet.current_row()
+        self.swap_cells(current_row, current_column, current_row, current_column + 1)
+
+    def move_cell_down(self):
+        current_column = self.rows_sheet.current_column()
+        current_row = self.rows_sheet.current_row()
+        self.swap_cells(current_row, current_column, current_row + 1, current_column)
+
+    def move_cell_left(self):
+        current_column = self.rows_sheet.current_column()
+        current_row = self.rows_sheet.current_row()
+        self.swap_cells(current_row, current_column, current_row, current_column - 1)
+
+    def swap_cells(self, current_row, current_column, next_row, next_column):
+        if (
+            next_row >= 0
+            and next_row <= self.get_row_count()
+            and next_column >= 0
+            and next_column <= self.report_columns_form.get_column_count()
+        ):
+            spc = expand_spans_with_size(self.spanned_cells)
+            if current_is_span := spc.get((current_row, current_column)):
+                if next_row > current_row:
+                    next_row = current_row + self.spanned_cells[current_is_span][0]
+                if next_column > current_column:
+                    next_column = current_column + self.spanned_cells[current_is_span][1]
+
+            next_span_cell = spc.get((next_row, next_column))
+            if next_span_cell:
+                next_row = next_span_cell[0]
+                next_column = next_span_cell[1]
+
+            key = f"{current_row},{current_column}"
+            next_key = f"{next_row},{next_column}"
+
+            current_cell_data = self.rows_data.cells.get(key, {})
+            next_cell_data = self.rows_data.cells.get(next_key, {})
+
+            self.rows_sheet.set_cell_text(next_cell_data.get("data"), current_row, current_column)
+            self.rows_sheet.set_cell_text(current_cell_data.get("data"), next_row, next_column)
+
+            for x in ["data", "style", "format", "name"]:
+                tmp_dft = {} if x == "style" else ""
+                tmp = self.rows_data.cells[key].get(x, tmp_dft)
+                self.rows_data.cells[key][x] = self.rows_data.cells[next_key].get(x, tmp_dft)
+                self.rows_data.cells[next_key][x] = tmp
+
+            self.rows_sheet.clear_selection()
+            self.rows_sheet.set_current_cell(next_row, next_column)
+            self._repaint()
+            self.rows_sheet_focus_in()
 
     def get_rows_form_list(self):
         return self.report_columns_form.get_rows_form_list()
@@ -1771,7 +1850,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             if key[1] == current_column:
                 del self.rows_data.cells[cell_key]
             elif key[1] > current_column:
-                tmp[f"{key[0]},{key[1]-1}"] = self.rows_data.cells[cell_key]
+                tmp[f"{key[0]},{key[1] - 1}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
             elif key[1] <= current_column:
                 col_span = self.rows_data.cells[cell_key].get("colspan", 0)
@@ -1788,10 +1867,10 @@ class Q2ReportRows(Q2Form, ReportForm):
             if key[1] not in [current_column, current_column + 1]:
                 continue
             if key[1] == current_column:
-                tmp[f"{key[0]},{key[1]+1}"] = self.rows_data.cells[cell_key]
+                tmp[f"{key[0]},{key[1] + 1}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
             elif key[1] == current_column + 1:
-                tmp[f"{key[0]},{key[1]-1}"] = self.rows_data.cells[cell_key]
+                tmp[f"{key[0]},{key[1] - 1}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
         self.rows_data.cells.update(tmp)
 
@@ -1804,7 +1883,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         for cell_key in list(self.rows_data.cells.keys()):
             key = [int_(y) for y in cell_key.split(",")]
             if key[1] >= current_column:
-                tmp[f"{key[0]},{key[1]+1}"] = self.rows_data.cells[cell_key]
+                tmp[f"{key[0]},{key[1] + 1}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
             elif key[1] <= current_column:
                 if key[1] + self.rows_data.cells[cell_key].get("colspan", 0) > current_column:
@@ -1827,7 +1906,7 @@ class Q2ReportRows(Q2Form, ReportForm):
                 if key[0] == current_row:
                     del self.rows_data.cells[cell_key]
                 elif key[0] > current_row:
-                    tmp[f"{key[0]-1},{key[1]}"] = self.rows_data.cells[cell_key]
+                    tmp[f"{key[0] - 1},{key[1]}"] = self.rows_data.cells[cell_key]
                     del self.rows_data.cells[cell_key]
                 elif key[0] <= current_row:
                     row_span = self.rows_data.cells[cell_key].get("rowspan", 0)
@@ -1860,10 +1939,10 @@ class Q2ReportRows(Q2Form, ReportForm):
             if key[0] not in [current_row, current_row + 1]:
                 continue
             if key[0] == current_row:
-                tmp[f"{key[0]+1},{key[1]}"] = self.rows_data.cells[cell_key]
+                tmp[f"{key[0] + 1},{key[1]}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
             elif key[0] == current_row + 1:
-                tmp[f"{key[0]-1},{key[1]}"] = self.rows_data.cells[cell_key]
+                tmp[f"{key[0] - 1},{key[1]}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
         self.rows_data.cells.update(tmp)
 
@@ -1883,7 +1962,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         for cell_key in list(self.rows_data.cells.keys()):
             key = [int_(y) for y in cell_key.split(",")]
             if key[0] >= current_row:
-                tmp[f"{key[0]+1},{key[1]}"] = self.rows_data.cells[cell_key]
+                tmp[f"{key[0] + 1},{key[1]}"] = self.rows_data.cells[cell_key]
                 del self.rows_data.cells[cell_key]
             elif key[0] <= current_row:
                 if key[0] + self.rows_data.cells[cell_key].get("rowspan", 1) > current_row:
@@ -2080,11 +2159,13 @@ class Q2ReportRows(Q2Form, ReportForm):
 
     def merge(self):
         sel = self.rows_sheet.get_selection()
+        [self.remove_cell_span(*x) for x in sel if x in self.spanned_cells]
+
         row = min(sel)[0]
         column = min(sel)[1]
         cell_key = f"{row},{column}"
-        rowspan = max(sel)[0] - row + 1
-        colspan = max(sel)[1] - column + 1
+        rowspan = max([x[0] for x in sel]) - row + 1
+        colspan = max([x[1] for x in sel]) - column + 1
 
         self.rows_data.cells[cell_key]["rowspan"] = rowspan
         self.rows_data.cells[cell_key]["colspan"] = colspan
@@ -2094,8 +2175,13 @@ class Q2ReportRows(Q2Form, ReportForm):
     def unmerge(self):
         row = self.rows_sheet.current_row()
         column = self.rows_sheet.current_column()
-        cell_key = f"{row},{column}"
+        self.remove_cell_span(row, column)
+        self.rows_sheet.set_current_cell(row, column)
+        self.rows_sheet_focus_in()
+        self.apply_style()
 
+    def remove_cell_span(self, row, column):
+        cell_key = f"{row},{column}"
         row_span = self.rows_data.cells[cell_key]["rowspan"]
         col_span = self.rows_data.cells[cell_key]["colspan"]
         for r in range(row, row + row_span):  # set data into unspanned cells
@@ -2107,9 +2193,6 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.rows_sheet.clear_spans()
         del self.rows_data.cells[cell_key]["rowspan"]
         del self.rows_data.cells[cell_key]["colspan"]
-        self.rows_sheet.set_current_cell(row, column)
-        self.rows_sheet_focus_in()
-        self.apply_style()
 
     def can_i_merge(self):
         selection = self.rows_sheet.get_selection()
