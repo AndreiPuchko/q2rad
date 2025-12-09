@@ -1625,6 +1625,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         super().__init__("Rows")
         self.i_am_child = True
         self.rows_sheet = None
+        self.in_focus_in = None
 
         self.parent_rows = None
 
@@ -1677,6 +1678,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.row_actions.add_action("Move Cell|Move Right", self.move_cell_right, hotkey="Ctrl+Right")
             self.row_actions.add_action("Move Cell|Move Down", self.move_cell_down, hotkey="Ctrl+Down")
             self.row_actions.add_action("Move Cell|Move Left", self.move_cell_left, hotkey="Ctrl+Left")
+            self.row_actions.add_action("Swap Cells", self.swap_selected_cells, hotkey="Ctrl+S")
 
             self.row_actions.show_actions = 0
             self.row_actions.show_main_button = 0
@@ -1719,25 +1721,43 @@ class Q2ReportRows(Q2Form, ReportForm):
             eat_enter=1,
         )
 
+    def swap_selected_cells(self):
+        if len(sel := self.rows_sheet.get_selection()) == 2:
+            self.swap_cells(*sel[0], *sel[1])
+
     def move_cell_up(self):
         current_column = self.rows_sheet.current_column()
         current_row = self.rows_sheet.current_row()
-        self.swap_cells(current_row, current_column, current_row - 1, current_column)
+        self.swap_cells(*self.find_next_cell(current_row, current_column, current_row - 1, current_column))
 
     def move_cell_right(self):
         current_column = self.rows_sheet.current_column()
         current_row = self.rows_sheet.current_row()
-        self.swap_cells(current_row, current_column, current_row, current_column + 1)
+        self.swap_cells(*self.find_next_cell(current_row, current_column, current_row, current_column + 1))
 
     def move_cell_down(self):
         current_column = self.rows_sheet.current_column()
         current_row = self.rows_sheet.current_row()
-        self.swap_cells(current_row, current_column, current_row + 1, current_column)
+        self.swap_cells(*self.find_next_cell(current_row, current_column, current_row + 1, current_column))
 
     def move_cell_left(self):
         current_column = self.rows_sheet.current_column()
         current_row = self.rows_sheet.current_row()
-        self.swap_cells(current_row, current_column, current_row, current_column - 1)
+        self.swap_cells(*self.find_next_cell(current_row, current_column, current_row, current_column - 1))
+
+    def find_next_cell(self, current_row, current_column, next_row, next_column):
+        spc = expand_spans_with_size(self.spanned_cells)
+        if current_is_span := spc.get((current_row, current_column)):
+            if next_row > current_row:
+                next_row = current_row + self.spanned_cells[current_is_span][0]
+            if next_column > current_column:
+                next_column = current_column + self.spanned_cells[current_is_span][1]
+
+        next_span_cell = spc.get((next_row, next_column))
+        if next_span_cell:
+            next_row = next_span_cell[0]
+            next_column = next_span_cell[1]
+        return current_row, current_column, next_row, next_column
 
     def swap_cells(self, current_row, current_column, next_row, next_column):
         if (
@@ -1746,18 +1766,6 @@ class Q2ReportRows(Q2Form, ReportForm):
             and next_column >= 0
             and next_column <= self.report_columns_form.get_column_count()
         ):
-            spc = expand_spans_with_size(self.spanned_cells)
-            if current_is_span := spc.get((current_row, current_column)):
-                if next_row > current_row:
-                    next_row = current_row + self.spanned_cells[current_is_span][0]
-                if next_column > current_column:
-                    next_column = current_column + self.spanned_cells[current_is_span][1]
-
-            next_span_cell = spc.get((next_row, next_column))
-            if next_span_cell:
-                next_row = next_span_cell[0]
-                next_column = next_span_cell[1]
-
             key = f"{current_row},{current_column}"
             next_key = f"{next_row},{next_column}"
 
@@ -2230,10 +2238,12 @@ class Q2ReportRows(Q2Form, ReportForm):
         return (row, column) in self.spanned_cells
 
     def rows_sheet_focus_in(self):
+        self.in_focus_in = True
         self.rows_sheet.action_set_visible("Unmerge", self.can_i_unmerge())
         self.rows_sheet.action_set_visible("Merge selection", self.can_i_merge())
         self.rows_sheet.action_set_visible("Move row up", len(self.spanned_cells) == 0)
         self.rows_sheet.action_set_visible("Move row down", len(self.spanned_cells) == 0)
+        self.rows_sheet.action_set_visible("Swap Cells", len(self.rows_sheet.get_selection()) == 2)
 
         all_style = self.get_style()
 
@@ -2273,6 +2283,7 @@ class Q2ReportRows(Q2Form, ReportForm):
                 cell_data.get("name", ""),
                 self.update_cell,
             )
+        self.in_focus_in = False
 
     def update_row_height(self, h0, h1):
         h0 = 0 if num(h0) == 0 else num(h0)
@@ -2398,6 +2409,8 @@ class Q2ReportRows(Q2Form, ReportForm):
                 self.add_table_footer(self.rows_data.get("table_footer"))
 
     def apply_style(self):
+        if self.in_focus_in:
+            return
         selection = self.rows_sheet.get_selection()
         if len(selection) > 1:
             for cell_key in selection:
