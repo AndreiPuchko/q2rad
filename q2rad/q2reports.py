@@ -521,7 +521,7 @@ class Q2ContentEditor(Q2Form):
     def hide_all(self):
         if self.first_run and self.w.root:
             self.first_run = None
-            self.w.root.setFixedHeight(self.w.root.height())
+            self.w.root.set_fixed_height(1.1)
         self.hide_rows()
         self.hide_width()
         self.hide_height()
