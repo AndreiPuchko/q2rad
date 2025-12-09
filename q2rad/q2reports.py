@@ -1166,8 +1166,8 @@ class Q2ReportPage(Q2Form, ReportForm):
         actions.add_action("-")
         actions.add_action("Hide/Show", self.hide_show)
         actions.add_action("Remove", self.remove_me)
-        actions.add_action("Move up", self.move_up)
-        actions.add_action("Move down", self.move_down)
+        actions.add_action("Move up", self.move_up, hotkey="Ctrl+Up")
+        actions.add_action("Move down", self.move_down, hotkey="Ctrl+Down")
         actions.show_actions = 0
         actions.show_main_button = 0
 
@@ -1367,8 +1367,8 @@ class Q2ReportColumns(Q2Form, ReportForm):
         self.section_actions.add_action("-")
         self.section_actions.add_action("Hide/Show", self.hide_show)
         self.section_actions.add_action("Remove", self.remove_me)
-        self.section_actions.add_action("Move up", self.move_up)
-        self.section_actions.add_action("Move down", self.move_down)
+        self.section_actions.add_action("Move up", self.move_up, hotkey="Ctrl+Up")
+        self.section_actions.add_action("Move down", self.move_down, hotkey="Ctrl+Down")
         self.section_actions.show_actions = 0
         self.section_actions.show_main_button = 0
 
@@ -1693,8 +1693,8 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.section_action.add_action("Add above", self.add_above)
             self.section_action.add_action("Add below", self.add_below)
             self.section_action.add_action("-")
-            self.section_action.add_action("Move up", self.move_up)
-            self.section_action.add_action("Move down", self.move_down)
+            self.section_action.add_action("Move up", self.move_up, hotkey="Ctrl+Up")
+            self.section_action.add_action("Move down", self.move_down, hotkey="Ctrl+Down")
             self.section_action.add_action("-")
             self.section_action.add_action("Hide/Show", self.hide_show)
             self.section_action.add_action("Remove", self.remove_me)
@@ -1767,9 +1767,9 @@ class Q2ReportRows(Q2Form, ReportForm):
     def swap_cells(self, current_row, current_column, next_row, next_column):
         if (
             next_row >= 0
-            and next_row <= self.get_row_count()
+            and next_row < self.get_row_count()
             and next_column >= 0
-            and next_column <= self.report_columns_form.get_column_count()
+            and next_column < self.report_columns_form.get_column_count()
         ):
             key = f"{current_row},{current_column}"
             next_key = f"{next_row},{next_column}"
@@ -2244,16 +2244,18 @@ class Q2ReportRows(Q2Form, ReportForm):
 
     def rows_sheet_focus_in(self):
         self.in_focus_in = True
+        row = self.rows_sheet.current_row()
+        column = self.rows_sheet.current_column()
+
         self.rows_sheet.action_set_visible("Unmerge", self.can_i_unmerge())
         self.rows_sheet.action_set_visible("Merge selection", self.can_i_merge())
         self.rows_sheet.action_set_visible("Move row up", len(self.spanned_cells) == 0)
         self.rows_sheet.action_set_visible("Move row down", len(self.spanned_cells) == 0)
         self.rows_sheet.action_set_visible("Swap Cells", len(self.rows_sheet.get_selection()) == 2)
+        self.rows_sheet.action_set_visible("Move Cell", column < self.report_columns_form.get_column_count())
 
         all_style = self.get_style()
 
-        row = self.rows_sheet.current_row()
-        column = self.rows_sheet.current_column()
         cell_key = f"{row},{column}"
         self.ensure_cell(cell_key)
 
