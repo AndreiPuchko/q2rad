@@ -955,22 +955,22 @@ class Q2ReportReport(Q2Form):
         if self.current_properties is None:
             return
 
-        prop_key = prop_name.replace("_", "-")
+        style_name = prop_name.replace("_", "-")
 
         if not self.w.__getattr__(prop_name).check.is_checked():
-            if prop_key in self.current_properties:
-                del self.current_properties[prop_key]
+            if style_name in self.current_properties:
+                del self.current_properties[style_name]
         else:
-            self.current_properties[prop_key] = prop_value
-        self.style_changed()
+            self.current_properties[style_name] = prop_value
+        self.style_changed(style_name)
 
-    def style_changed(self):
+    def style_changed(self, style_name=None):
         if self.lock_status_bar:
             return
         if self.current_focus:
-            self.current_focus.meta["form"].apply_style()
+            self.current_focus.meta["form"].apply_style(style_name=style_name)
 
-    def apply_style(self):
+    def apply_style(self, style_name=None):
         for page in self.get_pages():
             for row_sheet in page.q2_form.get_rows_form_list():
                 row_sheet.apply_style()
@@ -1013,7 +1013,7 @@ class Q2ReportReport(Q2Form):
             selected_style_keys = [x for x in selected_style.keys()]
             for key in selected_style_keys:
                 if f"{selected_style[key]}".upper() == f"{parent_style.get(key)}".upper():
-                    del selected_style[key]        
+                    del selected_style[key]
             parent_style.update(selected_style)
         self.lock_status_bar = True
         self.current_properties = selected_style
@@ -1320,7 +1320,7 @@ class Q2ReportPage(Q2Form, ReportForm):
             return []
         return [x.q2_form for x in self.anchor.get_layout_widgets()[1:]]
 
-    def apply_style(self):
+    def apply_style(self, style_name=None):
         for column in self.get_columns():
             column.apply_style()
 
@@ -1562,7 +1562,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
         style.update(self.columns_data.get("style", {}))
         return style
 
-    def apply_style(self):
+    def apply_style(self, style_name=None):
         for row_sheet in self.get_rows_form_list():
             row_sheet.apply_style()
 
@@ -2265,7 +2265,9 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.report_report_form.focus_changed(self.rows_sheet)
 
             self.report_report_form.update_style_bar(
-                self.report_columns_form.get_style(), self.rows_data.cells[cell_key]["style"], self.rows_data.cells[cell_key]
+                self.report_columns_form.get_style(),
+                self.rows_data.cells[cell_key]["style"],
+                self.rows_data.cells[cell_key],
             )
 
         if self.focus_widget() == self.w.style_button:
@@ -2413,7 +2415,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             if self.rows_data.get("table_footer"):
                 self.add_table_footer(self.rows_data.get("table_footer"))
 
-    def apply_style(self):
+    def apply_style(self, style_name=None):
         if self.in_focus_in:
             return
         selection = self.rows_sheet.get_selection()
@@ -2422,9 +2424,14 @@ class Q2ReportRows(Q2Form, ReportForm):
                 cell_key = "{0},{1}".format(cell_key[0], cell_key[1])
                 if cell_key != self.selection_first_cell:
                     self.ensure_cell(cell_key)
-                    self.rows_data.cells[cell_key]["style"] = dict(
-                        self.rows_data.cells[self.selection_first_cell]["style"]
-                    )
+                    if style_name:
+                        self.rows_data.cells[cell_key]["style"][style_name] = self.rows_data.cells[
+                            self.selection_first_cell
+                        ]["style"][style_name]
+                    else:
+                        self.rows_data.cells[cell_key]["style"] = dict(
+                            self.rows_data.cells[self.selection_first_cell]["style"]
+                        )
 
         self.rows_sheet.sheet_styles = self.get_style()
         self.rows_sheet.cell_styles = {}
