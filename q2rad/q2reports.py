@@ -1779,6 +1779,7 @@ class Q2ReportRows(Q2Form, ReportForm):
 
             self.rows_sheet.set_cell_text(next_cell_data.get("data"), current_row, current_column)
             self.rows_sheet.set_cell_text(current_cell_data.get("data"), next_row, next_column)
+            self.ensure_cell(next_key)
 
             for x in ["data", "style", "format", "name"]:
                 tmp_dft = {} if x == "style" else ""

@@ -1,3 +1,16 @@
+* run form and get selected row
+```python
+myform = get_form("text_fragments")
+
+def select(mem=mem, myform=None):
+    def worker():
+        mem.s.initial_note = myform.r.content
+        myform.close()
+    return worker
+myform.add_action("Select", select(myform=myform) ,tag="select")
+myform.run()
+```
+
 * progressbar & error
 ```python
 import time
@@ -33,12 +46,12 @@ form.add_control(**myapp.get_form("another_form_name").c.control_name)
 #  in Before Form Show script
 for x in mem.controls:
     column = x["column"]
-    if column:
+    if column and not column.startswith("/"):
         mem.s.__setattr__(column, const.__getattr__(column))
 #  in Valid script
 for x in mem.controls:
     column = x["column"]
-    if column:
+    if column and not column.startswith("/"):
         const.__setattr__(column, mem.s.__getattr__(column))
 ```
 
