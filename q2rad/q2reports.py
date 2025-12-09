@@ -521,7 +521,6 @@ class Q2ContentEditor(Q2Form):
     def hide_all(self):
         if self.first_run and self.w.root:
             self.first_run = None
-            print()
             self.w.root.setFixedHeight(self.w.root.height())
         self.hide_rows()
         self.hide_width()
@@ -594,7 +593,7 @@ class Q2ReportReport(Q2Form):
         self.anchor2 = None
         self.ratio = 45
         self.report_report_form = self
-        self.current_propertys = {}
+        self.current_properties = {}
         self.lock_status_bar = True
 
         self.report_data = dotdict()
@@ -953,16 +952,16 @@ class Q2ReportReport(Q2Form):
     def property_changed(self, prop_name, prop_value):
         if self.lock_status_bar:
             return
-        if self.current_propertys is None:
+        if self.current_properties is None:
             return
 
         prop_key = prop_name.replace("_", "-")
 
         if not self.w.__getattr__(prop_name).check.is_checked():
-            if prop_key in self.current_propertys:
-                del self.current_propertys[prop_key]
+            if prop_key in self.current_properties:
+                del self.current_properties[prop_key]
         else:
-            self.current_propertys[prop_key] = prop_value
+            self.current_properties[prop_key] = prop_value
         self.style_changed()
 
     def style_changed(self):
@@ -1010,8 +1009,14 @@ class Q2ReportReport(Q2Form):
             return
         if self.current_focus is None:
             return
+        if self.current_focus.meta["form"] != self:
+            selected_style_keys = [x for x in selected_style.keys()]
+            for key in selected_style_keys:
+                if f"{selected_style[key]}".upper() == f"{parent_style.get(key)}".upper():
+                    del selected_style[key]        
+            parent_style.update(selected_style)
         self.lock_status_bar = True
-        self.current_propertys = selected_style
+        self.current_properties = selected_style
         for x in parent_style:
             widget_name = x.replace("-", "_")
             w = self.widgets().get(widget_name)
@@ -1249,7 +1254,7 @@ class Q2ReportPage(Q2Form, ReportForm):
     def style_button_pressed(self):
         self.report_report_form.content_editor.hide_all()
         self.report_report_form.focus_changed(self.w.style_button)
-        self.report_report_form.update_style_bar(self.get_style(), self.page_data.style)
+        self.report_report_form.update_style_bar(self.report_report_form.get_style(), self.page_data.style)
 
     def clone(self):
         self.widget().add_widget_below(Q2ReportPage(self.report_report_form, self.get_content()).get_widget())
@@ -1491,7 +1496,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
     def style_button_pressed(self):
         self.report_report_form.content_editor.hide_all()
         self.report_report_form.focus_changed(self.w.style_button)
-        self.report_report_form.update_style_bar(self.get_style(), self.columns_data.style)
+        self.report_report_form.update_style_bar(self.report_page_form.get_style(), self.columns_data.style)
 
     def column_sheet_focus_changed(self):
         # self.report_report_form.focus_changed(self.columns_sheet.get_current_widget())
@@ -2163,7 +2168,7 @@ class Q2ReportRows(Q2Form, ReportForm):
     def style_button_pressed(self):
         self.w.style_button.action_set_visible("Table", self.rows_data.role == "table")
         self.report_report_form.focus_changed(self.w.style_button)
-        self.report_report_form.update_style_bar(self.get_style(), self.rows_data.style)
+        self.report_report_form.update_style_bar(self.report_columns_form.get_style(), self.rows_data.style)
 
     def merge(self):
         sel = self.rows_sheet.get_selection()
@@ -2260,7 +2265,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.report_report_form.focus_changed(self.rows_sheet)
 
             self.report_report_form.update_style_bar(
-                all_style, self.rows_data.cells[cell_key]["style"], self.rows_data.cells[cell_key]
+                self.report_columns_form.get_style(), self.rows_data.cells[cell_key]["style"], self.rows_data.cells[cell_key]
             )
 
         if self.focus_widget() == self.w.style_button:
