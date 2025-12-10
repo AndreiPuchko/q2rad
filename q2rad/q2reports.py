@@ -595,6 +595,7 @@ class Q2ReportReport(Q2Form):
         self.report_report_form = self
         self.current_properties = {}
         self.lock_status_bar = True
+        self._xc_cell = None
 
         self.report_data = dotdict()
 
@@ -1679,6 +1680,9 @@ class Q2ReportRows(Q2Form, ReportForm):
             self.row_actions.add_action("Merge selection", self.merge)
             self.row_actions.add_action("Unmerge", self.unmerge)
             self.row_actions.add_action("-")
+            self.row_actions.add_action("Cut Cell", self.cut_cell, hotkey="Ctrl+X")
+            self.row_actions.add_action("Copy Cell", self.copy_cell, hotkey="Ctrl+C")
+            self.row_actions.add_action("Paste Cell", self.paste_cell, hotkey="Ctrl+V")
             self.row_actions.add_action("Move Cell|Move Up", self.move_cell_up, hotkey="Ctrl+Up")
             self.row_actions.add_action("Move Cell|Move Right", self.move_cell_right, hotkey="Ctrl+Right")
             self.row_actions.add_action("Move Cell|Move Down", self.move_cell_down, hotkey="Ctrl+Down")
@@ -1725,6 +1729,42 @@ class Q2ReportRows(Q2Form, ReportForm):
             dblclick=self.cell_double_clicked,
             eat_enter=1,
         )
+
+    def cut_cell(self):
+        self.copy_cell()
+        current_row = self.rows_sheet.current_row()
+        current_col = self.rows_sheet.current_column()
+        self.rows_sheet.set_cell_text("", current_row, current_col)
+        cell_key = f"{current_row},{current_col}"
+        self.rows_data.cells[cell_key]["data"] = ""
+        self.rows_data.cells[cell_key]["format"] = ""
+        self.rows_data.cells[cell_key]["name"] = ""
+        self.ensure_cell(cell_key)
+        self._repaint()
+        self.rows_sheet_focus_in()
+
+    def copy_cell(self):
+        cell_key = f"{self.rows_sheet.current_row()},{self.rows_sheet.current_column()}"
+        self.ensure_cell(cell_key)
+        self.report_report_form._xc_cell = dict(self.rows_data.cells.get(cell_key, {}))
+        if self.report_report_form._xc_cell.get("rowspan"):
+            del self.report_report_form._xc_cell["rowspan"]
+        if self.report_report_form._xc_cell.get("colspan"):
+            del self.report_report_form._xc_cell["colspan"]
+
+    def paste_cell(self):
+        current_row = self.rows_sheet.current_row()
+        current_col = self.rows_sheet.current_column()
+        cell_key = f"{current_row},{current_col}"
+        self.ensure_cell(cell_key)
+        for key, value in self.report_report_form._xc_cell.items():
+            self.rows_data.cells[cell_key][key] = value
+
+        self.rows_sheet.set_cell_text(
+            self.rows_data.cells[cell_key].get("data", ""), current_row, current_col
+        )
+        self._repaint()
+        self.rows_sheet_focus_in()
 
     def swap_selected_cells(self):
         if len(sel := self.rows_sheet.get_selection()) == 2:
@@ -2254,6 +2294,10 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.rows_sheet.action_set_visible("Move row down", len(self.spanned_cells) == 0)
         self.rows_sheet.action_set_visible("Swap Cells", len(self.rows_sheet.get_selection()) == 2)
         self.rows_sheet.action_set_visible("Move Cell", column < self.report_columns_form.get_column_count())
+
+        self.rows_sheet.action_set_visible("Cut Cell", len(self.rows_sheet.get_selection()) == 1)
+        self.rows_sheet.action_set_visible("Copy Cell", len(self.rows_sheet.get_selection()) == 1)
+        self.rows_sheet.action_set_visible("Paste Cell", len(self.rows_sheet.get_selection()) == 1)
 
         all_style = self.get_style()
 
