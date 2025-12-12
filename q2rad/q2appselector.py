@@ -15,7 +15,7 @@
 
 from q2gui import q2app
 from q2gui.q2form import NEW, COPY
-from q2gui.q2dialogs import q2Mess
+from q2gui.q2dialogs import q2mess, q2ask
 from q2gui.q2utils import Q2Crypto
 
 from q2db.schema import Q2DbSchema
@@ -80,7 +80,6 @@ class Q2AppSelect(Q2Form):
 
         self.add_control("/")
         if self.add_control("/f", _("Data storage")):
-
             self.add_control(
                 "driver_data",
                 label=_("Storage type"),
@@ -125,7 +124,6 @@ class Q2AppSelect(Q2Form):
             self.add_control("/")
 
         if self.add_control("/f", _("Logic storage")):
-
             self.add_control(
                 "driver_logic",
                 label=_("Storage type"),
@@ -197,6 +195,16 @@ class Q2AppSelect(Q2Form):
             tag="#4dd0e1",
         )
 
+        try:
+            from q2mysql55_win_local.server import run_test
+        except:
+            self.add_action(
+                _("Install MySQL"),
+                self.install_mysql,
+                icon="database",
+                mess="Install embedded MySQL server",
+            )
+
         self.add_action(_("Demo"), self.run_demo)
 
         self.before_form_show = self.before_form_show
@@ -206,6 +214,14 @@ class Q2AppSelect(Q2Form):
         self.set_cursor(cursor)
 
         self.actions.add_action("/crud")
+
+    def install_mysql(self):
+        if q2ask("Install MySQL local server?") == 2:
+            q2_app: Q2App = q2app.q2_app
+            version, path = self.q2_app.get_github_package_release_version(
+                "https://github.com/AndreiPuchko/q2mysql55_win_local"
+            )
+            q2_app.pip_install(path, version)
 
     @staticmethod
     def decrypt_creds(pin, credhash):
@@ -225,7 +241,7 @@ class Q2AppSelect(Q2Form):
             if pin is None:
                 return
             if Q2Crypto(pin).check_pin(self.s.credhash) is None:
-                q2Mess("Wrong PIN")
+                q2mess("Wrong PIN")
                 return
             creds = self.decrypt_creds(pin, self.s.credhash)
             if creds is not None:
@@ -284,13 +300,13 @@ class Q2AppSelect(Q2Form):
 
         def valid():
             if (pform.s.user1 or pform.s.user2) and pform.s.user1 != pform.s.user2:
-                q2Mess("Username mismatch")
+                q2mess("Username mismatch")
                 return False
             if (pform.s.pass1 or pform.s.pass2) and pform.s.pass1 != pform.s.pass2:
-                q2Mess("Password mismatch")
+                q2mess("Password mismatch")
                 return False
             if (pform.s.pin1 or pform.s.pin2) and pform.s.pin1 != pform.s.pin2:
-                q2Mess("PIN mismatch")
+                q2mess("PIN mismatch")
                 return False
             return True
 
@@ -398,15 +414,15 @@ class Q2AppSelect(Q2Form):
 
     def before_crud_save(self):
         if self.s.name == "":
-            q2Mess(_("Give me some NAME!!!"))
+            q2mess(_("Give me some NAME!!!"))
             self.w.name.set_focus()
             return False
         if self.s.database_data == "":
-            q2Mess(_("Give me some database!!!"))
+            q2mess(_("Give me some database!!!"))
             self.w.database_data.set_focus()
             return False
         if self.s.database_logic == "":
-            q2Mess(_("Give me some database!!!"))
+            q2mess(_("Give me some database!!!"))
             self.w.database_logic.set_focus()
             return False
 
@@ -470,7 +486,7 @@ class Q2AppSelect(Q2Form):
             # self.q2_app.migrate_db_data()
             AppManager.import_json_data(json.load(response_data))
         else:
-            q2Mess(_("Can't to load Demo App"))
+            q2mess(_("Can't to load Demo App"))
 
     def _select_application(self, app_data={}):
         if app_data.get("credhash"):
@@ -479,7 +495,7 @@ class Q2AppSelect(Q2Form):
                 return False
             creds = self.decrypt_creds(pin, app_data.get("credhash"))
             if creds is None:
-                q2Mess("Wrong PIN")
+                q2mess("Wrong PIN")
                 return False
             app_data["username"] = creds[0]
             app_data["password"] = creds[1]
