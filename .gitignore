@@ -12,3 +12,4 @@ q2apps.sqlite
 make/
 .vscode
 databases/
+mysql_local_databases/

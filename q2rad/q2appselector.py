@@ -12,7 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-
+import sys
 from q2gui import q2app
 from q2gui.q2form import NEW, COPY
 from q2gui.q2dialogs import q2mess, q2ask
@@ -47,14 +47,6 @@ class Q2AppSelect(Q2Form):
         self.autoload_enabled = True
 
     def on_init(self):
-        # q2_app: Q2App = q2app.q2_app
-        # q2_app.clear_menu()
-        # q2_app.build_menu()
-        # q2_app.hide_menubar()
-        # q2_app.hide_toolbar()
-        # q2_app.hide_statusbar()
-        # q2_app.hide_tabbar()
-
         self.db = Q2Db(database_name=self.db_file_path)
         self.define_form()
 
@@ -195,15 +187,16 @@ class Q2AppSelect(Q2Form):
             tag="#4dd0e1",
         )
 
-        try:
-            from q2mysql55_win_local.server import run_test
-        except:
-            self.add_action(
-                _("Install MySQL"),
-                self.install_mysql,
-                icon="database",
-                mess="Install embedded MySQL server",
-            )
+        if sys.platform == "win32":
+            try:
+                from q2mysql55_win_local.server import run_test
+            except Exception:
+                self.add_action(
+                    _("Install MySQL"),
+                    self.install_mysql,
+                    icon="database",
+                    mess="Install embedded MySQL server",
+                )
 
         self.add_action(_("Demo"), self.run_demo)
 
@@ -217,11 +210,8 @@ class Q2AppSelect(Q2Form):
 
     def install_mysql(self):
         if q2ask("Install MySQL local server?") == 2:
-            q2_app: Q2App = q2app.q2_app
-            version, path = self.q2_app.get_github_package_release_version(
-                "https://github.com/AndreiPuchko/q2mysql55_win_local"
-            )
-            q2_app.pip_install(path, version)
+            q2app.q2_app.pip_install("https://github.com/AndreiPuchko/q2mysql55_win_local")
+            q2mess("A local MySQL 5.5 server instance is available on port 3366.")
 
     @staticmethod
     def decrypt_creds(pin, credhash):
@@ -483,7 +473,6 @@ class Q2AppSelect(Q2Form):
             self.close()
             AppManager.import_json_app(json.load(response_app))
             self.q2_app.open_selected_app()
-            # self.q2_app.migrate_db_data()
             AppManager.import_json_data(json.load(response_data))
         else:
             q2mess(_("Can't to load Demo App"))

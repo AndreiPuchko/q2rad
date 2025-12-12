@@ -249,6 +249,9 @@ class Q2RadApp(Q2App):
         self.settings_title = "q2RAD"
         self.style_file = "q2rad.qss"
         self.frozen = getattr(sys, "frozen", False)
+        self.windows_mysql_local_server = None
+        self.windows_mysql_local_server_port = 3366
+        self.windows_mysql_local_server_datadir = "mysql_local_databases"
         self.db = None
 
         self.db_data = None
@@ -336,6 +339,21 @@ class Q2RadApp(Q2App):
         else:
             self.close()
         self.subwindow_count_changed()
+
+    def start_local_mysql(self):
+        if self.windows_mysql_local_server is None and sys.platform == "win32":
+            try:
+                from q2mysql55_win_local.server import Q2MySQL55_Win_Local_Server
+                self.windows_mysql_local_server = Q2MySQL55_Win_Local_Server()
+                self.windows_mysql_local_server.start(
+                    self.windows_mysql_local_server_port, self.windows_mysql_local_server_datadir
+                )
+            except Exception:
+                self.windows_mysql_local_server = None
+
+    def stop_local_mysql(self):
+        if self.windows_mysql_local_server:
+            self.windows_mysql_local_server.stop()
 
     def open_selected_app(self, go_to_q2market=False, migrate_db_data=True):
         wait = Q2WaitShow(5, "Loading app> ")
@@ -523,6 +541,7 @@ class Q2RadApp(Q2App):
                     return None
 
     def open_databases(self):
+        self.start_local_mysql()
         self.db_data = self._open_database(
             database_name=self.selected_application.get("database_data", ""),
             db_engine_name=self.selected_application.get("driver_data", "").lower(),
@@ -841,8 +860,7 @@ class Q2RadApp(Q2App):
             latest_version, current_version = self.get_package_versions(package)
             if isinstance(package, (list, tuple)) and len(package) > 1:
                 if re.findall(r"https://github.com/.*", package[1]):  # git release
-                    _, package = self.get_github_package_release_version(package[1])
-            # q2mess([package, latest_version, current_version])
+                    _tmp, package = self.get_github_package_release_version(package[1])
             if self.db_logic is not None and package not in q2_modules:
                 pkg_ver = get(
                     "packages",
@@ -870,7 +888,6 @@ class Q2RadApp(Q2App):
                     except Exception as error:
                         latest_version = None
                         logging.warning(f"pip update {package} error:{error}")
-                    # latest_version, new_current_version = self.get_package_versions(package)
                 if latest_version:
                     upgraded.append(f"{_package} - <b>{current_version}</b> => <b>{latest_version}</b>")
                 else:
@@ -927,26 +944,31 @@ class Q2RadApp(Q2App):
             os.execv(sys.executable, [sys.executable, "-m", "q2rad"])
         self.close()
 
-    def pip_install(self, package, latest_version):
+    def pip_install(self, package, latest_version=""):
         if self.frozen:
             return
 
         if isinstance(package, tuple) or isinstance(package, list):
             package = package[1] if package[1] else package[0]
         if re.findall(r"https://github.com/.*", package):
+            if not package.endswith(".whl"):
+                _tmp, package = self.get_github_package_release_version(package)
             latest_version = ""
         latest_version = f"=={latest_version}" if latest_version else ""
 
-        def pip_runner():
-            trm = Q2Terminal(callback=print)
-            trm.run(
-                f'"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
-                f"--upgrade --no-cache-dir {package}"
-                f"{latest_version}"
-            )
-            trm.close()
+        def pip_runner(package):
+            def worker():
+                trm = Q2Terminal(callback=print)
+                trm.run(
+                    f'"{sys.executable.replace("w.exe", ".exe")}" -m pip install '
+                    f"--upgrade --no-cache-dir {package}"
+                    f"{latest_version}"
+                )
+                trm.close()
 
-        q2working(pip_runner, _("Installing package %s...") % package)
+            return worker
+
+        q2working(pip_runner(package), _("Installing package %s...") % package)
 
     def pip_uninstall(self, package):
         if self.frozen:
@@ -1799,6 +1821,10 @@ class Q2RadApp(Q2App):
 
     def run_module(self, name=""):
         return run_module(name)
+
+    def close(self):
+        self.stop_local_mysql()
+        return super().close()
 
 
 def main():
