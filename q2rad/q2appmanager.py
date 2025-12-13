@@ -108,36 +108,40 @@ class AppManager(Q2Form):
                         data=q2app.q2_app.app_version,
                         readonly=1,
                     )
-                self.add_control(
-                    "drl",
-                    "Database type",
-                    data=app_data["driver_logic"].lower(),
-                    readonly=1,
-                    datalen=len(app_data["driver_logic"].strip()) + 5,
-                )
-                self.add_control(
-                    "dtl",
-                    "Database name ",
-                    data=app_data["database_logic"],
-                    readonly=1,
-                    datalen=len(app_data["database_logic"].strip()),
-                )
-                if app_data.get("host_logic"):
+                self.add_control("/")
+                if self.add_control("/h", "Database"):
                     self.add_control(
-                        "hl",
-                        "Host",
-                        data=app_data["host_logic"],
+                        "drl",
+                        "Type",
+                        data=app_data["driver_logic"].lower(),
                         readonly=1,
-                        datalen=len(app_data["host_logic"].strip()),
+                        datalen=len(app_data["driver_logic"].strip()) + 5,
                     )
-                if num(app_data.get("port_logic")):
                     self.add_control(
-                        "pl",
-                        "Port",
-                        data=app_data["port_logic"],
+                        "dtl",
+                        "Name",
+                        data=app_data["database_logic"],
                         readonly=1,
-                        datalen=len(app_data["port_logic"]) + 5,
+                        datalen=len(app_data["database_logic"].strip()),
                     )
+                    if app_data.get("host_logic"):
+                        self.add_control(
+                            "hl",
+                            "Host",
+                            data=app_data["host_logic"],
+                            readonly=1,
+                            datalen=len(app_data["host_logic"].strip()),
+                        )
+                    if num(app_data.get("port_logic")):
+                        self.add_control(
+                            "pl",
+                            "Port",
+                            data=app_data["port_logic"],
+                            readonly=1,
+                            datalen=len(f"{app_data['port_logic']}") + 5,
+                        )
+                    self.add_control("/s")
+                    self.add_control("/")
                 self.add_control("/")
 
                 if self.add_control("/h", ""):
@@ -204,17 +208,17 @@ class AppManager(Q2Form):
             self.add_control("/")
 
         if self.add_control("/v", "Data"):
-            if self.add_control("/f", ""):
+            if self.add_control("/h", "Database"):
                 self.add_control(
                     "drd",
-                    "Database type",
+                    "Type",
                     data=app_data["driver_data"].lower(),
                     readonly=1,
                     datalen=len(app_data["driver_data"].strip()) + 5,
                 )
                 self.add_control(
                     "dtd",
-                    "Database name ",
+                    "Name ",
                     data=app_data["database_data"],
                     readonly=1,
                     datalen=len(app_data["database_data"].strip()),
@@ -233,8 +237,9 @@ class AppManager(Q2Form):
                         "Port",
                         data=app_data["port_data"],
                         readonly=1,
-                        datalen=len(app_data["port_data"]) + 5,
+                        datalen=len(f"{app_data['port_data']}") + 5,
                     )
+                self.add_control("/s")
                 self.add_control("/")
 
             if self.add_control("/h", ""):
