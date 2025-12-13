@@ -213,7 +213,7 @@ class Q2AppSelect(Q2Form):
             q2app.q2_app.pip_install("https://github.com/AndreiPuchko/q2mysql55_win_local")
             q2mess(
                 "A local MySQL 5.5 server instance will be available "
-                f"on port >={self.windows_mysql_local_server_default_port}."
+                f"on port >={q2app.q2_app.windows_mysql_local_server_default_port}."
             )
 
     @staticmethod
