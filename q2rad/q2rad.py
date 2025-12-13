@@ -364,7 +364,7 @@ class Q2RadApp(Q2App):
 
     def stop_local_mysql(self):
         if self.windows_mysql_local_server:
-            self.windows_mysql_local_server.stop()
+            self.windows_mysql_local_server.stop(timeout=0)
 
     def open_selected_app(self, go_to_q2market=False, migrate_db_data=True):
         wait = Q2WaitShow(5, "Loading app> ")
