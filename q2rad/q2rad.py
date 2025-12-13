@@ -76,7 +76,6 @@ import gettext
 import json
 import subprocess
 import shutil
-import pkgutil
 from importlib.metadata import version as version2
 from importlib.metadata import distributions
 import logging
@@ -250,6 +249,7 @@ class Q2RadApp(Q2App):
         self.style_file = "q2rad.qss"
         self.frozen = getattr(sys, "frozen", False)
         self.windows_mysql_local_server = None
+        self.windows_mysql_local_server_default_port = 3366
         self.windows_mysql_local_server_port = 3366
         self.windows_mysql_local_server_datadir = "mysql_local_databases"
         self.db = None
@@ -344,12 +344,23 @@ class Q2RadApp(Q2App):
         if self.windows_mysql_local_server is None and sys.platform == "win32":
             try:
                 from q2mysql55_win_local.server import Q2MySQL55_Win_Local_Server
+
                 self.windows_mysql_local_server = Q2MySQL55_Win_Local_Server()
-                self.windows_mysql_local_server.start(
+                self.windows_mysql_local_server_port = self.windows_mysql_local_server.start(
                     self.windows_mysql_local_server_port, self.windows_mysql_local_server_datadir
                 )
             except Exception:
                 self.windows_mysql_local_server = None
+        if self.windows_mysql_local_server:
+            if num(self.windows_mysql_local_server.port) != num(self.windows_mysql_local_server_default_port):
+                if num(self.selected_application["port_logic"]) == num(
+                    self.windows_mysql_local_server_default_port
+                ):
+                    self.selected_application["port_logic"] = self.windows_mysql_local_server.port
+                if num(self.selected_application["port_data"]) == num(
+                    self.windows_mysql_local_server_default_port
+                ):
+                    self.selected_application["port_data"] = self.windows_mysql_local_server.port
 
     def stop_local_mysql(self):
         if self.windows_mysql_local_server:

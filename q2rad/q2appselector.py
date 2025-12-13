@@ -211,7 +211,10 @@ class Q2AppSelect(Q2Form):
     def install_mysql(self):
         if q2ask("Install MySQL local server?") == 2:
             q2app.q2_app.pip_install("https://github.com/AndreiPuchko/q2mysql55_win_local")
-            q2mess("A local MySQL 5.5 server instance is available on port 3366.")
+            q2mess(
+                "A local MySQL 5.5 server instance will be available "
+                f"on port >={self.windows_mysql_local_server_default_port}."
+            )
 
     @staticmethod
     def decrypt_creds(pin, credhash):

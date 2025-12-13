@@ -54,6 +54,60 @@ def create_q2apps_sqlite(dist_folder):
     db_logic = None
 
 
+def create_q2apps_mysql(dist_folder):
+    database_folder_name = "databases"
+    appsel = Q2AppSelect(f"{dist_folder}/q2apps.sqlite")
+    database_name_prefix = os.path.basename(appsel.q2_app.app_url) if appsel.q2_app.app_url else "app1"
+    appsel.db.insert(
+        "applications",
+        {
+            "ordnum": 1,
+            "name": appsel.q2_app.app_title,
+            "driver_data": "mysql",
+            "database_data": f"{database_name_prefix}_data",
+            "port_data": f"{appsel.q2_app.windows_mysql_local_server_default_port}",
+            "driver_logic": "mysql",
+            "database_logic": f"{database_name_prefix}_logic",
+            "port_logic": f"{appsel.q2_app.windows_mysql_local_server_default_port}",
+            "autoselect": "*",
+            "dev_mode": "",
+        },
+    )
+
+    from q2mysql55_win_local.server import Q2MySQL55_Win_Local_Server
+
+    mysql3388_datadir = os.path.join(dist_folder, appsel.q2_app.windows_mysql_local_server_datadir)
+    mysql3388server = Q2MySQL55_Win_Local_Server()
+    mysql3388server.start(3388, mysql3388_datadir)
+    db_logic = Q2Db(
+        "mysql",
+        user="q2user",
+        password="q2password",
+        port=3388,
+        database_name=f"{database_name_prefix}_logic",
+        root_user="root",
+        root_password="",
+    )
+    db_logic.get_admin_credential_callback = lambda: ["root", ""]
+    appsel.q2_app.migrate_db_logic(db_logic)
+
+    db_data = Q2Db(
+        "mysql",
+        user="q2user",
+        password="q2password",
+        port=3388,
+        database_name=f"{database_name_prefix}_data",
+        root_user="root",
+        root_password="",
+    )
+    db_data.close()
+
+    AppManager().import_json_app(AppManager().get_app_json(), db_logic)
+    mysql3388server.stop()
+    db_logic.close()
+    db_logic = None
+
+
 def make_binary(self):
     form = Q2Form()
     form.add_control("make_folder", "Working folder", datatype="char", data="make")
@@ -130,7 +184,11 @@ app.run()
     )
     if not os.path.isdir(os.path.abspath(f"{dist_folder}/assets")):
         shutil.copytree("assets", os.path.abspath(f"{dist_folder}/assets"))
-    create_q2apps_sqlite(f"{dist_folder}")
+
+    if sys.platform == "win32" and q2app.q2_app.windows_mysql_local_server:
+        create_q2apps_mysql(f"{dist_folder}")
+    else:
+        create_q2apps_sqlite(f"{dist_folder}")
 
     # if onefile:
     #     dist_folder = os.path.abspath(f"{make_folder}/dist")
