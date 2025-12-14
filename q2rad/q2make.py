@@ -23,7 +23,9 @@ from q2rad.q2appselector import Q2AppSelect
 from q2db.db import Q2Db
 from q2rad.q2appmanager import AppManager
 from q2gui import q2app
-
+from datetime import datetime
+import logging
+_logger = logging.getLogger(__name__)
 
 def create_q2apps_sqlite(dist_folder):
     database_folder_name = "databases"
@@ -52,6 +54,7 @@ def create_q2apps_sqlite(dist_folder):
     AppManager().import_json_app(AppManager().get_app_json(), db_logic)
     db_logic.close()
     db_logic = None
+    appsel.db.close()
 
 
 def create_q2apps_mysql(dist_folder):
@@ -103,9 +106,10 @@ def create_q2apps_mysql(dist_folder):
     db_data.close()
 
     AppManager().import_json_app(AppManager().get_app_json(), db_logic)
-    mysql3388server.stop()
     db_logic.close()
+    mysql3388server.stop()
     db_logic = None
+    appsel.db.close()
 
 
 def make_binary(self):
@@ -126,7 +130,7 @@ def make_binary(self):
 
     if q2ask("Уou are about to start building binary executable file of Q2RAD!<br>Are You Sure?") != 2:
         return
-
+    _logger.info("Binary building started")
     make_folder = os.path.abspath(form.s.make_folder)
     binary_name = form.s.binary_name
     # onefile = "--onefile" if form.s.onefile else ""
@@ -135,8 +139,8 @@ def make_binary(self):
         os.mkdir(make_folder)
     if not os.path.isdir(make_folder):
         return
-
-    main = """
+    binary_build = f"{datetime.now()}"
+    main = f"""
 import sys
 if "darwin" in sys.platform:
     path = sys.argv[0].split("/Contents/MacOS")[0]
@@ -145,6 +149,7 @@ if "darwin" in sys.platform:
 
 from q2rad.q2rad import Q2RadApp
 app = Q2RadApp()
+app.binary_build = "{binary_build}"
 app.run()
     """
     open(f"{make_folder}/{binary_name}.py", "w").write(main)
@@ -185,7 +190,11 @@ app.run()
     if not os.path.isdir(os.path.abspath(f"{dist_folder}/assets")):
         shutil.copytree("assets", os.path.abspath(f"{dist_folder}/assets"))
 
-    if sys.platform == "win32" and q2app.q2_app.windows_mysql_local_server:
+    if (
+        sys.platform == "win32"
+        and q2app.q2_app.windows_mysql_local_server
+        and q2app.q2_app.windows_mysql_local_server.is_running()
+    ):
         create_q2apps_mysql(f"{dist_folder}")
     else:
         create_q2apps_sqlite(f"{dist_folder}")
@@ -202,26 +211,30 @@ app.run()
         )
         os.remove(f"{make_folder}/dist/{binary_name}/{binary_name}")
         shutil.rmtree(f"{make_folder}/dist/{binary_name}/_internal", ignore_errors=True)
-
+    print("Creating ZIP archieve")
     name = f"{make_folder}/dist/{binary_name}"
     zip_name = name + ".zip"
 
     with zipfile.ZipFile(zip_name, "w", zipfile.ZIP_DEFLATED) as zip_ref:
         for folder_name, subfolders, filenames in os.walk(name):
+            print(folder_name, "...")
             for filename in filenames:
+                q2app.q2_app.process_events()
                 file_path = os.path.join(folder_name, filename)
                 zip_ref.write(file_path, arcname=f"{binary_name}/{os.path.relpath(file_path, name)}")
 
     zip_ref.close()
+    open(f"{make_folder}/dist/{binary_name}.ver", "w").write(f"{binary_build}")
 
     w.close()
+    print("Done")
 
     if terminal.exit_code != 0:
         q2mess("Error occured while making binary! See output for details.")
     else:
         if (
             q2ask(
-                f"Success! You binary is located in <b>{dist_folder}</b> <br>Do you want to open the folder?"
+                f"Success! You binary is located in <b>{dist_folder}</b><br>Do you want to open the folder?"
             )
             == 2
         ):
