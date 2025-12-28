@@ -46,42 +46,46 @@ class AppManager(Q2Form):
 
     def on_init(self):
         app_data = q2app.q2_app.selected_application
+        frozen = q2app.q2_app.frozen
+        # frozen = 1
+
         self.add_control("/")
-        if self.add_control("/h", "Platform"):
-            if not q2app.q2_app.frozen:
+        if not frozen:
+            if self.add_control("/h", "Platform"):
+                if not q2app.q2_app.frozen:
+                    self.add_control(
+                        "upgrade",
+                        "Check updates",
+                        control="button",
+                        valid=q2app.q2_app.update_packages,
+                    )
+
+                    self.add_control("/s")
+
+                    self.add_control(
+                        "reinstall_",
+                        "Reinstall",
+                        control="button",
+                        valid=self.reinstall,
+                    )
+
+                    self.add_control(
+                        "reinstall_git",
+                        "Reinstall from GitHub",
+                        control="button",
+                        valid=self.update_from_git,
+                    )
+
+                    self.add_control("/s")
+
                 self.add_control(
-                    "upgrade",
-                    "Check updates",
+                    "reload_assets",
+                    "Reload assets",
                     control="button",
-                    valid=q2app.q2_app.update_packages,
+                    valid=self.reload_assets,
                 )
 
-                self.add_control("/s")
-
-                self.add_control(
-                    "reinstall_",
-                    "Reinstall",
-                    control="button",
-                    valid=self.reinstall,
-                )
-
-                self.add_control(
-                    "reinstall_git",
-                    "Reinstall from GitHub",
-                    control="button",
-                    valid=self.update_from_git,
-                )
-
-                self.add_control("/s")
-
-            self.add_control(
-                "reload_assets",
-                "Reload assets",
-                control="button",
-                valid=self.reload_assets,
-            )
-
-            self.add_control("/")
+                self.add_control("/")
 
         if self.add_control("/v", "Application"):
             if self.add_control("/f"):
@@ -92,7 +96,7 @@ class AppManager(Q2Form):
                     data=q2app.q2_app.app_title,
                     readonly=1,
                 )
-                if q2app.q2_app.app_url:
+                if not frozen and q2app.q2_app.app_url:
                     self.add_control(
                         "",
                         "App URL",
@@ -109,6 +113,8 @@ class AppManager(Q2Form):
                         readonly=1,
                     )
                 self.add_control("/")
+
+            if not frozen:
                 if self.add_control("/h", "Database"):
                     self.add_control(
                         "drl",
@@ -142,7 +148,6 @@ class AppManager(Q2Form):
                         )
                     self.add_control("/s")
                     self.add_control("/")
-                self.add_control("/")
 
                 if self.add_control("/h", ""):
                     self.add_control(
@@ -524,7 +529,7 @@ class AppManager(Q2Form):
         wait_table = Q2WaitShow(len(data))
         errors = []
         db.transaction()
-        for table in data:
+        for table in sorted(data, key=lambda k: "" if k == "forms" else k):
             wait_table.step(table)
             if table not in db_tables:
                 continue
