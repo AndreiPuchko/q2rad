@@ -421,6 +421,7 @@ def set_logging(log_folder="log"):
     formatter = logging.Formatter("%(asctime)s-%(name)s: %(levelname)s: %(message)s")
     handler.setFormatter(formatter)
     logging.basicConfig(handlers=[handler])
+    logging.getLogger().setLevel(logging.INFO)
 
 
 def open_folder(folder):
