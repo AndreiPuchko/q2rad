@@ -25,7 +25,9 @@ from q2rad.q2appmanager import AppManager
 from q2gui import q2app
 from datetime import datetime
 import logging
+
 _logger = logging.getLogger(__name__)
+
 
 def create_q2apps_sqlite(dist_folder):
     database_folder_name = "databases"
@@ -113,6 +115,7 @@ def create_q2apps_mysql(dist_folder):
 
 
 def make_binary(self):
+    print("Prepare make")
     form = Q2Form()
     form.add_control("make_folder", "Working folder", datatype="char", data="make")
     form.add_control(
@@ -140,6 +143,7 @@ def make_binary(self):
     if not os.path.isdir(make_folder):
         return
     binary_build = f"{datetime.now()}"
+    binary_url = f"{q2app.q2_app.binary_url}"
     main = f"""
 import sys
 if "darwin" in sys.platform:
@@ -150,6 +154,7 @@ if "darwin" in sys.platform:
 from q2rad.q2rad import Q2RadApp
 app = Q2RadApp()
 app.binary_build = "{binary_build}"
+app.binary_url = "{binary_url}"
 app.run()
     """
     open(f"{make_folder}/{binary_name}.py", "w").write(main)
@@ -199,32 +204,24 @@ app.run()
     else:
         create_q2apps_sqlite(f"{dist_folder}")
 
-    # if onefile:
-    #     dist_folder = os.path.abspath(f"{make_folder}/dist")
-    #     for x in os.listdir(dist_folder):
-    #         if os.path.isfile(os.path.join(dist_folder, x)):
-    #             shutil.move(os.path.join(dist_folder, x), os.path.join(dist_folder, binary_name, x))
-
     if "darwin" in sys.platform:
         shutil.move(
             f"{make_folder}/dist/{binary_name}.app", f"{make_folder}/dist/{binary_name}/{binary_name}.app"
         )
         os.remove(f"{make_folder}/dist/{binary_name}/{binary_name}")
         shutil.rmtree(f"{make_folder}/dist/{binary_name}/_internal", ignore_errors=True)
-    print("Creating ZIP archieve")
-    name = f"{make_folder}/dist/{binary_name}"
-    zip_name = name + ".zip"
 
-    with zipfile.ZipFile(zip_name, "w", zipfile.ZIP_DEFLATED) as zip_ref:
-        for folder_name, subfolders, filenames in os.walk(name):
-            print(folder_name, "...")
-            for filename in filenames:
-                q2app.q2_app.process_events()
-                file_path = os.path.join(folder_name, filename)
-                zip_ref.write(file_path, arcname=f"{binary_name}/{os.path.relpath(file_path, name)}")
+    from q2sfx import Q2SFXBuilder
 
-    zip_ref.close()
-    open(f"{make_folder}/dist/{binary_name}.ver", "w").write(f"{binary_build}")
+    print(f"Building {make_folder}/dist/{binary_name}_sfx.exe")
+    Q2SFXBuilder.build_sfx_from(
+        # payload_zip=zip_name,
+        dist_path=f"{make_folder}/dist/{binary_name}",
+        dist_zip_dir=f"{make_folder}/dist.zip/{binary_name}",
+        output_dir=f"{make_folder}/dist.sfx",
+        output_name=f"{binary_name}_sfx.exe",
+        build_time=binary_build,
+    )
 
     w.close()
     print("Done")
