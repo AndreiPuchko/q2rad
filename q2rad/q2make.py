@@ -144,6 +144,17 @@ def make_binary(self):
         return
     binary_build = f"{datetime.now()}"
     binary_url = f"{q2app.q2_app.binary_url}"
+
+    get_packages_sql = """select package_name as name
+                    from packages
+                    where 'pyinstaller'<>package_name
+                        and 'q2sfx'<>package_name
+                    """
+
+    packages = " ".join(
+        [f"\nimport {x['name']}" for x in q2cursor(get_packages_sql, self.db_logic).records()]
+    )
+
     main = f"""
 import sys
 if "darwin" in sys.platform:
@@ -152,6 +163,7 @@ if "darwin" in sys.platform:
     os.chdir(path)
 
 from q2rad.q2rad import Q2RadApp
+{packages}
 app = Q2RadApp()
 app.binary_build = "{binary_build}"
 app.binary_url = "{binary_url}"
@@ -174,13 +186,7 @@ app.run()
                 return
 
     packages = " ".join(
-        [
-            f" --collect-all {x['name']}"
-            for x in q2cursor(
-                "select package_name as name from packages where 'pyinstaller'<>package_name ",
-                self.db_logic,
-            ).records()
-        ]
+        [f" --collect-data {x['name']}" for x in q2cursor(get_packages_sql, self.db_logic).records()]
     )
     packages += " --collect-all pip "
     terminal.run(f"cd '{make_folder}'")
