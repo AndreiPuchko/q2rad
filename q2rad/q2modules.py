@@ -77,14 +77,18 @@ class Q2Modules(Q2Form, Q2_save_and_run):
         self.system_controls.insert(2, self._save_and_run_control)
 
     def name_valid(self):
+        self.check_manifest()
+
+    def check_manifest(self):
         if self.s.name == "manifest":
             for x in [
-                'myapp.app_url = ""',
-                'myapp.app_description = ""',
-                'myapp.app_title = ""',
+                'myapp.app_url = "',
+                'myapp.app_description = "',
+                'myapp.app_title = "',
+                'myapp.binary_url = "',
             ]:
                 if x not in self.s.script:
-                    self.s.script = x + "\n" + self.s.script
+                    self.s.script = x + '"\n' + self.s.script
 
     def before_crud_save(self):
         code = self.q2_app.code_compiler(self.s.script)
@@ -116,15 +120,18 @@ class Q2Modules(Q2Form, Q2_save_and_run):
 
     def after_form_show(self):
         if self.crud_mode == "EDIT":
+            self.check_manifest()            
             self.w.script.set_focus()
 
     def script_runner(self):
         # self.q2_app.code_runner(self.r.script)()
         from q2rad.q2rad import run_module
+
         run_module(script=self.r.script)
 
     def editor_just_run(self):
         # self.q2_app.code_runner(self.s.script)()
         from q2rad.q2rad import run_module
+
         run_module(script=self.s.script)
         self.w.script.set_focus()
