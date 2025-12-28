@@ -19,6 +19,7 @@ import threading
 from packaging import version
 import webbrowser
 from functools import partial
+from zipfile import ZipFile
 
 if __name__ == "__main__":
     sys.path.insert(0, ".")
@@ -243,7 +244,7 @@ def explain_error(tb=None, errtype=None):
 
 class Q2RadApp(Q2App):
     def __init__(self, title=""):
-        _logger.warning("About to start")
+        _logger.info("About to start")
         super().__init__(title)
         self.settings_title = "q2RAD"
         self.style_file = "q2rad.qss"
@@ -253,6 +254,8 @@ class Q2RadApp(Q2App):
         self.windows_mysql_local_server_port = 3366
         self.windows_mysql_local_server_datadir = "mysql_local_databases"
         self.db = None
+        self.binary_build = ""
+        self.binary_url = ""
 
         self.db_data = None
         self.db_logic = None
@@ -315,7 +318,87 @@ class Q2RadApp(Q2App):
         if not os.path.isfile("poetry.lock"):
             self.load_assets()
             self.check_packages_update()
+        self.install_binary_build()
         self.open_application(autoload_enabled=True)
+
+    def install_binary_build(self):
+        if self.binary_url:
+            _new_binary_build = read_url(f"{self.binary_url}.ver").decode("utf8")
+            if _new_binary_build > self.binary_build:
+                if (
+                    q2ask(
+                        _(
+                            "A new version is available.<br>"
+                            + ("Current build <b>%s</b><br>" % self.binary_build)
+                            + ("new build <b>%s</b><br>" % _new_binary_build)
+                            + "Install the new version now?"
+                        )
+                    )
+                    == 2
+                ):
+                    shutil.rmtree("_new_build", ignore_errors=True)
+                    os.makedirs("_new_build", exist_ok=True)
+                    zip_content = read_url(f"{self.binary_url}.zip", waitbar=True)
+                    open(f"_new_build/new_build.zip", "wb").write(zip_content)
+                    zip_file = ZipFile(f"_new_build/new_build.zip")
+                    zip_file.extractall("_new_build")
+                    binary_name = os.path.basename(self.binary_url)
+                    update_bat_content = f"""ping localhost -n 2
+
+rename _internal _internal.bak
+move _new_build\\{binary_name}\\_internal .
+
+rename assets assets.bak
+move _new_build\\{binary_name}\\assets .
+
+rename {binary_name}.exe {binary_name}.bak
+move _new_build\\{binary_name}\\{binary_name}.exe .
+
+start {binary_name}.exe"""
+                    open("_update.bat", "w").write(update_bat_content)
+
+                    roolback_bat_content = f"""@echo off
+setlocal
+
+REM --- небольшая пауза
+ping localhost -n 2 >nul
+
+REM --- проверка наличия бэкапов
+if not exist "{binary_name}.bak" goto RUN_CURRENT
+if not exist "_internal.bak" goto RUN_CURRENT
+if not exist "assets.bak" goto RUN_CURRENT
+
+REM --- удаляем текущие версии
+rmdir /s /q _internal 2>nul
+rmdir /s /q assets 2>nul
+del {binary_name}.exe 2>nul
+
+REM --- восстанавливаем из bak
+rename _internal.bak _internal
+rename assets.bak assets
+rename {binary_name}.bak {binary_name}.exe
+
+REM --- запуск восстановленной версии
+start "" {binary_name}.exe
+exit /b 0
+
+:RUN_CURRENT
+REM --- если rollback невозможен — запускаем текущую
+start "" {binary_name}.exe
+exit /b """
+                    open("_update.bat", "w").write(roolback_bat_content)
+
+                    if os.path.isdir(fn := "_internal.bak"):
+                        os.rmdir(fn)
+                    if os.path.isdir(fn := "assets.bak"):
+                        os.rmdir(fn)
+                    if os.path.isfile(fn := f"{binary_name}.bak"):
+                        os.remove(fn)
+                    subprocess.Popen(
+                        ["cmd.exe", "/c", "_update.bat"],
+                        creationflags=subprocess.DETACHED_PROCESS,
+                    )
+                    self.close()
 
     def subwindow_count_changed(self):
         if super().subwindow_count_changed() == 0:
@@ -351,7 +434,10 @@ class Q2RadApp(Q2App):
                 )
             except Exception:
                 self.windows_mysql_local_server = None
-        if self.windows_mysql_local_server:
+        if self.windows_mysql_local_server and self.windows_mysql_local_server.is_running():
+            _logger.info(
+                f"The local MySQl 5.5 server is running on port {self.windows_mysql_local_server.port}"
+            )
             if num(self.windows_mysql_local_server.port) != num(self.windows_mysql_local_server_default_port):
                 if num(self.selected_application["port_logic"]) == num(
                     self.windows_mysql_local_server_default_port
@@ -365,6 +451,7 @@ class Q2RadApp(Q2App):
     def stop_local_mysql(self):
         if self.windows_mysql_local_server:
             self.windows_mysql_local_server.stop(timeout=0)
+            _logger.info("The local MySQL 5.5 server has terminated.")
 
     def open_selected_app(self, go_to_q2market=False, migrate_db_data=True):
         wait = Q2WaitShow(5, "Loading app> ")
@@ -629,6 +716,9 @@ class Q2RadApp(Q2App):
             about.append(f"Uploaded: {self.app_version}")
         if self.app_url:
             about.append(f"URL: <u>{self.app_url}</u>")
+        about.append("")
+        if self.binary_build:
+            about.append(f"Binary build: {self.binary_build}")
         about.append("")
         if text:
             about.append(text)
@@ -900,7 +990,7 @@ class Q2RadApp(Q2App):
                         latest_version = None
                         logging.warning(f"pip update {package} error:{error}")
                 if latest_version:
-                    upgraded.append(f"{_package} - <b>{current_version}</b> => <b>{latest_version}</b>")
+                    upgraded.append(f"{_package} - <b>{current_version}</b> ⭆ <b>{latest_version}</b>")
                 else:
                     upgraded.append(f"Error occured while updating package <b>{_package}</b>!")
         w.close()
