@@ -322,7 +322,7 @@ class Q2RadApp(Q2App):
         self.open_application(autoload_enabled=True)
 
     def install_binary_build(self):
-        if self.binary_url:
+        if self.frozen and self.binary_url:
             _new_binary_build = read_url(f"{self.binary_url}.ver").decode("utf8")
             if _new_binary_build > self.binary_build:
                 if (
@@ -338,66 +338,10 @@ class Q2RadApp(Q2App):
                 ):
                     shutil.rmtree("_new_build", ignore_errors=True)
                     os.makedirs("_new_build", exist_ok=True)
-                    zip_content = read_url(f"{self.binary_url}.zip", waitbar=True)
-                    open(f"_new_build/new_build.zip", "wb").write(zip_content)
-                    zip_file = ZipFile(f"_new_build/new_build.zip")
-                    zip_file.extractall("_new_build")
-                    binary_name = os.path.basename(self.binary_url)
-                    update_bat_content = f"""ping localhost -n 2
-
-rename _internal _internal.bak
-move _new_build\\{binary_name}\\_internal .
-
-rename assets assets.bak
-move _new_build\\{binary_name}\\assets .
-
-rename {binary_name}.exe {binary_name}.bak
-move _new_build\\{binary_name}\\{binary_name}.exe .
-
-start {binary_name}.exe"""
-                    open("_update.bat", "w").write(update_bat_content)
-
-                    roolback_bat_content = f"""@echo off
-setlocal
-
-REM --- небольшая пауза
-ping localhost -n 2 >nul
-
-REM --- проверка наличия бэкапов
-if not exist "{binary_name}.bak" goto RUN_CURRENT
-if not exist "_internal.bak" goto RUN_CURRENT
-if not exist "assets.bak" goto RUN_CURRENT
-
-REM --- удаляем текущие версии
-rmdir /s /q _internal 2>nul
-rmdir /s /q assets 2>nul
-del {binary_name}.exe 2>nul
-
-REM --- восстанавливаем из bak
-rename _internal.bak _internal
-rename assets.bak assets
-rename {binary_name}.bak {binary_name}.exe
-
-REM --- запуск восстановленной версии
-start "" {binary_name}.exe
-exit /b 0
-
-:RUN_CURRENT
-REM --- если rollback невозможен — запускаем текущую
-start "" {binary_name}.exe
-exit /b """
-                    open("_update.bat", "w").write(roolback_bat_content)
-
-                    if os.path.isdir(fn := "_internal.bak"):
-                        os.rmdir(fn)
-                    if os.path.isdir(fn := "assets.bak"):
-                        os.rmdir(fn)
-                    if os.path.isfile(fn := f"{binary_name}.bak"):
-                        os.remove(fn)
-                    subprocess.Popen(
-                        ["cmd.exe", "/c", "_update.bat"],
-                        creationflags=subprocess.DETACHED_PROCESS,
-                    )
+                    new_build_content = read_url(f"{self.binary_url}.exe", waitbar=True)
+                    new_build_file_path = os.path.join("_new_build", "new_build.exe")
+                    open(new_build_file_path, "wb").write(new_build_content)
+                    subprocess.Popen([new_build_file_path, "."], creationflags=subprocess.DETACHED_PROCESS)
                     self.close()
 
     def subwindow_count_changed(self):
