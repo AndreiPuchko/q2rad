@@ -15,7 +15,6 @@
 import os
 import sys
 import shutil
-import zipfile
 from q2terminal.q2terminal import Q2Terminal
 from q2rad.q2utils import q2cursor, Q2Form, open_folder  # noqa F401
 from q2gui.q2dialogs import q2mess, q2wait, q2ask
@@ -24,6 +23,7 @@ from q2db.db import Q2Db
 from q2rad.q2appmanager import AppManager
 from q2gui import q2app
 from datetime import datetime
+import subprocess
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -217,17 +217,23 @@ app.run()
         os.remove(f"{make_folder}/dist/{binary_name}/{binary_name}")
         shutil.rmtree(f"{make_folder}/dist/{binary_name}/_internal", ignore_errors=True)
 
-    from q2sfx import Q2SFXBuilder
+    try:
+        from q2sfx import Q2SFXBuilder
 
-    print(f"Building {make_folder}/dist/{binary_name}_sfx.exe")
-    Q2SFXBuilder.build_sfx_from(
-        # payload_zip=zip_name,
-        dist_path=f"{make_folder}/dist/{binary_name}",
-        dist_zip_dir=f"{make_folder}/dist.zip/{binary_name}",
-        output_dir=f"{make_folder}/dist.sfx",
-        output_name=f"{binary_name}_sfx.exe",
-        build_time=binary_build,
-    )
+        print(f"Building {make_folder}/dist/{binary_name}_sfx.exe")
+        Q2SFXBuilder.build_sfx_from(
+            # payload_zip=zip_name,
+            dist_path=f"{make_folder}/dist/{binary_name}",
+            dist_zip_dir=f"{make_folder}/dist.zip/{binary_name}",
+            output_dir=f"{make_folder}/dist.sfx",
+            output_name=f"{binary_name}_sfx.exe",
+            build_time=binary_build,
+        )
+    except Exception as e:
+        print(f"q2sfx not found: {e}")
+
+    if os.path.isfile(send_build_file := f"send_build_{binary_name}.bat"):
+        subprocess.run(send_build_file, check=True)
 
     w.close()
     print("Done")
