@@ -1028,8 +1028,8 @@ class Q2RadApp(Q2App):
 
     def check_app_update(self, force_update=False):
         # self.update_app_packages()
-        if self.frozen:
-            return
+        # if self.frozen:
+        #     return
 
         if not os.path.isdir(self.q2market_path) and self.app_url or force_update:
             try:
@@ -1057,8 +1057,8 @@ class Q2RadApp(Q2App):
                     return True
 
     def check_ext_update(self, prefix="", force_update=False, _ext_url=""):
-        if self.frozen:
-            return
+        # if self.frozen:
+        #     return
         if prefix:
             cu = q2cursor(f"select * from extensions where prefix='{prefix}'")
         else:
