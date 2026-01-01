@@ -233,7 +233,8 @@ app.run()
         print(f"q2sfx not found: {e}")
 
     if os.path.isfile(send_build_file := f"send_build_{binary_name}.bat"):
-        subprocess.run(send_build_file, check=True)
+        if q2ask("Send build to web?") == 2:
+            subprocess.run(send_build_file, check=True)
 
     w.close()
     print("Done")
