@@ -198,9 +198,17 @@ app.run()
         f"{pynstaller_executable} -y --noconsole --clean {onefile} "
         f" {packages} -i q2rad.ico '{binary_name}.py'"
     )
-    if not os.path.isdir(os.path.abspath(f"{dist_folder}/assets")):
-        shutil.copytree("assets", os.path.abspath(f"{dist_folder}/assets"))
+    terminal.close()
 
+    if terminal.exit_code != 0:
+        q2mess("Error occured while making binary! See output for details.")
+        w.close()
+        return
+
+    print("Binary is ready")
+    print("Copying the assets folder")
+    shutil.copytree("assets", os.path.abspath(f"{dist_folder}/assets"))
+    print("Preparing the logic DB")
     if (
         sys.platform == "win32"
         and q2app.q2_app.windows_mysql_local_server
@@ -217,9 +225,15 @@ app.run()
         os.remove(f"{make_folder}/dist/{binary_name}/{binary_name}")
         shutil.rmtree(f"{make_folder}/dist/{binary_name}/_internal", ignore_errors=True)
 
+    is_q2sfx = False
     try:
         from q2sfx import Q2SFXBuilder
 
+        is_q2sfx = True
+    except Exception as e:
+        print(f"q2sfx not found: {e}")
+
+    if is_q2sfx:
         print(f"Building {make_folder}/dist/{binary_name}_sfx.exe")
         Q2SFXBuilder.build_sfx_from(
             # payload_zip=zip_name,
@@ -229,24 +243,16 @@ app.run()
             output_name=f"{binary_name}_sfx.exe",
             build_time=binary_build,
         )
-    except Exception as e:
-        print(f"q2sfx not found: {e}")
 
-    if os.path.isfile(send_build_file := f"send_build_{binary_name}.bat"):
-        if q2ask("Send build to web?") == 2:
-            subprocess.run(send_build_file, check=True)
+        if os.path.isfile(send_build_file := f"send_build_{binary_name}.bat"):
+            if q2ask("Send build to web?") == 2:
+                subprocess.run(send_build_file, check=True)
 
     w.close()
     print("Done")
 
-    if terminal.exit_code != 0:
-        q2mess("Error occured while making binary! See output for details.")
-    else:
-        if (
-            q2ask(
-                f"Success! You binary is located in <b>{dist_folder}</b><br>Do you want to open the folder?"
-            )
-            == 2
-        ):
-            open_folder(dist_folder)
-    terminal.close()
+    if (
+        q2ask(f"Success! You binary is located in <b>{dist_folder}</b><br>Do you want to open the folder?")
+        == 2
+    ):
+        open_folder(make_folder)
