@@ -48,12 +48,19 @@ for x in mem.controls:
     column = x["column"]
     if column and not column.startswith("/"):
         mem.s.__setattr__(column, const.__getattr__(column))
+        if mem.w.__getattr__(column).meta.get("check"):
+            value = mem.s.__getattr__(column)
+            if mem.c.__getattr__(column)["num"]:
+                value = num(value)
+            if value:
+                mem.w.__getattr__(column).check.set_checked()
 #  in Valid script
 for x in mem.controls:
     column = x["column"]
     if column and not column.startswith("/"):
-        const.__setattr__(column, mem.s.__getattr__(column))
-```
+        if mem.w.__getattr__(column).meta.get("check") and not mem.w.__getattr__(column).check.is_checked():
+            mem.s.__setattr__(column, "")
+        const.__setattr__(column, mem.s.__getattr__(column))```
 
 * auto_filter form
 ```python
