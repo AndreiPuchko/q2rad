@@ -238,7 +238,7 @@ app.run()
         Q2SFXBuilder.build_sfx_from(
             # payload_zip=zip_name,
             dist_path=f"{make_folder}/dist/{binary_name}",
-            dist_zip_dir=f"{make_folder}/dist.zip/{binary_name}",
+            dist_zip_dir=f"{make_folder}/dist.zip",
             output_dir=f"{make_folder}/dist.sfx",
             output_name=f"{binary_name}_sfx.exe",
             build_time=binary_build,
