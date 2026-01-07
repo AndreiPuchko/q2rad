@@ -32,6 +32,7 @@ from q2gui.q2dialogs import q2working, q2Mess, q2wait
 from q2gui.q2app import Q2Actions
 from q2gui.q2app import Q2Controls
 from q2gui.q2utils import int_
+from q2rad.q2raddb import get, update, insert
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -225,29 +226,35 @@ class Q2Form(_Q2Form):
     def changelog(self):
         choice = q2ask(
             "Select viewing mode for changelog: only current row or all rows?",
-            buttons=["Cancel", "Current row", "All rows"],
+            buttons=[
+                "Cancel",
+                "Current row",
+                "All",
+                "Deleted",
+                "Inserted",
+                "Updated",
+            ],
         )
         if choice < 2:  # Cancel
             return
-        elif choice == 2:  # Row
-            pk = self.model.get_meta_primary_key()
-            cu = q2cursor(
-                f"""select *
-                        from log_{self.model.get_table_name()}
-                        where {pk} = '{self.r.__getattr__(pk)}'
-                    """,
-                q2_db=self.db,
-            )
-        elif choice == 3:
-            where = self.model.get_where()
-            where = f" where {where}" if where != "" else ""
-            cu = q2cursor(
-                f"""select *
-                        from log_{self.model.get_table_name()}
-                        {where}
-                    """,
-                self.db,
-            )
+
+        pk = self.model.get_meta_primary_key()
+        table_name = self.model.get_table_name()
+
+        sql = f"select * from log_{table_name} "
+        where = self.model.get_where()
+        if choice == 2:  # Row
+            sql += f"where {pk} = '{self.r.__getattr__(pk)}'"
+        elif choice == 3:  # all
+            sql += f" where {where}" if where != "" else ""
+        elif choice == 4:  # deleted
+            sql += 'where q2_mode = "d"' + (f" and {where}" if where != "" else "")
+        elif choice == 5:  # inserted
+            sql += 'where q2_mode = "i"' + (f" and {where}" if where != "" else "")
+        elif choice == 6:  # updated
+            sql += 'where q2_mode = ""' + (f" and {where}" if where != "" else "")
+
+        cu = q2cursor(sql, self.db)
         form = Q2Form(f"Changelog ({self.title})")
         form.db = self.db
         form.add_control("/")
@@ -259,6 +266,17 @@ class Q2Form(_Q2Form):
         form.add_control("/f")
         form.controls.extend(self.controls)
         form.set_cursor(cu)
+
+        def restore(form=form):
+            record = form.get_current_record()
+            if q2ask("Are You sure?"):
+                if get(table_name, [pk, record.get(pk)], pk):
+                    update(table_name, record)
+                else:
+                    insert(table_name, record)
+                self.refresh()
+
+        form.add_action("Restore row", lambda: restore(form), eof_disabled="*")
         form.run()
 
     def grid_data_info(self):
@@ -558,7 +576,7 @@ class auto_filter:
             if col["column"] in self.exclude:
                 continue
             if make_tabs and cu.current_row() % self.lines_per_tab == 0:
-                self.mem.add_control("/t", f"={1+ cu.current_row() // self.lines_per_tab}")
+                self.mem.add_control("/t", f"={1 + cu.current_row() // self.lines_per_tab}")
                 self.mem.add_control("/f")
             if col["control"] == "text":
                 col["control"] = "line"
