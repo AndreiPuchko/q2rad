@@ -167,6 +167,7 @@ from q2rad.q2rad import Q2RadApp
 app = Q2RadApp()
 app.binary_build = "{binary_build}"
 app.binary_url = "{binary_url}"
+app.app_title = "{q2app.q2_app.app_title}"
 app.run()
     """
     open(f"{make_folder}/{binary_name}.py", "w").write(main)
@@ -242,6 +243,7 @@ app.run()
             output_dir=f"{make_folder}/dist.sfx",
             output_name=f"{binary_name}_sfx.exe",
             build_time=binary_build,
+            make_ver_file=False,
         )
 
         if os.path.isfile(send_build_file := f"send_build_{binary_name}.bat"):

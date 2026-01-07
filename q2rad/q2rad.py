@@ -341,7 +341,10 @@ class Q2RadApp(Q2App):
                     new_build_content = read_url(f"{self.binary_url}.exe", waitbar=True)
                     new_build_file_path = os.path.join("_new_build", "new_build.exe")
                     open(new_build_file_path, "wb").write(new_build_content)
-                    subprocess.Popen([new_build_file_path, "."], creationflags=subprocess.DETACHED_PROCESS)
+                    subprocess.Popen(
+                        [new_build_file_path, f"-shortcut-name={self.app_title}", "."],
+                        creationflags=subprocess.CREATE_NEW_CONSOLE,
+                    )
                     self.close()
 
     def subwindow_count_changed(self):
@@ -666,23 +669,24 @@ class Q2RadApp(Q2App):
         about.append("")
         if text:
             about.append(text)
-        about.append("<b>q2RAD</b>")
-        about.append("Versions:")
         about.append(f"<b>Python</b>: {sys.version}<p>")
 
-        rez = self.get_packages_version(q2_modules)
+        if not self.frozen:
+            about.append("Versions:")
+            about.append("<b>q2RAD</b>")
+            rez = self.get_packages_version(q2_modules)
 
-        for package in rez:
-            latest_version, current_version = rez[package]
-            if latest_version:
-                if current_version != latest_version:
-                    latest_version_text = f"({latest_version})"
+            for package in rez:
+                latest_version, current_version = rez[package]
+                if latest_version:
+                    if current_version != latest_version:
+                        latest_version_text = f"({latest_version})"
+                    else:
+                        latest_version_text = ""
                 else:
-                    latest_version_text = ""
-            else:
-                latest_version_text = _(" (Can't load package info)")
+                    latest_version_text = _(" (Can't load package info)")
 
-            about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
+                about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
 
         q2Mess("<br>".join(about))
 
