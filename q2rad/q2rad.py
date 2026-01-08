@@ -1255,7 +1255,7 @@ class Q2RadApp(Q2App):
                 self.find_string = find_string
 
             def get_columns_sql(self, table):
-                return "select {{}} from {} where concat({}) like".format(
+                return "select {{}} from `{}` where concat({}) like".format(
                     table,
                     ", ".join([f"`{x}`" for x in q2app.q2_app.db_logic.get_database_columns(table).keys()]),
                 )
