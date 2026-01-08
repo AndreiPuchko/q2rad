@@ -270,7 +270,7 @@ class Q2Form(_Q2Form):
         def restore(form=form):
             record = form.get_current_record()
             if q2ask("Are You sure?"):
-                if get(table_name, [pk, record.get(pk)], pk):
+                if get(table_name, [f"{pk}=%s", record.get(pk)], pk):
                     update(table_name, record)
                 else:
                     insert(table_name, record)
