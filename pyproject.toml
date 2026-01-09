@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "q2rad"
-version = "0.1.254"
+version = "0.1.255"
 description = "RAD - database, GUI, reports"
 authors = ["Andrei Puchko <andrei.puchko@gmx.de>"]
 readme = "README.md"
