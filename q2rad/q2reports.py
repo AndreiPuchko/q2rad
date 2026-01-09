@@ -627,6 +627,20 @@ class Q2ReportReport(Q2Form):
             actions.add_action("XLSX", lambda: self.run_report("xlsx"))
             actions.add_action("DOCX", lambda: self.run_report("docx"))
             actions.add_action("HTML", lambda: self.run_report("html"))
+            actions.add_action("-", lambda: self.run_report("html"))
+
+            def show_json():
+                form = Q2Form("Show report JSON")
+                form.add_control("/v")
+                form.add_control(
+                    "json",
+                    control="code_json",
+                    data=self.get_content(),
+                )
+                form.cancel_button = 1
+                form.run()
+
+            actions.add_action("Show as JSON", show_json)
             actions.show_main_button = 0
 
         if self.add_control("/h"):
@@ -2295,9 +2309,21 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.rows_sheet.action_set_visible("Swap Cells", len(self.rows_sheet.get_selection()) == 2)
         self.rows_sheet.action_set_visible("Move Cell", column < self.report_columns_form.get_column_count())
 
-        self.rows_sheet.action_set_visible("Cut Cell", len(self.rows_sheet.get_selection()) == 1)
-        self.rows_sheet.action_set_visible("Copy Cell", len(self.rows_sheet.get_selection()) == 1)
-        self.rows_sheet.action_set_visible("Paste Cell", len(self.rows_sheet.get_selection()) == 1)
+        self.rows_sheet.action_set_visible(
+            "Cut Cell",
+            column < self.report_columns_form.get_column_count()
+            and len(self.rows_sheet.get_selection()) == 1,
+        )
+        self.rows_sheet.action_set_visible(
+            "Copy Cell",
+            column < self.report_columns_form.get_column_count()
+            and len(self.rows_sheet.get_selection()) == 1,
+        )
+        self.rows_sheet.action_set_visible(
+            "Paste Cell",
+            column < self.report_columns_form.get_column_count()
+            and len(self.rows_sheet.get_selection()) == 1,
+        )
 
         all_style = self.get_style()
 
@@ -2447,10 +2473,10 @@ class Q2ReportRows(Q2Form, ReportForm):
         return style
 
     def set_content(self):
-        for row in range(self.get_row_count()):
-            for column in range(self.report_columns_form.get_column_count()):
-                cell_data = self.rows_data.cells.get(f"{row},{column}", {})
-                self.rows_sheet.set_cell_text(cell_data.get("data", ""), row, column)
+        # for row in range(self.get_row_count()):
+        #     for column in range(self.report_columns_form.get_column_count()):
+        #         cell_data = self.rows_data.cells.get(f"{row},{column}", {})
+        #         self.rows_sheet.set_cell_text(cell_data.get("data", ""), row, column)
 
         self.apply_style()
 
@@ -2487,7 +2513,8 @@ class Q2ReportRows(Q2Form, ReportForm):
         for row in range(self.get_row_count()):
             for column in range(self.report_columns_form.get_column_count()):
                 cell_data = self.rows_data.cells.get(f"{row},{column}", {})
-
+                self.rows_sheet.set_cell_text(cell_data.get("data", ""), row, column)
+                
                 self.rows_sheet.cell_styles[f"{row},{column}"] = cell_data.get("style", {})
                 # self.rows_sheet.cell_styles[f"{row},{column}"]["border-color"] = (
                 #     "white" if self.q2_app.q2style.color_mode == "dark" else "black"
@@ -2637,11 +2664,11 @@ class Q2ReportRows(Q2Form, ReportForm):
         if self.rows_sheet is None:
             return
 
-        ratio = self.report_columns_form.report_page_form.report_report_form.ratio
-        self.apply_style()
         self.rows_sheet.set_row_count(self.get_row_count())
         self.rows_sheet.set_column_count(self.report_columns_form.get_column_count() + 1)
+        self.apply_style()
 
+        ratio = self.report_columns_form.report_page_form.report_report_form.ratio
         self.rows_sheet.set_fixed_width(self.report_columns_form.report_page_form.get_pixel_page_width(), "")
         for i, x in enumerate(self.rows_data.heights):
             h = max([num(h) for h in x.split("-")] + [0.7])
