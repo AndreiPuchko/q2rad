@@ -24,9 +24,10 @@ from q2rad.q2utils import Q2Form, int_
 from q2gui import q2app
 import csv
 
-import gettext
+from q2rad.q2utils import tr
 
-_ = gettext.gettext
+_ = tr
+
 
 SQL_DATATYPES = (
     "char",

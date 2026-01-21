@@ -18,12 +18,11 @@ from q2gui.q2dialogs import q2AskYN
 from q2rad.q2utils import Q2Form
 import json
 from q2rad.q2raddb import read_url, open_url
-
-import gettext
-
 from q2rad.q2appmanager import AppManager
 
-_ = gettext.gettext
+from q2rad.q2utils import tr
+
+_ = tr
 
 
 class Q2Market(Q2Form):

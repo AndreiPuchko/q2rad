@@ -19,7 +19,6 @@ import threading
 from packaging import version
 import webbrowser
 from functools import partial
-from zipfile import ZipFile
 
 if __name__ == "__main__":
     sys.path.insert(0, ".")
@@ -246,6 +245,8 @@ class Q2RadApp(Q2App):
     def __init__(self, title=""):
         _logger.info("About to start")
         super().__init__(title)
+        self.i18n.register_domain(domain="q2rad", package="q2rad")
+        self.set_lang("ru")
         self.settings_title = "q2RAD"
         self.style_file = "q2rad.qss"
         self.frozen = getattr(sys, "frozen", False)

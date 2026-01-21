@@ -21,11 +21,11 @@ from q2rad.q2utils import Q2Form
 from q2rad.q2utils import Q2_save_and_run
 from q2gui.q2utils import num
 
-import gettext
-
 from q2gui.q2app import Q2Actions
 
-_ = gettext.gettext
+from q2rad.q2utils import tr
+
+_ = tr
 
 
 class Q2Modules(Q2Form, Q2_save_and_run):
@@ -120,7 +120,7 @@ class Q2Modules(Q2Form, Q2_save_and_run):
 
     def after_form_show(self):
         if self.crud_mode == "EDIT":
-            self.check_manifest()            
+            self.check_manifest()
             self.w.script.set_focus()
 
     def script_runner(self):

@@ -18,6 +18,9 @@ from q2rad.q2raddb import int_
 from PyQt6.QtWidgets import QFontDialog
 from PyQt6.QtGui import QFont
 import logging
+from q2rad.q2utils import tr
+
+_ = tr
 
 _logger = logging.getLogger(__name__)
 
@@ -69,19 +72,19 @@ class AppStyleSettings(Q2Form):
             disabled=1,
             data=self.q2_app.q2style.font_name,
         )
-        self.add_control("get_font", "Change font", datalen=15, control="button", valid=self.change_font)
-        self.add_control("apply", "Apply immediately", control="check", data=True)
-        self.add_control("reset", "Reset to Arial, 12", control="button", valid=self.reset_font)
+        self.add_control("get_font", _("Change font"), datalen=15, control="button", valid=self.change_font)
+        self.add_control("apply", _("Apply immediately"), control="check", data=True)
+        self.add_control("reset", _("Reset to Arial, 12"), control="button", valid=self.reset_font)
 
         self.ok_button = 1
         self.cancel_button = 1
 
     def reset_font(self):
-        self.s.font_size=12
-        self.s.font_name="Arial"
+        self.s.font_size = 12
+        self.s.font_name = "Arial"
         if self.s.apply:
             self.style_valid()
-    
+
     def change_font(self):
         font, ok = QFontDialog.getFont(QFont(self.s.font_name, int_(self.s.font_size)))
         if ok:

@@ -32,11 +32,11 @@ import json
 import os
 import logging
 import threading
-import gettext
-
 from q2rad.q2utils import Q2Form
+from q2rad.q2utils import tr
 
-_ = gettext.gettext
+_ = tr
+
 _logger = logging.getLogger(__name__)
 
 # TODO: selected rows removing - bug
@@ -305,7 +305,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         model.set_order("name").refresh()
         self.set_model(model)
         self.add_action("/crud")
-        self.add_action("Run", self.run_report, hotkey="F4", eof_disabled=1, tag="orange")
+        self.add_action(_("Run"), self.run_report, hotkey="F4", eof_disabled=1, tag="orange")
         self.add_action("-")
         self.add_action("JSON", self.edit_json, eof_disabled=1)
 
@@ -329,7 +329,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
                 json_file_name = form.validate_impexp_file_name(json_file_name, "json")
                 open(json_file_name, "w", encoding="utf8").write(form.s.json)
 
-        json_editor_actions.add_action("Save as", save_json, hotkey="")
+        json_editor_actions.add_action(_("Save as"), save_json, hotkey="")
         form.add_control("/v")
         form.add_control(
             "json",
@@ -640,7 +640,7 @@ class Q2ReportReport(Q2Form):
                 form.cancel_button = 1
                 form.run()
 
-            actions.add_action("Show as JSON", show_json)
+            actions.add_action(_("Show as JSON"), show_json)
             actions.show_main_button = 0
 
         if self.add_control("/h"):
@@ -1175,14 +1175,14 @@ class Q2ReportPage(Q2Form, ReportForm):
         set_dict_default(self.page_data, "page_margin_bottom", 2.0)
 
         actions = Q2Actions()
-        actions.add_action("Clone", self.clone)
-        actions.add_action("Add above", self.add_above)
-        actions.add_action("Add below", self.add_below)
+        actions.add_action(_("Clone"), self.clone)
+        actions.add_action(_("Add above"), self.add_above)
+        actions.add_action(_("Add below"), self.add_below)
         actions.add_action("-")
-        actions.add_action("Hide/Show", self.hide_show)
-        actions.add_action("Remove", self.remove_me)
-        actions.add_action("Move up", self.move_up, hotkey="Ctrl+Up")
-        actions.add_action("Move down", self.move_down, hotkey="Ctrl+Down")
+        actions.add_action(_("Hide/Show"), self.hide_show)
+        actions.add_action(_("Remove"), self.remove_me)
+        actions.add_action(_("Move up"), self.move_up, hotkey="Ctrl+Up")
+        actions.add_action(_("Move down"), self.move_down, hotkey="Ctrl+Down")
         actions.show_actions = 0
         actions.show_main_button = 0
 
@@ -1364,26 +1364,26 @@ class Q2ReportColumns(Q2Form, ReportForm):
         self.col_actions = Q2Actions()
         self.section_actions = Q2Actions()
 
-        self.col_actions.add_action("Width", self.cell_double_clicked)
+        self.col_actions.add_action(_("Width"), self.cell_double_clicked)
         self.actions.add_action("-")
-        self.col_actions.add_action("Add left", self.column_add_left)
-        self.col_actions.add_action("Add right", self.column_add_right)
+        self.col_actions.add_action(_("Add left"), self.column_add_left)
+        self.col_actions.add_action(_("Add right"), self.column_add_right)
         self.col_actions.add_action("-")
-        self.col_actions.add_action("Move left", self.column_move_left)
-        self.col_actions.add_action("Move right", self.column_move_right)
+        self.col_actions.add_action(_("Move left"), self.column_move_left)
+        self.col_actions.add_action(_("Move right"), self.column_move_right)
         self.col_actions.add_action("-")
-        self.col_actions.add_action("Remove", self.column_remove)
+        self.col_actions.add_action(_("Remove"), self.column_remove)
         self.col_actions.show_actions = 0
         self.col_actions.show_main_button = 0
 
-        self.section_actions.add_action("Clone", self.clone)
-        self.section_actions.add_action("Add above", self.add_above)
-        self.section_actions.add_action("Add below", self.add_below)
+        self.section_actions.add_action(_("Clone"), self.clone)
+        self.section_actions.add_action(_("Add above"), self.add_above)
+        self.section_actions.add_action(_("Add below"), self.add_below)
         self.section_actions.add_action("-")
-        self.section_actions.add_action("Hide/Show", self.hide_show)
-        self.section_actions.add_action("Remove", self.remove_me)
-        self.section_actions.add_action("Move up", self.move_up, hotkey="Ctrl+Up")
-        self.section_actions.add_action("Move down", self.move_down, hotkey="Ctrl+Down")
+        self.section_actions.add_action(_("Hide/Show"), self.hide_show)
+        self.section_actions.add_action(_("Remove"), self.remove_me)
+        self.section_actions.add_action(_("Move up"), self.move_up, hotkey="Ctrl+Up")
+        self.section_actions.add_action(_("Move down"), self.move_down, hotkey="Ctrl+Down")
         self.section_actions.show_actions = 0
         self.section_actions.show_main_button = 0
 
@@ -1679,48 +1679,56 @@ class Q2ReportRows(Q2Form, ReportForm):
         self.row_actions = Q2Actions()
         self.section_action = Q2Actions()
         if 1:
-            self.row_actions.add_action("Edit", self.cell_double_clicked)
+            self.row_actions.add_action(_("Edit"), self.cell_double_clicked)
             self.row_actions.add_action("-")
-            self.row_actions.add_action("Height", self.edit_row_height)
+            self.row_actions.add_action(_("Height"), self.edit_row_height)
             self.row_actions.add_action("-")
-            self.row_actions.add_action("Add row above", self.row_add_above)
-            self.row_actions.add_action("Add row below", self.row_add_below)
+            self.row_actions.add_action(_("Add row above"), self.row_add_above)
+            self.row_actions.add_action(_("Add row below"), self.row_add_below)
             self.row_actions.add_action("-")
-            self.row_actions.add_action("Move row up", self.row_move_up)
-            self.row_actions.add_action("Move row down", self.row_move_down)
+            self.row_actions.add_action(_("Move row up"), self.row_move_up)
+            self.row_actions.add_action(_("Move row down"), self.row_move_down)
             self.row_actions.add_action("-")
-            self.row_actions.add_action("Remove row", self.row_remove)
+            self.row_actions.add_action(_("Remove row"), self.row_remove)
             self.row_actions.add_action("-")
-            self.row_actions.add_action("Merge selection", self.merge)
-            self.row_actions.add_action("Unmerge", self.unmerge)
+            self.row_actions.add_action(_("Merge selection"), self.merge)
+            self.row_actions.add_action(_("Unmerge"), self.unmerge)
             self.row_actions.add_action("-")
-            self.row_actions.add_action("Cut Cell", self.cut_cell, hotkey="Ctrl+X")
-            self.row_actions.add_action("Copy Cell", self.copy_cell, hotkey="Ctrl+C")
-            self.row_actions.add_action("Paste Cell", self.paste_cell, hotkey="Ctrl+V")
-            self.row_actions.add_action("Move Cell|Move Up", self.move_cell_up, hotkey="Ctrl+Up")
-            self.row_actions.add_action("Move Cell|Move Right", self.move_cell_right, hotkey="Ctrl+Right")
-            self.row_actions.add_action("Move Cell|Move Down", self.move_cell_down, hotkey="Ctrl+Down")
-            self.row_actions.add_action("Move Cell|Move Left", self.move_cell_left, hotkey="Ctrl+Left")
-            self.row_actions.add_action("Swap Cells", self.swap_selected_cells, hotkey="Ctrl+S")
+            self.row_actions.add_action(_("Cut Cell"), self.cut_cell, hotkey="Ctrl+X")
+            self.row_actions.add_action(_("Copy Cell"), self.copy_cell, hotkey="Ctrl+C")
+            self.row_actions.add_action(_("Paste Cell"), self.paste_cell, hotkey="Ctrl+V")
+            self.row_actions.add_action(
+                _("Move Cell") + "|" + _("Move Up"), self.move_cell_up, hotkey="Ctrl+Up"
+            )
+            self.row_actions.add_action(
+                _("Move Cell") + "|" + _("Move Right"), self.move_cell_right, hotkey="Ctrl+Right"
+            )
+            self.row_actions.add_action(
+                _("Move Cell") + "|" + _("Move Down"), self.move_cell_down, hotkey="Ctrl+Down"
+            )
+            self.row_actions.add_action(
+                _("Move Cell") + "|" + _("Move Left"), self.move_cell_left, hotkey="Ctrl+Left"
+            )
+            self.row_actions.add_action(_("Swap Cells"), self.swap_selected_cells, hotkey="Ctrl+S")
 
             self.row_actions.show_actions = 0
             self.row_actions.show_main_button = 0
 
-            self.section_action.add_action("Edit", self.edit_data_role)
-            self.section_action.add_action("Clone", self.clone)
-            self.section_action.add_action("Add above", self.add_above)
-            self.section_action.add_action("Add below", self.add_below)
+            self.section_action.add_action(_("Edit"), self.edit_data_role)
+            self.section_action.add_action(_("Clone"), self.clone)
+            self.section_action.add_action(_("Add above"), self.add_above)
+            self.section_action.add_action(_("Add below"), self.add_below)
             self.section_action.add_action("-")
-            self.section_action.add_action("Move up", self.move_up, hotkey="Ctrl+Up")
-            self.section_action.add_action("Move down", self.move_down, hotkey="Ctrl+Down")
+            self.section_action.add_action(_("Move up"), self.move_up, hotkey="Ctrl+Up")
+            self.section_action.add_action(_("Move down"), self.move_down, hotkey="Ctrl+Down")
             self.section_action.add_action("-")
-            self.section_action.add_action("Hide/Show", self.hide_show)
-            self.section_action.add_action("Remove", self.remove_me)
+            self.section_action.add_action(_("Hide/Show"), self.hide_show)
+            self.section_action.add_action(_("Remove"), self.remove_me)
             self.section_action.add_action("-")
-            self.section_action.add_action("Table|Add header", self.add_table_header)
-            self.section_action.add_action("Table|Add footer", self.add_table_footer)
+            self.section_action.add_action(_("Table") + "|" + _("Add header"), self.add_table_header)
+            self.section_action.add_action(_("Table") + "|" + _("Add footer"), self.add_table_footer)
             # self.section_action.add_action("Table|Add page footer")
-            self.section_action.add_action("Table|Add grouping", self.add_table_group)
+            self.section_action.add_action(_("Table") + "|" + _("Add grouping"), self.add_table_group)
             self.section_action.show_actions = 0
             self.section_action.show_main_button = 0
 
@@ -2514,7 +2522,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             for column in range(self.report_columns_form.get_column_count()):
                 cell_data = self.rows_data.cells.get(f"{row},{column}", {})
                 self.rows_sheet.set_cell_text(cell_data.get("data", ""), row, column)
-                
+
                 self.rows_sheet.cell_styles[f"{row},{column}"] = cell_data.get("style", {})
                 # self.rows_sheet.cell_styles[f"{row},{column}"]["border-color"] = (
                 #     "white" if self.q2_app.q2style.color_mode == "dark" else "black"

@@ -1,0 +1,1108 @@
+# German translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-21 19:06+0100\n"
+"PO-Revision-Date: 2026-01-20 23:51+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CP1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:49
+msgid "Action text"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:51
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:70
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:112
+msgid "Main"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:53
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:44
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:73
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:118
+msgid "Sequence number"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:57
+msgid "Action mode"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:63
+msgid "Action message"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:64
+msgid "Action icon"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:65
+msgid "Hot key"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:66
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:129
+msgid "Tag"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:69
+msgid "Disabled for empty grid"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:77
+msgid "Form name"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:80
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:91
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:95
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:139
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:128
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:139
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:192
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:203
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:215
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:229
+msgid "?"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:81
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:230
+msgid "Open list of existing forms"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:86
+msgid "Child form"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:88
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:97
+msgid "Child where"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:92
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:216
+msgid "Open list of existing columns"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:101
+msgid "Don't show"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:108
+msgid "Copy mode"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:109
+msgid "Ask;Always;Newer"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:117
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:199
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:243
+msgid "Form"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:129
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:132
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:214
+msgid "Action Script"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:137
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:42
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:49
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:256
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:57
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:38
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2queries.py:67
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:298
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:428
+msgid "Comment"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:138
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:150
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:152
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:257
+msgid "Comments"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:48
+msgid "Manage q2Application"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:58
+msgid "Platform"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:62
+msgid "Check updates"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:71
+msgid "Reinstall"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:78
+msgid "Reinstall from GitHub"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:87
+msgid "Reload assets"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:94
+msgid "Application"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:98
+msgid "App title"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:106
+msgid "App URL"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:114
+msgid "App version"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:122
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:220
+msgid "Database"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:125
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:223
+msgid "Type"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:132
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:71
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:35
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:43
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:177
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:67
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:34
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:41
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:35
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2queries.py:53
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:286
+msgid "Name"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:140
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:238
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:103
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:147
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:527
+msgid "Host"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:148
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:246
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:104
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:148
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:528
+msgid "Port"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:159
+msgid "Extensions"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:166
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:255
+msgid "Export"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:169
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:258
+msgid "As JSON file"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:177
+msgid "Export to q2Market"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:187
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:265
+msgid "Import"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:190
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:268
+msgid "From JSON file"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:192
+msgid "Excluding _ prefixes"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:198
+msgid "From JSON file *"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:199
+msgid "Import all, including _ prefixes"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:208
+msgid "From q2Market"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:219
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:124
+msgid "Data"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:230
+msgid "Name "
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:280
+msgid "You are about to reinstall platform packages?"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:285
+msgid ""
+"You are about to reinstall platform packages from github.com! Are you sure?"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:294
+msgid "No App URL!"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:298
+msgid "<p>You are about to export App "
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:300
+msgid "<p>Are you sure?"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:362
+msgid "FTP credentials"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:363
+msgid "Server"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:364
+msgid "Login"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:365
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:530
+msgid "Password"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:378
+msgid "Export Application"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:384
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:479
+msgid "Prepare data..."
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:439
+msgid "Check all"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:446
+msgid "Uncheck all"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:453
+msgid "Invert"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:472
+msgid "Export Database"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:505
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:518
+msgid "Import Application"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:581
+msgid "Import Data"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:44
+msgid "Select application"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:62
+msgid "Order"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:65
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:182
+msgid "Autoload"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:74
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:89
+msgid "Data storage"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:77
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:121
+msgid "Storage type"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:78
+msgid "Data storage type"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:97
+msgid "Open Data Storage sqlite database file"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:103
+msgid "Data host"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:104
+msgid "Data port"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:107
+msgid "Guest mode"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:111
+msgid "No database schema changes"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:118
+msgid "Logic storage"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:122
+msgid "Logic storage type"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:141
+msgid "Open App Storage sqlite database file"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:147
+msgid "Logic host"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:148
+msgid "Logic port"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:151
+msgid "Dev mode"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:155
+msgid "Allow to change App"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:174
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:386
+msgid "Select"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:195
+msgid "Install MySQL"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:201
+msgid "Demo"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:373
+msgid "SQLite (*.sqlite);;All files(*.*)"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:410
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:289
+msgid "Give me some NAME!!!"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:414
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:418
+msgid "Give me some database!!!"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:481
+msgid "Can't to load Demo App"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:40
+msgid "Label"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:41
+msgid "Value"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:45
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:178
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:35
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:37
+msgid "Version"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:46
+msgid "q2market folder"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:47
+msgid "q2market url"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:48
+msgid "Check for updates"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:179
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:36
+msgid "Description"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:180
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:37
+msgid "Path"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:72
+msgid "Title"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:76
+msgid "Main menu"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:77
+msgid "Menu bar path"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:78
+msgid "Menu text"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:79
+msgid "Before path"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:80
+msgid "Icon file name or char"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:81
+msgid "Tip text"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:85
+msgid "Add separator before"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:92
+msgid "Show in app toolbar"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:103
+msgid "Add OK button"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:110
+msgid "Add Cancel button"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:117
+msgid "Add view actions"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:125
+msgid "Data table"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:129
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:193
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:204
+msgid "Open list of existing tables"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:134
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1728
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1729
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1731
+msgid "Table"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:136
+msgid "Sort by"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:140
+msgid "Open column list"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:154
+msgid "After load"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:157
+msgid "After Form load"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:161
+msgid "Build"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:166
+msgid "Before Form Build"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:174
+msgid "Before Grid Build"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:180
+msgid "Grid"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:185
+msgid "Before Grid Show"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:193
+msgid "After Grid Show"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:204
+msgid "Before Form Show"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:212
+msgid "After Form Show"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:218
+msgid "Save"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:221
+msgid "Before save"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:224
+msgid "After save"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:227
+msgid "Delete"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:230
+msgid "Before delete"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:233
+msgid "After delete"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:236
+msgid "Valid"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:243
+msgid "Refresh"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:250
+msgid "After close"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:110
+msgid "Column name"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:114
+msgid "Form label"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:115
+msgid "Grid label"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:116
+msgid "Tooltip"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:119
+msgid "No grid"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:120
+msgid "No form"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:121
+msgid "Has checkbox"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:122
+msgid "Disabled"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:123
+msgid "Readonly"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:127
+msgid "Stretch factor"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:128
+msgid "Alignment"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:132
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:135
+msgid "Control type"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:142
+msgid "Control data"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:145
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:148
+msgid "Data type"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:155
+msgid "Data length"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:156
+msgid "Decimal length"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:163
+msgid "Migrate"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:171
+msgid "Primary key"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:179
+msgid "Autoincrement"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:188
+msgid "Linked"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:189
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:198
+msgid "To table"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:200
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:209
+msgid "To field"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:211
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:223
+msgid "Data to show"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:226
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:235
+msgid "Form to open"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:258
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:261
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:269
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:285
+msgid "Script When"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:266
+msgid "Script Show"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:282
+msgid "Script Valid"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:290
+msgid "Stylesheet"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:51
+msgid "Module"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:99
+#, python-format
+msgid ""
+"\n"
+"                        Error!\n"
+"                        Do you want to save it anyway?\n"
+"                        <br><br>\n"
+"                        Error explanation:\n"
+"                        <br>%s\n"
+"                        "
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:36
+msgid "Pip name"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:332
+msgid "A new version is available.<br>"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:525
+msgid "Database name"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:526
+msgid "Engine"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:529
+msgid "User name"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:554
+msgid "Opening database"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:583
+msgid "Creating database"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:688
+msgid " (Can't load package info)"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:748
+msgid "<b>Loading failed for</b>:<br>"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:1021
+#, python-format
+msgid "Installing package %s..."
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:1032
+#, python-format
+msgid "Uninstalling package %s..."
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:308
+msgid "Run"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:332
+msgid "Save as"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:643
+msgid "Show as JSON"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:820
+msgid "Horizontal alignment"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:829
+msgid "Vertical alignment"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:840
+msgid "Font"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:849
+msgid "Background"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:858
+msgid "Borders"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1178
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1379
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1718
+msgid "Clone"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1179
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1380
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1719
+msgid "Add above"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1180
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1381
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1720
+msgid "Add below"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1182
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1383
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1725
+msgid "Hide/Show"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1183
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1375
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1384
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1726
+msgid "Remove"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1184
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1385
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1722
+msgid "Move up"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1185
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1386
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1723
+msgid "Move down"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1202
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1367
+msgid "Width"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1211
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1684
+msgid "Height"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1220
+msgid "Left"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1229
+msgid "Right"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1238
+msgid "Top"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1247
+msgid "Bottom"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1369
+msgid "Add left"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1370
+msgid "Add right"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1372
+msgid "Move left"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1373
+msgid "Move right"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1482
+msgid "Enter column width"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1487
+msgid "Col width"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1682
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1717
+msgid "Edit"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1686
+msgid "Add row above"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1687
+msgid "Add row below"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1689
+msgid "Move row up"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1690
+msgid "Move row down"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1692
+msgid "Remove row"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1694
+msgid "Merge selection"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1695
+msgid "Unmerge"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1697
+msgid "Cut Cell"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1698
+msgid "Copy Cell"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1699
+msgid "Paste Cell"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1701
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1704
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1707
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1710
+msgid "Move Cell"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1701
+msgid "Move Up"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1704
+msgid "Move Right"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1707
+msgid "Move Down"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1710
+msgid "Move Left"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1712
+msgid "Swap Cells"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1728
+msgid "Add header"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1729
+msgid "Add footer"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1731
+msgid "Add grouping"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2069
+msgid "Edit cell content"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2098
+msgid "Enter row height"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2102
+msgid "Column height min"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2111
+msgid "Column height max"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2126
+msgid "Set default"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2138
+msgid "Rows data role"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2154
+msgid "Role"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2164
+msgid "Datasource"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2173
+msgid "Grouping"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2179
+msgid "Print when"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2180
+msgid "After print"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2185
+msgid "New page before"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2191
+msgid "New page after"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2203
+msgid "It will remove all siblings! Proceed?"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2625
+msgid "Remove rows?"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:75
+msgid "Change font"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:76
+msgid "Apply immediately"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:77
+msgid "Reset to Arial, 12"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:224
+msgid "Changelog"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:232
+msgid "Select viewing mode for changelog: only current row or all rows?"
+msgstr ""

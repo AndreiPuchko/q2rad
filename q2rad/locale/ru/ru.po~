@@ -1,0 +1,975 @@
+# Russian translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-21 14:30+0100\n"
+"PO-Revision-Date: 2026-01-21 13:30+0100\n"
+"Last-Translator: Gemini\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:49
+msgid "Action text"
+msgstr "Текст действия"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:51
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:70
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:112
+msgid "Main"
+msgstr "Главная"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:53
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:44
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:73
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:118
+msgid "Sequence number"
+msgstr "Порядковый номер"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:57
+msgid "Action mode"
+msgstr "Режим действия"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:63
+msgid "Action message"
+msgstr "Сообщение действия"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:64
+msgid "Action icon"
+msgstr "Иконка действия"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:65
+msgid "Hot key"
+msgstr "Горячая клавиша"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:66
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:129
+msgid "Tag"
+msgstr "Тег"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:69
+msgid "Disabled for empty grid"
+msgstr "Отключено для пустой таблицы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:77
+msgid "Form name"
+msgstr "Имя формы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:80
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:91
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:95
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:139
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:128
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:139
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:192
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:203
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:215
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:229
+msgid "?"
+msgstr "?"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:81
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:230
+msgid "Open list of existing forms"
+msgstr "Открыть список существующих форм"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:86
+msgid "Child form"
+msgstr "Дочерняя форма"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:88
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:97
+msgid "Child where"
+msgstr "Условие (where) дочерней формы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:92
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:216
+msgid "Open list of existing columns"
+msgstr "Открыть список существующих колонок"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:101
+msgid "Don't show"
+msgstr "Не показывать"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:108
+msgid "Copy mode"
+msgstr "Режим копирования"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:109
+msgid "Ask;Always;Newer"
+msgstr "Спрашивать;Всегда;Более новые"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:117
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:199
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:243
+msgid "Form"
+msgstr "Форма"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:129
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:132
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:214
+msgid "Action Script"
+msgstr "Скрипт действия"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:137
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:42
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:49
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:256
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:57
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:38
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2queries.py:67
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:298
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:428
+msgid "Comment"
+msgstr "Комментарий"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:138
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:150
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:152
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:257
+msgid "Comments"
+msgstr "Комментарии"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:44
+msgid "Select application"
+msgstr "Выберите приложение"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:62
+msgid "Order"
+msgstr "Порядок"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:65
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:182
+msgid "Autoload"
+msgstr "Автозагрузка"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:71
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:35
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:43
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:177
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:67
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:34
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:41
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:35
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2queries.py:53
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:286
+msgid "Name"
+msgstr "Имя"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:74
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:89
+msgid "Data storage"
+msgstr "Хранилище данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:77
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:121
+msgid "Storage type"
+msgstr "Тип хранилища"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:78
+msgid "Data storage type"
+msgstr "Тип хранилища данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:97
+msgid "Open Data Storage sqlite database file"
+msgstr "Открыть файл БД SQLite для данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:103
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:147
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:528
+msgid "Host"
+msgstr "Хост"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:103
+msgid "Data host"
+msgstr "Хост данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:104
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:148
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:529
+msgid "Port"
+msgstr "Порт"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:104
+msgid "Data port"
+msgstr "Порт данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:107
+msgid "Guest mode"
+msgstr "Гостевой режим"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:111
+msgid "No database schema changes"
+msgstr "Без изменения схемы базы данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:118
+msgid "Logic storage"
+msgstr "Хранилище логики"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:122
+msgid "Logic storage type"
+msgstr "Тип хранилища логики"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:141
+msgid "Open App Storage sqlite database file"
+msgstr "Открыть файл БД SQLite для логики приложения"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:147
+msgid "Logic host"
+msgstr "Хост логики"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:148
+msgid "Logic port"
+msgstr "Порт логики"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:151
+msgid "Dev mode"
+msgstr "Режим разработки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:155
+msgid "Allow to change App"
+msgstr "Разрешить изменение приложения"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:174
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:386
+msgid "Select"
+msgstr "Выбрать"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:195
+msgid "Install MySQL"
+msgstr "Установить MySQL"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:201
+msgid "Demo"
+msgstr "Демо"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:373
+msgid "SQLite (*.sqlite);;All files(*.*)"
+msgstr "SQLite (*.sqlite);;Все файлы (*.*)"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:410
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:289
+msgid "Give me some NAME!!!"
+msgstr "Введите ИМЯ!!!"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:414
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:418
+msgid "Give me some database!!!"
+msgstr "Укажите базу данных!!!"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:481
+msgid "Can't to load Demo App"
+msgstr "Не удалось загрузить демо-приложение"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:40
+msgid "Label"
+msgstr "Метка"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:41
+msgid "Value"
+msgstr "Значение"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:45
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:178
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:35
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:37
+msgid "Version"
+msgstr "Версия"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:46
+msgid "q2market folder"
+msgstr "Папка q2market"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:47
+msgid "q2market url"
+msgstr "URL q2market"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:48
+msgid "Check for updates"
+msgstr "Проверить обновления"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:179
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:36
+msgid "Description"
+msgstr "Описание"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:180
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:37
+msgid "Path"
+msgstr "Путь"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:72
+msgid "Title"
+msgstr "Заголовок"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:76
+msgid "Main menu"
+msgstr "Главное меню"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:77
+msgid "Menu bar path"
+msgstr "Путь в меню"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:78
+msgid "Menu text"
+msgstr "Текст меню"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:79
+msgid "Before path"
+msgstr "Перед путем"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:80
+msgid "Icon file name or char"
+msgstr "Имя файла иконки или символ"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:81
+msgid "Tip text"
+msgstr "Текст подсказки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:85
+msgid "Add separator before"
+msgstr "Добавить разделитель перед"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:92
+msgid "Show in app toolbar"
+msgstr "Показывать на панели инструментов"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:103
+msgid "Add OK button"
+msgstr "Добавить кнопку ОК"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:110
+msgid "Add Cancel button"
+msgstr "Добавить кнопку Отмена"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:117
+msgid "Add view actions"
+msgstr "Добавить действия просмотра"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:124
+msgid "Data"
+msgstr "Данные"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:125
+msgid "Data table"
+msgstr "Таблица данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:129
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:193
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:204
+msgid "Open list of existing tables"
+msgstr "Открыть список существующих таблиц"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:134
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1728
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1729
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1731
+msgid "Table"
+msgstr "Таблица"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:136
+msgid "Sort by"
+msgstr "Сортировать по"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:140
+msgid "Open column list"
+msgstr "Открыть список колонок"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:154
+msgid "After load"
+msgstr "После загрузки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:157
+msgid "After Form load"
+msgstr "После загрузки формы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:161
+msgid "Build"
+msgstr "Сборка"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:166
+msgid "Before Form Build"
+msgstr "Перед сборкой формы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:174
+msgid "Before Grid Build"
+msgstr "Перед сборкой таблицы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:180
+msgid "Grid"
+msgstr "Таблица"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:185
+msgid "Before Grid Show"
+msgstr "Перед показом таблицы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:193
+msgid "After Grid Show"
+msgstr "После показа таблицы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:204
+msgid "Before Form Show"
+msgstr "Перед показом формы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:212
+msgid "After Form Show"
+msgstr "После показа формы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:218
+msgid "Save"
+msgstr "Сохранить"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:221
+msgid "Before save"
+msgstr "Перед сохранением"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:224
+msgid "After save"
+msgstr "После сохранения"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:227
+msgid "Delete"
+msgstr "Удалить"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:230
+msgid "Before delete"
+msgstr "Перед удалением"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:233
+msgid "After delete"
+msgstr "После удаления"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:236
+msgid "Valid"
+msgstr "Проверка (Valid)"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:243
+msgid "Refresh"
+msgstr "Обновить"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:250
+msgid "After close"
+msgstr "После закрытия"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:110
+msgid "Column name"
+msgstr "Имя колонки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:114
+msgid "Form label"
+msgstr "Метка формы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:115
+msgid "Grid label"
+msgstr "Метка таблицы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:116
+msgid "Tooltip"
+msgstr "Подсказка"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:119
+msgid "No grid"
+msgstr "Без таблицы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:120
+msgid "No form"
+msgstr "Без формы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:121
+msgid "Has checkbox"
+msgstr "С флажком"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:122
+msgid "Disabled"
+msgstr "Отключено"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:123
+msgid "Readonly"
+msgstr "Только чтение"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:127
+msgid "Stretch factor"
+msgstr "Коэффициент растяжения"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:128
+msgid "Alignment"
+msgstr "Выравнивание"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:132
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:135
+msgid "Control type"
+msgstr "Тип элемента управления"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:142
+msgid "Control data"
+msgstr "Данные элемента управления"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:145
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:148
+msgid "Data type"
+msgstr "Тип данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:155
+msgid "Data length"
+msgstr "Длина данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:156
+msgid "Decimal length"
+msgstr "Знаков после запятой"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:163
+msgid "Migrate"
+msgstr "Миграция"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:171
+msgid "Primary key"
+msgstr "Первичный ключ"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:179
+msgid "Autoincrement"
+msgstr "Автоинкремент"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:188
+msgid "Linked"
+msgstr "Связанный"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:189
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:198
+msgid "To table"
+msgstr "К таблице"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:200
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:209
+msgid "To field"
+msgstr "К полю"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:211
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:223
+msgid "Data to show"
+msgstr "Отображаемые данные"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:226
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:235
+msgid "Form to open"
+msgstr "Форма для открытия"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:258
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:261
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:269
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:285
+msgid "Script When"
+msgstr "Скрипт When"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:266
+msgid "Script Show"
+msgstr "Скрипт Show"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:282
+msgid "Script Valid"
+msgstr "Скрипт Valid"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:290
+msgid "Stylesheet"
+msgstr "Таблица стилей (CSS)"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:51
+msgid "Module"
+msgstr "Модуль"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:99
+#, python-format
+msgid ""
+"\n"
+"                        Error!\n"
+"                        Do you want to save it anyway?\n"
+"                        <br><br>\n"
+"                        Error explanation:\n"
+"                        <br>%s\n"
+"                        "
+msgstr ""
+"\n"
+"                        Ошибка!\n"
+"                        Все равно сохранить?\n"
+"                        <br><br>\n"
+"                        Описание ошибки:\n"
+"                        <br>%s\n"
+"                        "
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:36
+msgid "Pip name"
+msgstr "Имя в Pip"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:333
+msgid "A new version is available.<br>"
+msgstr "Доступна новая версия.<br>"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:526
+msgid "Database name"
+msgstr "Имя базы данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:527
+msgid "Engine"
+msgstr "Движок"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:530
+msgid "User name"
+msgstr "Имя пользователя"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:531
+msgid "Password"
+msgstr "Пароль"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:555
+msgid "Opening database"
+msgstr "Открытие базы данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:584
+msgid "Creating database"
+msgstr "Создание базы данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:689
+msgid " (Can't load package info)"
+msgstr " (Не удалось загрузить информацию о пакете)"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:749
+msgid "<b>Loading failed for</b>:<br>"
+msgstr "<b>Загрузка не удалась для</b>:<br>"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:1022
+#, python-format
+msgid "Installing package %s..."
+msgstr "Установка пакета %s..."
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:1033
+#, python-format
+msgid "Uninstalling package %s..."
+msgstr "Удаление пакета %s..."
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:308
+msgid "Run"
+msgstr "Запустить"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:332
+#, fuzzy
+msgid "Save as"
+msgstr "Сохранить"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:643
+msgid "Show as JSON"
+msgstr "Показать как JSON"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:820
+msgid "Horizontal alignment"
+msgstr "Горизонтальное выравнивание"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:829
+msgid "Vertical alignment"
+msgstr "Вертикальное выравнивание"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:840
+msgid "Font"
+msgstr "Шрифт"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:849
+msgid "Background"
+msgstr "Фон"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:858
+msgid "Borders"
+msgstr "Границы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1178
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1379
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1718
+msgid "Clone"
+msgstr "Клонировать"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1179
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1380
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1719
+msgid "Add above"
+msgstr "Добавить сверху"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1180
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1381
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1720
+msgid "Add below"
+msgstr "Добавить снизу"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1182
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1383
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1725
+msgid "Hide/Show"
+msgstr "Скрыть/показать"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1183
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1375
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1384
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1726
+#, fuzzy
+msgid "Remove"
+msgstr "Удалить строки?"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1184
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1385
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1722
+msgid "Move up"
+msgstr "Сдвинуть вверх"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1185
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1386
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1723
+msgid "Move down"
+msgstr "Сдвинуть вниз"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1202
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1367
+msgid "Width"
+msgstr "Ширина"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1211
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1684
+msgid "Height"
+msgstr "Высота"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1220
+msgid "Left"
+msgstr "Слева"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1229
+msgid "Right"
+msgstr "Справа"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1238
+msgid "Top"
+msgstr "Сверху"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1247
+msgid "Bottom"
+msgstr "Снизу"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1369
+msgid "Add left"
+msgstr "Добавить слева"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1370
+msgid "Add right"
+msgstr "Добавить справа"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1372
+msgid "Move left"
+msgstr "Сдвинуть влево"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1373
+#, fuzzy
+msgid "Move right"
+msgstr "Высота"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1482
+msgid "Enter column width"
+msgstr "Введите ширину колонки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1487
+msgid "Col width"
+msgstr "Ширина колонки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1682
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1717
+msgid "Edit"
+msgstr "Править"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1686
+#, fuzzy
+msgid "Add row above"
+msgstr "Добавить разделитель перед"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1687
+#, fuzzy
+msgid "Add row below"
+msgstr "Добавить разделитель перед"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1689
+#, fuzzy
+msgid "Move row up"
+msgstr "Удалить строки?"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1690
+msgid "Move row down"
+msgstr "Сдвинуть строку вниз"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1692
+#, fuzzy
+msgid "Remove row"
+msgstr "Удалить строки?"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1694
+msgid "Merge selection"
+msgstr "Объеденить"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1695
+msgid "Unmerge"
+msgstr "Разъединить"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1697
+msgid "Cut Cell"
+msgstr "Вырезать ячейку"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1698
+#, fuzzy
+msgid "Copy Cell"
+msgstr "Режим копирования"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1699
+msgid "Paste Cell"
+msgstr "Вставить ячейку"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1701
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1704
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1707
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1710
+msgid "Move Cell"
+msgstr "Переместить ячейку"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1701
+msgid "Move Up"
+msgstr "Вверх"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1704
+#, fuzzy
+msgid "Move Right"
+msgstr "Вправо"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1707
+msgid "Move Down"
+msgstr "Вправо"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1710
+#, fuzzy
+msgid "Move Left"
+msgstr "Влево"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1712
+msgid "Swap Cells"
+msgstr "Поменять местами"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1728
+msgid "Add header"
+msgstr "Добавить шапку"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1729
+msgid "Add footer"
+msgstr "Добавить подвал"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1731
+#, fuzzy
+msgid "Add grouping"
+msgstr "Группировка"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2069
+msgid "Edit cell content"
+msgstr "Редактировать содержимое ячейки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2098
+msgid "Enter row height"
+msgstr "Введите высоту строки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2102
+msgid "Column height min"
+msgstr "Мин. высота колонки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2111
+msgid "Column height max"
+msgstr "Макс. высота колонки"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2126
+msgid "Set default"
+msgstr "По умолчанию"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2138
+msgid "Rows data role"
+msgstr "Роль данных строк"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2154
+msgid "Role"
+msgstr "Роль"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2164
+msgid "Datasource"
+msgstr "Источник данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2173
+msgid "Grouping"
+msgstr "Группировка"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2179
+msgid "Print when"
+msgstr "Печатать, когда"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2180
+msgid "After print"
+msgstr "После печати"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2185
+msgid "New page before"
+msgstr "Новая страница перед"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2191
+msgid "New page after"
+msgstr "Новая страница после"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2203
+msgid "It will remove all siblings! Proceed?"
+msgstr "Это удалит все дочерние элементы! Продолжить?"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2625
+msgid "Remove rows?"
+msgstr "Удалить строки?"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:75
+#, fuzzy
+msgid "Change font"
+msgstr "История изменений"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:76
+msgid "Apply immediately"
+msgstr "Применить сразу"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:77
+msgid "Reset to Arial, 12"
+msgstr "Установить Arial, 12"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:224
+msgid "Changelog"
+msgstr "История изменений"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:232
+msgid "Select viewing mode for changelog: only current row or all rows?"
+msgstr ""
+"Выберите режим просмотра истории: только для текущей строки или для всех?"
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "                        Error!\n"
+#~ "                        Do you want to save it anyway?\n"
+#~ "                        <br><br>\n"
+#~ "                        Error explanation:\n"
+#~ "                        <br>%s\n"
+#~ "                        "
+#~ msgstr ""
+#~ "\n"
+#~ "                        Ошибка!\n"
+#~ "                        Всё равно сохранить?\n"
+#~ "                        <br><br>\n"
+#~ "                        Описание ошибки:\n"
+#~ "                        <br>%s\n"
+#~ "                        "

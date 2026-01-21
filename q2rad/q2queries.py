@@ -20,12 +20,14 @@ from q2gui.q2app import Q2Actions
 from q2rad.q2utils import q2cursor, Q2_save_and_run, num
 from q2gui.q2utils import set_dict_default
 import json
-import gettext
 import re
 from q2rad.q2utils import Q2Form
 from q2gui import q2app
 
-_ = gettext.gettext
+from q2rad.q2utils import tr
+
+_ = tr
+
 re_find_param = re.compile(r"(?::\b\w+\b|\{.+\})")
 
 

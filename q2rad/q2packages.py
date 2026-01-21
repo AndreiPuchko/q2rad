@@ -19,10 +19,10 @@ from q2gui.q2dialogs import q2Mess, q2AskYN
 
 from q2rad.q2utils import Q2Form
 from q2gui import q2app
-import gettext
 
+from q2rad.q2utils import tr
 
-_ = gettext.gettext
+_ = tr
 
 
 class Q2Packages(Q2Form):

@@ -22,17 +22,15 @@ from q2gui import q2app
 
 from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
-from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run
-
+from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run, tr
 from q2rad.q2utils import Q2Form
 
-import gettext
 
-_ = gettext.gettext
+_ = tr
 
 
 class Q2Forms(Q2Form, Q2_save_and_run):
-    def __init__(self, title="Forms"):
+    def __init__(self, title=_("Forms")):
         super().__init__(title)
         self.no_view_action = True
 
@@ -46,14 +44,14 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         self.add_action("/crud")
 
         self.add_action(
-            "Lines",
+            _("Lines"),
             child_form=Q2Lines,
             child_where="name='{name}'",
             hotkey="F2",
             eof_disabled=1,
         )
         self.add_action(
-            "Actions",
+            _("Actions"),
             child_form=Q2Actions,
             child_where="name='{name}'",
             hotkey="F3",
@@ -62,8 +60,8 @@ class Q2Forms(Q2Form, Q2_save_and_run):
 
         # self.add_seq_actions()
 
-        self.add_action("Migrate", self.q2_app.migrate_db_data, eof_disabled=1)
-        self.add_action("Run", self.form_runner, hotkey="F4", eof_disabled=1, tag="orange")
+        self.add_action(_("Migrate"), self.q2_app.migrate_db_data, eof_disabled=1)
+        self.add_action(_("Run"), self.form_runner, hotkey="F4", eof_disabled=1, tag="orange")
 
     def create_form(self):
         self.add_control("name", _("Name"), datatype="char", datalen=100, pk="*")
@@ -238,21 +236,21 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         if self.add_control("/t", _("Valid")):
             self.add_control(
                 "form_valid",
-                label=_(""),
+                label="",
                 nogrid="*",
                 control="code",
             )
         if self.add_control("/t", _("Refresh")):
             self.add_control(
                 "form_refresh",
-                label=_(""),
+                label="",
                 nogrid="*",
                 control="code",
             )
         if self.add_control("/t", _("After close")):
             self.add_control(
                 "after_form_closed",
-                label=_(""),
+                label="",
                 nogrid="*",
                 control="code",
             )

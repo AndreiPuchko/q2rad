@@ -46,6 +46,13 @@ from ftplib import FTP
 _ = gettext.gettext
 
 
+def tr(s):
+    if q2app.q2app.q2_app:
+        return q2app.q2app.q2_app.i18n.tr(s)
+    else:
+        return s
+
+
 def round_(number, ndigits=2):
     if ndigits >= 0:
         return num(number).quantize(
@@ -215,9 +222,9 @@ class Q2Form(_Q2Form):
 
     def grid_navigation_actions_hook(self, actions):
         if self.is_grid_updateable():
-            actions.add_action(q2app.q2app.ACTION_TOOLS_TEXT + "|-")
+            actions.add_action(tr(q2app.q2app.ACTION_TOOLS_TEXT) + "|-")
             actions.add_action(
-                q2app.q2app.ACTION_TOOLS_TEXT + "|" + "Changelog",
+                tr(q2app.q2app.ACTION_TOOLS_TEXT) + "|" + tr("Changelog"),
                 self.changelog,
                 icon="time",
                 eof_disabled=1,
@@ -225,7 +232,7 @@ class Q2Form(_Q2Form):
 
     def changelog(self):
         choice = q2ask(
-            "Select viewing mode for changelog: only current row or all rows?",
+            tr("Select viewing mode for changelog: only current row or all rows?"),
             buttons=[
                 "Cancel",
                 "Current row",

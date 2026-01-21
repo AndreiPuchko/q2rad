@@ -19,11 +19,9 @@ from q2rad.q2raddb import last_error, insert
 from q2rad.q2utils import q2cursor, choice_form, choice_column, Q2_save_and_run, Q2Form, int_
 from q2gui import q2app
 
-# from q2rad import Q2Form
+from q2rad.q2utils import tr
 
-import gettext
-
-_ = gettext.gettext
+_ = tr
 
 
 class Q2Actions(Q2Form, Q2_save_and_run):

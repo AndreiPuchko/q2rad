@@ -26,6 +26,11 @@ from datetime import datetime
 import subprocess
 import logging
 
+
+from q2rad.q2utils import tr
+
+_ = tr
+
 _logger = logging.getLogger(__name__)
 
 

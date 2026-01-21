@@ -22,7 +22,6 @@ from q2db.schema import Q2DbSchema
 from q2db.db import Q2Db
 from q2db.cursor import Q2Cursor
 
-import gettext
 import json
 import os
 
@@ -31,11 +30,12 @@ from q2rad.q2utils import q2cursor, Q2Form
 from q2rad.q2raddb import insert
 from q2rad.q2appmanager import AppManager
 from q2rad.q2raddb import open_url
+from q2rad.q2utils import tr
 
+
+_ = tr
 
 SQL_ENGINES = ["MySQL", "SQLite", "PostgreSQL"]
-
-_ = gettext.gettext
 
 
 class Q2AppSelect(Q2Form):

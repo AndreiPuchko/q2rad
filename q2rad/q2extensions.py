@@ -23,13 +23,14 @@ from q2rad.q2utils import Q2Form
 from q2gui import q2app
 from q2rad.q2appmanager import AppManager
 from q2terminal.q2terminal import Q2Terminal
-import gettext
 import json
 from q2rad.q2raddb import read_url
 from q2gui.q2model import Q2Model
 
 
-_ = gettext.gettext
+from q2rad.q2utils import tr
+
+_ = tr
 
 
 class Q2Extensions(Q2Form):

@@ -28,6 +28,10 @@ from q2rad.q2utils import ftp_upload
 import json
 import os
 
+from q2rad.q2utils import tr
+
+_ = tr
+
 app_tables = [
     "forms",
     "lines",
@@ -41,7 +45,7 @@ app_tables = [
 
 class AppManager(Q2Form):
     def __init__(self, title=""):
-        super().__init__("Manage q2Application")
+        super().__init__(_("Manage q2Application"))
         self.selected_tables = []
 
     def on_init(self):
@@ -51,11 +55,11 @@ class AppManager(Q2Form):
 
         self.add_control("/")
         if not frozen:
-            if self.add_control("/h", "Platform"):
+            if self.add_control("/h", _("Platform")):
                 if not q2app.q2_app.frozen:
                     self.add_control(
                         "upgrade",
-                        "Check updates",
+                        _("Check updates"),
                         control="button",
                         valid=q2app.q2_app.update_packages,
                     )
@@ -64,14 +68,14 @@ class AppManager(Q2Form):
 
                     self.add_control(
                         "reinstall_",
-                        "Reinstall",
+                        _("Reinstall"),
                         control="button",
                         valid=self.reinstall,
                     )
 
                     self.add_control(
                         "reinstall_git",
-                        "Reinstall from GitHub",
+                        _("Reinstall from GitHub"),
                         control="button",
                         valid=self.update_from_git,
                     )
@@ -80,18 +84,18 @@ class AppManager(Q2Form):
 
                 self.add_control(
                     "reload_assets",
-                    "Reload assets",
+                    _("Reload assets"),
                     control="button",
                     valid=self.reload_assets,
                 )
 
                 self.add_control("/")
 
-        if self.add_control("/v", "Application"):
+        if self.add_control("/v", _("Application")):
             if self.add_control("/f"):
                 self.add_control(
                     "",
-                    "App title",
+                    _("App title"),
                     control="line",
                     data=q2app.q2_app.app_title,
                     readonly=1,
@@ -99,7 +103,7 @@ class AppManager(Q2Form):
                 if not frozen and q2app.q2_app.app_url:
                     self.add_control(
                         "",
-                        "App URL",
+                        _("App URL"),
                         control="line",
                         data=q2app.q2_app.app_url,
                         readonly=1,
@@ -107,7 +111,7 @@ class AppManager(Q2Form):
                 if q2app.q2_app.app_version:
                     self.add_control(
                         "",
-                        "App version",
+                        _("App version"),
                         control="line",
                         data=q2app.q2_app.app_version,
                         readonly=1,
@@ -115,17 +119,17 @@ class AppManager(Q2Form):
                 self.add_control("/")
 
             if not frozen:
-                if self.add_control("/h", "Database"):
+                if self.add_control("/h", _("Database")):
                     self.add_control(
                         "drl",
-                        "Type",
+                        _("Type"),
                         data=app_data["driver_logic"].lower(),
                         readonly=1,
                         datalen=len(app_data["driver_logic"].strip()) + 5,
                     )
                     self.add_control(
                         "dtl",
-                        "Name",
+                        _("Name"),
                         data=app_data["database_logic"],
                         readonly=1,
                         datalen=len(app_data["database_logic"].strip()),
@@ -133,7 +137,7 @@ class AppManager(Q2Form):
                     if app_data.get("host_logic"):
                         self.add_control(
                             "hl",
-                            "Host",
+                            _("Host"),
                             data=app_data["host_logic"],
                             readonly=1,
                             datalen=len(app_data["host_logic"].strip()),
@@ -141,7 +145,7 @@ class AppManager(Q2Form):
                     if num(app_data.get("port_logic")):
                         self.add_control(
                             "pl",
-                            "Port",
+                            _("Port"),
                             data=app_data["port_logic"],
                             readonly=1,
                             datalen=len(f"{app_data['port_logic']}") + 5,
@@ -152,17 +156,17 @@ class AppManager(Q2Form):
                 if self.add_control("/h", ""):
                     self.add_control(
                         "exts",
-                        "Extensions",
+                        _("Extensions"),
                         control="button",
                         # datalen=13,
                         valid=q2app.q2_app.run_extensions,
                     )
 
                     self.add_control("/s")
-                    if self.add_control("/h", "Export"):
+                    if self.add_control("/h", _("Export")):
                         self.add_control(
                             "save_app",
-                            "As JSON file",
+                            _("As JSON file"),
                             control="button",
                             # datalen=13,
                             valid=self.export_app,
@@ -170,7 +174,7 @@ class AppManager(Q2Form):
                         if os.path.isdir(self.q2_app.q2market_path):
                             self.add_control(
                                 "save_app_2_market",
-                                "Export to q2Market",
+                                _("Export to q2Market"),
                                 control="button",
                                 # datalen=14,
                                 valid=self.export_q2market,
@@ -180,19 +184,19 @@ class AppManager(Q2Form):
 
                     self.add_control("/s")
 
-                    if self.add_control("/h", "Import"):
+                    if self.add_control("/h", _("Import")):
                         self.add_control(
                             "load_app",
-                            "From JSON file",
+                            _("From JSON file"),
                             control="button",
-                            mess="Excluding _ prefixes",
+                            mess=_("Excluding _ prefixes"),
                             # datalen=10,
                             valid=self.import_app,
                         )
                         self.add_control(
                             "load_app_all",
-                            "From JSON file *",
-                            mess="Import all, including _ prefixes",
+                            _("From JSON file *"),
+                            mess=_("Import all, including _ prefixes"),
                             control="button",
                             # datalen=10,
                             valid=self.import_app_all,
@@ -201,7 +205,7 @@ class AppManager(Q2Form):
                         if self.q2_app.app_url:
                             self.add_control(
                                 "load_q2market_app",
-                                "From q2Market",
+                                _("From q2Market"),
                                 control="button",
                                 # datalen=10,
                                 valid=self.import_q2market,
@@ -212,18 +216,18 @@ class AppManager(Q2Form):
 
             self.add_control("/")
 
-        if self.add_control("/v", "Data"):
-            if self.add_control("/h", "Database"):
+        if self.add_control("/v", _("Data")):
+            if self.add_control("/h", _("Database")):
                 self.add_control(
                     "drd",
-                    "Type",
+                    _("Type"),
                     data=app_data["driver_data"].lower(),
                     readonly=1,
                     datalen=len(app_data["driver_data"].strip()) + 5,
                 )
                 self.add_control(
                     "dtd",
-                    "Name ",
+                    _("Name "),
                     data=app_data["database_data"],
                     readonly=1,
                     datalen=len(app_data["database_data"].strip()),
@@ -231,7 +235,7 @@ class AppManager(Q2Form):
                 if app_data.get("host_data"):
                     self.add_control(
                         "hd",
-                        "Host",
+                        _("Host"),
                         data=app_data["host_data"],
                         readonly=1,
                         datalen=len(app_data["host_data"].strip()),
@@ -239,7 +243,7 @@ class AppManager(Q2Form):
                 if num(app_data.get("port_data")):
                     self.add_control(
                         "pd",
-                        "Port",
+                        _("Port"),
                         data=app_data["port_data"],
                         readonly=1,
                         datalen=len(f"{app_data['port_data']}") + 5,
@@ -248,20 +252,20 @@ class AppManager(Q2Form):
                 self.add_control("/")
 
             if self.add_control("/h", ""):
-                if self.add_control("/h", "Export"):
+                if self.add_control("/h", _("Export")):
                     self.add_control(
                         "save_data",
-                        "As JSON file",
+                        _("As JSON file"),
                         control="button",
                         datalen=10,
                         valid=self.export_data,
                     )
                     self.add_control("/")
                 self.add_control("/s")
-                if self.add_control("/h", "Import"):
+                if self.add_control("/h", _("Import")):
                     self.add_control(
                         "load_app",
-                        "From JSON file",
+                        _("From JSON file"),
                         control="button",
                         datalen=10,
                         valid=self.import_data,
@@ -273,12 +277,12 @@ class AppManager(Q2Form):
         self.cancel_button = 1
 
     def reinstall(self):
-        if q2ask("You are about to reinstall platform packages?") == 2:
+        if q2ask(_("You are about to reinstall platform packages?")) == 2:
             # q2app.q2_app.update_packages(force=True)
             q2app.q2_app.update_from_git(source="")
 
     def update_from_git(self):
-        if q2ask("You are about to reinstall platform packages from github.com! Are you sure?") == 2:
+        if q2ask(_("You are about to reinstall platform packages from github.com! Are you sure?")) == 2:
             q2app.q2_app.update_from_git()
 
     def reload_assets(self):
@@ -287,13 +291,13 @@ class AppManager(Q2Form):
     def export_q2market(self):
         self.q2_app.run_module("manifest")
         if not self.q2_app.app_url:
-            q2Mess("No App URL!")
+            q2Mess(_("No App URL!"))
             return
         if (
             q2AskYN(
-                "<p>You are about to export App "
-                f"<p>into folder {os.path.abspath(self.q2_app.q2market_path)}"
-                "<p>Are you sure?"
+                _("<p>You are about to export App ") +
+                f"<p>into folder {os.path.abspath(self.q2_app.q2market_path)}" +
+                _("<p>Are you sure?")
             )
             != 2
         ):
@@ -355,10 +359,10 @@ class AppManager(Q2Form):
                 workdir = os.path.dirname(self.q2_app.app_url.split(server)[1])
             else:
                 workdir = ""
-            ftp_creds = Q2Form("FTP credentials")
-            ftp_creds.add_control("server", "Server", datalen=100, data=server)
-            ftp_creds.add_control("login", "Login", datalen=100, data=login)
-            ftp_creds.add_control("password", "Password", pic="*", datalen=100, data=password)
+            ftp_creds = Q2Form(_("FTP credentials"))
+            ftp_creds.add_control("server", _("Server"), datalen=100, data=server)
+            ftp_creds.add_control("login", _("Login"), datalen=100, data=login)
+            ftp_creds.add_control("password", _("Password"), pic="*", datalen=100, data=password)
             ftp_creds.ok_button = 1
             ftp_creds.cancel_button = 1
             ftp_creds.run()
@@ -371,13 +375,13 @@ class AppManager(Q2Form):
     def export_app(self, file="", app_json=None):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_save_file_dialoq("Export Application", filter=filetype)
+            file, filetype = q2app.q2_app.get_save_file_dialoq(_("Export Application"), filter=filetype)
         if not file:
             return
         file = self.validate_impexp_file_name(file, filetype)
         if file:
             if app_json is None:
-                app_json = q2working(self.get_app_json, "Prepare data...")
+                app_json = q2working(self.get_app_json, _("Prepare data..."))
             if app_json:
                 json.dump(app_json, open(file, "w"), indent=1)
 
@@ -432,21 +436,21 @@ class AppManager(Q2Form):
         st.add_control("/h")
         st.add_control(
             "all",
-            "Check all",
+            _("Check all"),
             control="button",
             datalen=10,
             valid=lambda: [st.s.__setattr__(x, 1) for x in get_widgets()],
         )
         st.add_control(
             "nothing",
-            "Uncheck all",
+            _("Uncheck all"),
             control="button",
             datalen=10,
             valid=lambda: [st.s.__setattr__(x, 0) for x in get_widgets()],
         )
         st.add_control(
             "invert",
-            "Invert",
+            _("Invert"),
             control="button",
             datalen=10,
             valid=lambda: [st.s.__setattr__(x, 0 if st.s.__getattr__(x) else 1) for x in get_widgets()],
@@ -465,14 +469,14 @@ class AppManager(Q2Form):
             return
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_save_file_dialoq("Export Database", filter=filetype)
+            file, filetype = q2app.q2_app.get_save_file_dialoq(_("Export Database"), filter=filetype)
 
         if not file:
             return
 
         file = self.validate_impexp_file_name(file, filetype)
         if file:
-            rez = q2working(self.get_data_json, "Prepare data...")
+            rez = q2working(self.get_data_json, _("Prepare data..."))
             if rez:
                 json.dump(rez, open(file, "w"), indent=1)
 
@@ -498,7 +502,7 @@ class AppManager(Q2Form):
     def import_app(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_open_file_dialoq("Import Application", filter=filetype)
+            file, filetype = q2app.q2_app.get_open_file_dialoq(_("Import Application"), filter=filetype)
 
         if not file or not os.path.isfile(file):
             return
@@ -511,7 +515,7 @@ class AppManager(Q2Form):
     def import_app_all(self, file=""):
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_open_file_dialoq("Import Application", filter=filetype)
+            file, filetype = q2app.q2_app.get_open_file_dialoq(_("Import Application"), filter=filetype)
 
         if not file or not os.path.isfile(file):
             return
@@ -574,7 +578,7 @@ class AppManager(Q2Form):
             return
         filetype = "JSON(*.json)"
         if not file:
-            file, filetype = q2app.q2_app.get_open_file_dialoq("Import Data", filter=filetype)
+            file, filetype = q2app.q2_app.get_open_file_dialoq(_("Import Data"), filter=filetype)
 
         if not file or not os.path.isfile(file):
             return
