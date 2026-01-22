@@ -37,13 +37,8 @@ from q2rad.q2raddb import get, update, insert
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-import gettext
-
 import math
 from ftplib import FTP
-
-
-_ = gettext.gettext
 
 
 def tr(s):
@@ -51,6 +46,8 @@ def tr(s):
         return q2app.q2app.q2_app.i18n.tr(s)
     else:
         return s
+
+_ = tr
 
 
 def round_(number, ndigits=2):
@@ -222,9 +219,9 @@ class Q2Form(_Q2Form):
 
     def grid_navigation_actions_hook(self, actions):
         if self.is_grid_updateable():
-            actions.add_action(tr(q2app.q2app.ACTION_TOOLS_TEXT) + "|-")
+            actions.add_action(_(q2app.q2app.ACTION_TOOLS_TEXT) + "|-")
             actions.add_action(
-                tr(q2app.q2app.ACTION_TOOLS_TEXT) + "|" + tr("Changelog"),
+                _(q2app.q2app.ACTION_TOOLS_TEXT) + "|" + _("Changelog"),
                 self.changelog,
                 icon="time",
                 eof_disabled=1,
@@ -232,14 +229,14 @@ class Q2Form(_Q2Form):
 
     def changelog(self):
         choice = q2ask(
-            tr("Select viewing mode for changelog: only current row or all rows?"),
+            _("Select viewing mode for changelog: only current row or all rows?"),
             buttons=[
-                "Cancel",
-                "Current row",
-                "All",
-                "Deleted",
-                "Inserted",
-                "Updated",
+                _("Cancel"),
+                _("Current row"),
+                _("All"),
+                _("Deleted"),
+                _("Inserted"),
+                _("Updated"),
             ],
         )
         if choice < 2:  # Cancel
@@ -262,12 +259,12 @@ class Q2Form(_Q2Form):
             sql += 'where q2_mode = ""' + (f" and {where}" if where != "" else "")
 
         cu = q2cursor(sql, self.db)
-        form = Q2Form(f"Changelog ({self.title})")
+        form = Q2Form(_("Changelog") + f" ({self.title})")
         form.db = self.db
         form.add_control("/")
         form.add_control("/h", "-")
-        form.add_control("q2_mode", "Mode", datalen=3)
-        form.add_control("q2_time", "Time", datalen=10)
+        form.add_control("q2_mode", _("Mode"), datalen=3)
+        form.add_control("q2_time", _("Time"), datalen=10)
         form.add_control("/s")
         form.add_control("/")
         form.add_control("/f")
@@ -276,29 +273,31 @@ class Q2Form(_Q2Form):
 
         def restore(form=form):
             record = form.get_current_record()
-            if q2ask("Are You sure?"):
+            if q2ask(_("Are You sure?")):
                 if get(table_name, [f"{pk}=%s", record.get(pk)], pk):
                     update(table_name, record)
                 else:
                     insert(table_name, record)
                 self.refresh()
 
-        form.add_action("Restore row", lambda: restore(form), eof_disabled="*")
+        form.add_action(_("Restore row"), lambda: restore(form), eof_disabled="*")
         form.run()
 
     def grid_data_info(self):
-        form = Q2Form("Info")
+        form = Q2Form(_("Info"))
         form.add_control("/")
         form.add_control("/vs")
         form.add_control("/h")
         form.add_control("/f")
-        form.add_control("row_count", q2app.GRID_DATA_INFO_ROWS, data=self.model.row_count(), readonly=True)
-        form.add_control("order", q2app.GRID_DATA_INFO_ORDER, data=self.model.get_order(), readonly=True)
-        form.add_control("where", q2app.GRID_DATA_INFO_FILTER, data=self.model.get_where(), readonly=True)
+        form.add_control(
+            "row_count", _(q2app.GRID_DATA_INFO_ROWS), data=self.model.row_count(), readonly=True
+        )
+        form.add_control("order", _(q2app.GRID_DATA_INFO_ORDER), data=self.model.get_order(), readonly=True)
+        form.add_control("where", _(q2app.GRID_DATA_INFO_FILTER), data=self.model.get_where(), readonly=True)
         form.add_control("/")
         form.add_control(
             "columns",
-            q2app.GRID_DATA_INFO_COLUMNS,
+            _(q2app.GRID_DATA_INFO_COLUMNS),
             control="list",
             pic=";".join(self.model.columns),
             readonly=True,
@@ -360,7 +359,7 @@ class q2cursor(Q2Cursor):
         return self
 
 
-def q2choice(records=[], title="Make your choice", column_title=["Column"]):
+def q2choice(records=[], title=_("Make your choice"), column_title=["Column"]):
     if len(records) == 0:
         return None
     setta = Q2Form(title)
@@ -406,16 +405,16 @@ def choice_table():
             for x in q2app.q2_app.db_data.db_schema.get_schema_tables()
             if not x.startswith("log_")
         ],
-        title="Select table",
-        column_title="Table",
+        title=_("Select table"),
+        column_title=_("Table"),
     )
 
 
 def choice_column(table):
     return q2choice(
         [{"col": x} for x in q2app.q2_app.db_data.db_schema.get_schema_columns(table)],
-        title="Select column",
-        column_title="Column",
+        title=_("Select column"),
+        column_title=_("Column"),
     )
 
 
@@ -432,8 +431,8 @@ def choice_form():
                 q2app.q2_app.db_logic,
             ).records()
         ],
-        title="Select form",
-        column_title="Form name",
+        title=_("Select form"),
+        column_title=_("Form name"),
     )
 
 
@@ -497,9 +496,9 @@ class Q2_save_and_run:
     def _add_save_and_run(self: Q2Form, save_only=False):
         self.dev_actions.show_main_button = False
         self.dev_actions.show_actions = False
-        self.dev_actions.add_action("Save", worker=self._save, hotkey="F2")
+        self.dev_actions.add_action(_("Save"), worker=self._save, hotkey="F2")
         if save_only is False:
-            self.dev_actions.add_action("Save and run", worker=self._save_and_run, hotkey="F4")
+            self.dev_actions.add_action(_("Save and run"), worker=self._save_and_run, hotkey="F4")
 
         self.add_control(
             "save_and_run_actions",
@@ -512,9 +511,9 @@ class Q2_save_and_run:
 
     def _add_save_and_run_visible(self: Q2Form, save_only=False):
         self.dev_actions_visible.show_main_button = False
-        self.dev_actions_visible.add_action("Save", worker=self._save, hotkey="F2")
+        self.dev_actions_visible.add_action(_("Save"), worker=self._save, hotkey="F2")
         if save_only is False:
-            self.dev_actions_visible.add_action("Save and run", worker=self._save_and_run, hotkey="F4")
+            self.dev_actions_visible.add_action(_("Save and run"), worker=self._save_and_run, hotkey="F4")
 
         self.add_control(
             "save_and_run_actions_visible",
@@ -536,8 +535,8 @@ class Q2_save_and_run:
 
     def _save_and_run_disable(self):
         if self.crud_mode != "EDIT":
-            self.dev_actions.set_disabled("Save and run")
-            self.dev_actions.set_disabled("Save")
+            self.dev_actions.set_disabled(_("Save and run"))
+            self.dev_actions.set_disabled(_("Save"))
 
 
 class auto_filter:
@@ -578,7 +577,7 @@ class auto_filter:
         make_tabs = cu.row_count() > self.lines_per_tab
         if not make_tabs:
             self.mem.add_control("/f")
-        self.mem.add_control("dev", "Dev", control="button", valid=self._dev)
+        self.mem.add_control("dev", _("Dev"), control="button", valid=self._dev)
         for col in cu.records():
             if col["column"] in self.exclude:
                 continue

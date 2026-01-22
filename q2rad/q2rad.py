@@ -63,6 +63,7 @@ from q2rad.q2extensions import Q2Extensions
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
+from q2rad.q2i18n import Q2Locale, Q2LocalePo
 from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder, open_document  # noqa F401
 from q2rad.q2utils import q2choice
 from q2rad.q2make import make_binary
@@ -491,6 +492,8 @@ class Q2RadApp(Q2App):
             Q2Actions(),
             Q2Reports(),
             Q2Packages(),
+            Q2Locale(),
+            Q2LocalePo(),
         ):
             for x in form.get_table_schema():
                 data_schema.add(**x)
@@ -647,6 +650,7 @@ class Q2RadApp(Q2App):
             self.add_menu("Dev|Finder", self.run_finder)
             self.add_menu("Dev|-")
             self.add_menu("Dev|Documentation", self.read_the_docs)
+            self.add_menu("Dev|Locale", self.run_locale)
             if not self.frozen:
                 self.add_menu("Dev|-")
                 self.add_menu("Dev|Make binary", self.make_binary)
@@ -1249,6 +1253,9 @@ class Q2RadApp(Q2App):
 
     def run_extensions(self):
         Q2Extensions().run()
+
+    def run_locale(self):
+        Q2Locale().run()
 
     def run_finder(self):
         class Q2Finder:
