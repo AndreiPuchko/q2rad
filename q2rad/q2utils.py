@@ -43,9 +43,19 @@ from ftplib import FTP
 
 def tr(s):
     if q2app.q2app.q2_app:
+        # print(q2app.q2app.q2_app.i18n.lang)
+        if hasattr(q2app.q2app.q2_app, "db_logic") and q2app.q2app.q2_app.db_logic:
+            if result := get(
+                "locale_po",
+                ["lang=%s and msgid=%s", [q2app.q2app.q2_app.i18n.lang, s]],
+                "msgstr",
+                q2_db=q2app.q2app.q2_app.db_logic,
+            ):
+                return result
         return q2app.q2app.q2_app.i18n.tr(s)
     else:
         return s
+
 
 _ = tr
 

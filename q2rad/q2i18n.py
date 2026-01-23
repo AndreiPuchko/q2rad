@@ -28,102 +28,129 @@ from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run, tr
 from q2rad.q2utils import Q2Form
 
 import ast
-from typing import List, Tuple, Union, Optional
-
 
 _ = tr
 
 
-TranslatableItem = Union[
-    Tuple[str, str],  # ("msgid", msgid)
-    Tuple[str, str, str],  # ("msgctxt", context, msgid)
-    Tuple[str, str, str, str],  # ("ngettext", singular, plural, msgid_plural)
-]
+forms_translate = ["title", "menu_path", "menu_text", "menu_before", "menu_tiptext"]
+lines_translate = ["label", "gridlabel", "mess"]
+actions_translate = ["action_text", "action_mess"]
+
+forms_sql = " union ".join([f"select {x} as msgid from forms" for x in forms_translate])
+lines_sql = " union ".join([f"select {x} as msgid from lines" for x in lines_translate])
+actions_sql = " union ".join([f"select {x} as msgid from actions" for x in actions_translate])
+
+collect_strings_sql = f"""
+select *
+from( {forms_sql} union {lines_sql} union {actions_sql} ) qq
+where msgid<>""
+order by 1
+"""
+
+collect_code_sql = """
+select *
+from(
+    select after_form_load as msgid from forms
+union select before_form_build from forms 
+union select before_grid_build from forms 
+union select before_grid_show from forms 
+union select after_grid_show from forms 
+union select before_form_show from forms 
+union select after_form_show from forms 
+union select before_crud_save from forms 
+union select after_crud_save from forms 
+union select before_delete from forms 
+union select after_delete from forms 
+union select form_valid from forms 
+union select form_refresh from forms 
+union select after_form_closed from forms 
+
+union select code_when from `lines`
+union select code_show from `lines`
+union select code_valid from `lines`
+
+union select action_worker from actions
+
+union select script from modules
+
+) qq
+where msgid<>""
+order by 1
+"""
 
 
-def _const_str(node: ast.AST) -> Optional[str]:
-    """Return string if node is a constant string or simple f-string."""
-    if isinstance(node, ast.Constant) and isinstance(node.value, str):
-        return node.value
+def extract_translatable(code: str) -> list[dict]:
+    def _const_str(node: ast.AST) -> str:
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
 
-    if isinstance(node, ast.JoinedStr):
-        # f-string: allow only if it contains no expressions
-        parts = []
-        for p in node.values:
-            if isinstance(p, ast.Constant) and isinstance(p.value, str):
-                parts.append(p.value)
-            else:
-                return None
-        return "".join(parts)
+        if isinstance(node, ast.JoinedStr):
+            parts = []
+            for p in node.values:
+                if isinstance(p, ast.Constant) and isinstance(p.value, str):
+                    parts.append(p.value)
+                else:
+                    return ""
+            return "".join(parts)
 
-    return None
+        return ""
 
-
-def extract_translatable(code: str) -> List[TranslatableItem]:
     tree = ast.parse(code)
-
-    out: List[TranslatableItem] = []
+    out: list[dict] = []
 
     class Visitor(ast.NodeVisitor):
         def visit_Call(self, node: ast.Call):
-            # get function name like _("..") or gettext.gettext("..")
             func = node.func
 
-            func_name = None
-            module_name = None
+            name = None
+            # module = None
 
             if isinstance(func, ast.Name):
-                func_name = func.id
+                name = func.id
             elif isinstance(func, ast.Attribute):
-                func_name = func.attr
-                if isinstance(func.value, ast.Name):
-                    module_name = func.value.id
+                name = func.attr
+                # if isinstance(func.value, ast.Name):
+                #     module = func.value.id
 
-            # handle _("..")
-            if func_name == "_":
+            # _("msg")
+            if name == "_":
                 if node.args:
-                    msgid = _const_str(node.args[0])
-                    if msgid is not None:
-                        out.append(("msgid", msgid))
+                    if msgid := _const_str(node.args[0]):
+                        out.append(
+                            {
+                                "msgid": msgid,
+                                "msgctxt": "",
+                                "plural": "",
+                            }
+                        )
 
-            # handle gettext.gettext("..")
-            elif func_name == "gettext" and module_name == "gettext":
-                if node.args:
-                    msgid = _const_str(node.args[0])
-                    if msgid is not None:
-                        out.append(("msgid", msgid))
-
-            # handle pgettext(ctx, msg)
-            elif func_name == "pgettext":
+            # pgettext(ctx, msg)
+            elif name == "pgettext":
                 if len(node.args) >= 2:
                     ctx = _const_str(node.args[0])
                     msgid = _const_str(node.args[1])
-                    if ctx is not None and msgid is not None:
-                        out.append(("msgctxt", ctx, msgid))
+                    if ctx and msgid:
+                        out.append(
+                            {
+                                "msgid": msgid,
+                                "msgctxt": ctx,
+                                "plural": "",
+                            }
+                        )
 
-            # handle gettext.pgettext(ctx, msg)
-            elif func_name == "pgettext" and module_name == "gettext":
+            # ngettext(s, p, n)
+            elif name == "ngettext":
                 if len(node.args) >= 2:
-                    ctx = _const_str(node.args[0])
-                    msgid = _const_str(node.args[1])
-                    if ctx is not None and msgid is not None:
-                        out.append(("msgctxt", ctx, msgid))
-
-            # handle ngettext(singular, plural, n)
-            elif func_name == "ngettext":
-                if len(node.args) >= 2:
-                    singular = _const_str(node.args[0])
-                    plural = _const_str(node.args[1])
-                    if singular is not None and plural is not None:
-                        out.append(("ngettext", singular, plural, plural))
-
-            # handle gettext.ngettext
-            elif func_name == "ngettext" and module_name == "gettext":
-                if len(node.args) >= 2:
-                    singular = _const_str(node.args[0])
-                    plural = _const_str(node.args[1])
-                    if singular is not None and plural is not None:
-                        out.append(("ngettext", singular, plural, plural))
+                    s = _const_str(node.args[0])
+                    p = _const_str(node.args[1])
+                    if s and p:
+                        out.append(
+                            {
+                                "msgid": s,
+                                "msgctxt": "",
+                                "plural": p,
+                            }
+                        )
 
             self.generic_visit(node)
 
@@ -131,10 +158,20 @@ def extract_translatable(code: str) -> List[TranslatableItem]:
     return out
 
 
+def get_tranlations():
+    langs = [{"lang": "en", "name": "English", "native_name": ""}]
+    for lang in q2cursor(
+        "select * from locale where disabled=''", q2_db=q2app.q2app.q2_app.db_logic
+    ).records():
+        langs.append(lang)
+    return langs
+
+
 class Q2Locale(Q2Form):
     def __init__(self, title=_("Locale")):
         super().__init__(title)
         self.no_view_action = True
+        self.locales = []
 
     def on_init(self):
         self.create_form()
@@ -163,71 +200,30 @@ class Q2Locale(Q2Form):
         self.add_control("lang", _("Language"), datatype="char", datalen=10, pk="*")
         self.add_control("name", _("Name (English)"), datatype="char", datalen=100)
         self.add_control("native_name", _("Native name"), datatype="char", datalen=100)
-        self.add_control("enabled", _("Enabled"), datatype="char", datalen=1, control="check")
+        self.add_control("disabled", _("Disabled"), datatype="char", datalen=1, control="check")
 
     def collect(self):
-        sql = """
-select *
-from(
-        select title as msgid from forms
-union select menu_path from forms 
-union select menu_text from forms 
-union select menu_before from forms 
-union select menu_tiptext from forms 
+        self.locales = [
+            x["lang"] for x in q2cursor("select lang from locale", q2app.q2_app.db_logic).records()
+        ]
+        for rec in q2cursor(collect_strings_sql, q2app.q2_app.db_logic).browse().records():
+            self.add_msg(rec)
+        for x in q2cursor(collect_code_sql, q2app.q2_app.db_logic).records():
+            words = extract_translatable(q2app.q2_app.code_compiler(x["msgid"])["script"])
+            for rec in words:
+                self.add_msg(rec)
+        self.refresh()
 
-union select label from `lines`
-union select gridlabel from `lines`
-union select mess from `lines`
-
-
-union select action_text from actions
-union select action_mess from actions
-) qq
-where msgid<>""
-order by 1
-        """
-        locales = [x["lang"] for x in q2cursor("select lang from locale", q2app.q2_app.db_logic).records()]
-        for rec in q2cursor(sql, q2app.q2_app.db_logic).records():
-            for lang in locales:
-                rec["lang"] = lang
-                msgid = rec["msgid"]
-                ensure_record(
-                    table_name="locale_po",
-                    where=f"msgid='{msgid}' and lang='{lang}'",
-                    record=rec,
-                    q2_db=q2app.q2_app.db_logic,
-                )
-        sql_code = """
-select *
-from(
-      select after_form_load as msgid from forms
-union select before_form_build from forms 
-union select before_grid_build from forms 
-union select before_grid_show from forms 
-union select after_grid_show from forms 
-union select before_form_show from forms 
-union select after_form_show from forms 
-union select before_crud_save from forms 
-union select after_crud_save from forms 
-union select before_delete from forms 
-union select after_delete from forms 
-union select form_valid from forms 
-union select form_refresh from forms 
-union select after_form_closed from forms 
-
-union select code_when from `lines`
-union select code_show from `lines`
-union select code_valid from `lines`
-
-union select action_worker from actions
-
-) qq
-where msgid<>""
-order by 1
-        """
-        # for x in q2cursor(sql_code, q2app.q2_app.db_logic).records():
-        #     print(extract_translatable(x["msgid"]))
-        # self.refresh()
+    def add_msg(self, rec):
+        for lang in self.locales:
+            rec["lang"] = lang
+            msgid = rec["msgid"]
+            ensure_record(
+                table_name="locale_po",
+                where=f"msgid='{msgid}' and lang='{lang}'",
+                record=rec,
+                q2_db=q2app.q2_app.db_logic,
+            )
 
 
 class Q2LocalePo(Q2Form):
@@ -245,8 +241,8 @@ class Q2LocalePo(Q2Form):
         self.add_action("/crud")
 
     def create_form(self):
-        self.add_control("id", "", datatype="int", pk="*", ai="*")
+        self.add_control("id", "", datatype="int", pk="*", ai="*", nogrid=1, noform=1)
         self.add_control("lang", _("Language"), datatype="char", datalen=10, disabled=1)
-        self.add_control("context", _("Context"), datatype="char", datalen=100, disabled=1)
         self.add_control("msgid", _("Key"), datatype="char", datalen=255, disabled=1)
         self.add_control("msgstr", _("Translation"), datatype="text")
+        self.add_control("context", _("Context"), datatype="char", datalen=100, disabled=1)

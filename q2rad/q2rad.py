@@ -63,16 +63,21 @@ from q2rad.q2extensions import Q2Extensions
 from q2rad.q2constants import Q2Constants, q2const
 from q2rad.q2queries import Q2Queries
 from q2rad.q2reports import Q2Reports, Q2RadReport
-from q2rad.q2i18n import Q2Locale, Q2LocalePo
+from q2rad.q2i18n import (
+    Q2Locale,
+    Q2LocalePo,
+    actions_translate,
+    lines_translate,
+    forms_translate,
+    get_tranlations,
+)
 from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder, open_document  # noqa F401
-from q2rad.q2utils import q2choice
+from q2rad.q2utils import q2choice, tr
 from q2rad.q2make import make_binary
 
 from q2data2docx.q2data2docx import q2data2docx  # noqa F401
 
 # from q2googledrive.q2googledrive import q2googledrive # noqa F401
-
-import gettext
 
 import json
 import subprocess
@@ -83,12 +88,12 @@ import logging
 import traceback
 
 
-# TODO: excel custom format 2 report
+_ = tr
 
+# TODO: excel custom format 2 report
 
 q2_modules = ["q2rad", "q2gui", "q2db", "q2report", "q2terminal", "q2data2docx"]
 const = q2const()
-_ = gettext.gettext
 
 
 set_logging()
@@ -247,7 +252,6 @@ class Q2RadApp(Q2App):
         _logger.info("About to start")
         super().__init__(title)
         self.i18n.register_domain(domain="q2rad", package="q2rad")
-        self.set_lang("ru")
         self.settings_title = "q2RAD"
         self.style_file = "q2rad.qss"
         self.frozen = getattr(sys, "frozen", False)
@@ -266,6 +270,8 @@ class Q2RadApp(Q2App):
         self.q2style.font_size = int_(self.settings.get("Style Settings", "font_size", "10"))  # noqa F405
         self.q2style.font_name = self.settings.get("Style Settings", "font_name", "Arial")  # noqa F405
         self.set_color_mode(self.settings.get("Style Settings", "color_mode", ""))
+        self.lang = self.settings.get("Style Settings", "lang", self.i18n.lang)
+        self.set_lang(self.lang)
 
         self.clear_app_info()
 
@@ -518,7 +524,7 @@ class Q2RadApp(Q2App):
             for co in tables[ta]["columns"]:
                 rez.append(f"d.{ta}.{co}")
                 rez.append(f"{ta}.{co}")
-        for x in q2cursor("select const_name from  constants").records():
+        for x in q2cursor("select const_name from constants").records():
             rez.append("c.const.{const_name}".format(**x))
             rez.append("const.{const_name}".format(**x))
         return rez
@@ -618,15 +624,17 @@ class Q2RadApp(Q2App):
 
     def create_menu(self):
         self.clear_menu()
-        self.add_menu("File|About", self.about, icon="info.png")
-        self.add_menu("File|Manage", self.run_app_manager, icon="tools.png")
-        self.add_menu("File|Style", self.run_stylesettings)
-        self.add_menu("File|Constants", self.run_constants)
+        self.add_menu(_("File") + "|" + _("About"), self.about, icon="info")
+        self.add_menu(_("File") + "|" + _("Manage"), self.run_app_manager, icon="tools")
+
+        lang_menu = _(" && Language") if len(get_tranlations()) > 1 else ""
+        self.add_menu(_("File") + "|" + _("Style") + lang_menu, self.run_stylesettings)
+        self.add_menu(_("File") + "|" + _("Constants"), self.run_constants)
         if not self.frozen:
-            self.add_menu("File|-")
-            self.add_menu("File|Open", self.open_application, icon="open.png")
-        self.add_menu("File|-")
-        self.add_menu("File|Close", self.close, toolbar=1, icon="exit.png")
+            self.add_menu(_("File") + "|" + _("-"))
+            self.add_menu(_("File") + "|" + _("Open"), self.open_application, icon="open")
+        self.add_menu(_("File") + "|" + _("-"))
+        self.add_menu(_("File") + "|" + _("Close"), self.close, toolbar=1, icon="exit")
 
         self.create_form_menu()
 
@@ -641,19 +649,19 @@ class Q2RadApp(Q2App):
         # self.dev_mode = False
 
         if self.dev_mode:
-            self.add_menu("Dev|Forms", self.run_forms)
-            self.add_menu("Dev|Modules", self.run_modules)
-            self.add_menu("Dev|Queries", self.run_queries)
-            self.add_menu("Dev|Reports", self.run_reports)
-            self.add_menu("Dev|Packages", self.run_packages)
-            self.add_menu("Dev|-")
-            self.add_menu("Dev|Finder", self.run_finder)
-            self.add_menu("Dev|-")
-            self.add_menu("Dev|Documentation", self.read_the_docs)
-            self.add_menu("Dev|Locale", self.run_locale)
+            self.add_menu(_("Dev") + "|" + _("Forms"), self.run_forms)
+            self.add_menu(_("Dev") + "|" + _("Modules"), self.run_modules)
+            self.add_menu(_("Dev") + "|" + _("Queries"), self.run_queries)
+            self.add_menu(_("Dev") + "|" + _("Reports"), self.run_reports)
+            self.add_menu(_("Dev") + "|" + _("Packages"), self.run_packages)
+            self.add_menu(_("Dev") + "|" + _("-"))
+            self.add_menu(_("Dev") + "|" + _("Finder"), self.run_finder)
+            self.add_menu(_("Dev") + "|" + _("-"))
+            self.add_menu(_("Dev") + "|" + _("Documentation"), self.read_the_docs)
+            self.add_menu(_("Dev") + "|" + _("Locale"), self.run_locale)
             if not self.frozen:
-                self.add_menu("Dev|-")
-                self.add_menu("Dev|Make binary", self.make_binary)
+                self.add_menu(_("Dev") + "|" + _("-"))
+                self.add_menu(_("Dev") + "|" + _("Make binary"), self.make_binary)
         self.build_menu()
         # self.show_toolbar(False)
         pass
@@ -1215,11 +1223,19 @@ class Q2RadApp(Q2App):
             """,
             self.db_logic,
         )
-        for x in cu.records():
-            if x["menu_separator"]:
-                self.add_menu(x["menu_path"] + "|-")
+        for form_dic in cu.records():
+            for x in forms_translate:
+                if form_dic[x]:
+                    form_dic[x] = _(form_dic[x])
 
-            menu_path = x["menu_path"] + "|" + (x["menu_text"] if x["menu_text"] else x["title"])
+            if form_dic["menu_separator"]:
+                self.add_menu(form_dic["menu_path"] + "|-")
+
+            menu_path = (
+                form_dic["menu_path"]
+                + "|"
+                + (form_dic["menu_text"] if form_dic["menu_text"] else form_dic["title"])
+            )
 
             def menu_worker(name):
                 def real_worker():
@@ -1230,10 +1246,10 @@ class Q2RadApp(Q2App):
             self.add_menu(
                 menu_path,
                 # worker=menu_worker(x["name"]),
-                worker=partial(self.run_form, x["name"]),
-                toolbar=x["toolbar"],
-                before=x["menu_before"],
-                icon=x["menu_icon"],
+                worker=partial(self.run_form, form_dic["name"]),
+                toolbar=form_dic["toolbar"],
+                before=form_dic["menu_before"],
+                icon=form_dic["menu_icon"],
             )
 
     def run_forms(self):
@@ -1350,6 +1366,9 @@ class Q2RadApp(Q2App):
 
         if form_dic == {}:
             return None
+        for x in forms_translate:
+            if form_dic[x]:
+                form_dic[x] = _(form_dic[x])
 
         sql = f"""
             select
@@ -1419,6 +1438,9 @@ class Q2RadApp(Q2App):
             if control.get("_show"):
                 control["show"] = self.code_runner(control["_show"], form)
             control["when"] = self.code_runner(control["_when"], form)
+            for x in lines_translate:
+                if control[x]:
+                    control[x] = _(control[x])
             form.add_control(**control)
             run_module("_e_control", _locals=locals())
 
@@ -1455,6 +1477,9 @@ class Q2RadApp(Q2App):
         sql = f"select * from (select * from actions where name = '{name}' order by seq ) qq {ext_select}"
         cu = q2cursor(sql, self.db_logic)
         for action in cu.records():
+            for x in actions_translate:
+                if action[x]:
+                    action[x] = _(action[x])
             if action["action_mode"] == "1":
                 form.add_action("/crud")
             elif action["action_mode"] == "3":

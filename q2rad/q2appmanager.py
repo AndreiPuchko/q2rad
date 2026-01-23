@@ -119,7 +119,7 @@ class AppManager(Q2Form):
                 self.add_control("/")
 
             if not frozen:
-                if self.add_control("/h", _("Database")):
+                if self.add_control("/h", _("Database"), alignment=7):
                     self.add_control(
                         "drl",
                         _("Type"),
@@ -133,6 +133,7 @@ class AppManager(Q2Form):
                         data=app_data["database_logic"],
                         readonly=1,
                         datalen=len(app_data["database_logic"].strip()),
+                        stretch=99,
                     )
                     if app_data.get("host_logic"):
                         self.add_control(
@@ -231,6 +232,7 @@ class AppManager(Q2Form):
                     data=app_data["database_data"],
                     readonly=1,
                     datalen=len(app_data["database_data"].strip()),
+                    stretch=99,
                 )
                 if app_data.get("host_data"):
                     self.add_control(
@@ -295,9 +297,9 @@ class AppManager(Q2Form):
             return
         if (
             q2AskYN(
-                _("<p>You are about to export App ") +
-                f"<p>into folder {os.path.abspath(self.q2_app.q2market_path)}" +
-                _("<p>Are you sure?")
+                _("<p>You are about to export App ")
+                + f"<p>into folder {os.path.abspath(self.q2_app.q2market_path)}"
+                + _("<p>Are you sure?")
             )
             != 2
         ):

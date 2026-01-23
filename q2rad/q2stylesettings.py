@@ -19,6 +19,7 @@ from PyQt6.QtWidgets import QFontDialog
 from PyQt6.QtGui import QFont
 import logging
 from q2rad.q2utils import tr
+from q2rad.q2i18n import get_tranlations
 
 _ = tr
 
@@ -47,8 +48,8 @@ class AppStyleSettings(Q2Form):
             ),
         )
         self.add_control("/")
-        self.add_control("/f", "Font")
-        if self.add_control("/h", "Size"):
+        self.add_control("/f", _("Font"))
+        if self.add_control("/h", _("Size")):
             self.add_control("minus", "-", datatype="int", control="button", valid=self._font_minus)
 
             self.add_control(
@@ -67,7 +68,7 @@ class AppStyleSettings(Q2Form):
 
         self.add_control(
             "font_name",
-            "Name",
+            _("Name"),
             control="line",
             disabled=1,
             data=self.q2_app.q2style.font_name,
@@ -75,6 +76,21 @@ class AppStyleSettings(Q2Form):
         self.add_control("get_font", _("Change font"), datalen=15, control="button", valid=self.change_font)
         self.add_control("apply", _("Apply immediately"), control="check", data=True)
         self.add_control("reset", _("Reset to Arial, 12"), control="button", valid=self.reset_font)
+
+        self.add_control("/")
+        self.add_control("/f")
+        self.langs = get_tranlations()
+        if len(self.langs) > 1:
+            combo_content = ";".join(["{lang}: {name} {native_name}".format(**x) for x in self.langs])
+            lang = self.q2_app.lang
+            for lang_index, value in enumerate(self.langs):
+                if value["lang"] == lang:
+                    lang_index += 1
+                    break
+
+            self.add_control(
+                "lang", _("Language"), control="combo", datatype="int", pic=combo_content, data=lang_index
+            )
 
         self.ok_button = 1
         self.cancel_button = 1
@@ -111,9 +127,16 @@ class AppStyleSettings(Q2Form):
         self.style_valid()
         color_mode = self.get_color_mode()
         self.q2_app.q2style.font_size = int_(self.s.font_size)
+
+        lang = "en"
+        if len(self.langs) > 1:
+            lang = self.langs[int_(self.s.lang) - 1]["lang"]
+        self.q2_app.settings.set("Style Settings", "lang", lang)
+
         self.q2_app.settings.set("Style Settings", "color_mode", color_mode)
         self.q2_app.settings.set("Style Settings", "font_size", self.s.font_size)
         self.q2_app.settings.set("Style Settings", "font_name", self.s.font_name)
+
         self.q2_app.set_color_mode(color_mode)
 
     def font_size_valid(self):
