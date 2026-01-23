@@ -37,7 +37,7 @@ lines_translate = ["label", "gridlabel", "mess"]
 actions_translate = ["action_text", "action_mess"]
 
 forms_sql = " union ".join([f"select {x} as msgid from forms" for x in forms_translate])
-lines_sql = " union ".join([f"select {x} as msgid from lines" for x in lines_translate])
+lines_sql = " union ".join([f"select {x} as msgid from `lines`" for x in lines_translate])
 actions_sql = " union ".join([f"select {x} as msgid from actions" for x in actions_translate])
 
 collect_strings_sql = f"""
