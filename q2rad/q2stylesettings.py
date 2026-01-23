@@ -131,7 +131,10 @@ class AppStyleSettings(Q2Form):
         lang = "en"
         if len(self.langs) > 1:
             lang = self.langs[int_(self.s.lang) - 1]["lang"]
-        self.q2_app.settings.set("Style Settings", "lang", lang)
+            self.q2_app.lang = lang
+            self.q2_app.set_lang(lang)
+            self.q2_app.settings.set("Style Settings", "lang", lang)
+            self.q2_app.create_menu()
 
         self.q2_app.settings.set("Style Settings", "color_mode", color_mode)
         self.q2_app.settings.set("Style Settings", "font_size", self.s.font_size)

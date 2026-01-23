@@ -24,7 +24,7 @@ from q2rad.q2raddb import ensure_record, last_error
 
 from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
-from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run, tr
+from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run, tr, clear_i18n_cache
 from q2rad.q2utils import Q2Form
 
 import ast
@@ -195,6 +195,14 @@ class Q2Locale(Q2Form):
             hotkey="F4",
             eof_disabled=1,
         )
+        self.add_action(
+            _("Clear cache"),
+            self.clear_cache,
+            eof_disabled=1,
+        )
+
+    def clear_cache(self):
+        clear_i18n_cache()
 
     def create_form(self):
         self.add_control("lang", _("Language"), datatype="char", datalen=10, pk="*")

@@ -41,9 +41,13 @@ import math
 from ftplib import FTP
 
 
+_i18n_cache = {}
+
+
 def tr(s):
     if q2app.q2app.q2_app:
-        # print(q2app.q2app.q2_app.i18n.lang)
+        if s in _i18n_cache:
+            return _i18n_cache[s]
         if hasattr(q2app.q2app.q2_app, "db_logic") and q2app.q2app.q2_app.db_logic:
             if result := get(
                 "locale_po",
@@ -51,11 +55,15 @@ def tr(s):
                 "msgstr",
                 q2_db=q2app.q2app.q2_app.db_logic,
             ):
+                _i18n_cache[s] = result
                 return result
         return q2app.q2app.q2_app.i18n.tr(s)
     else:
         return s
 
+
+def clear_i18n_cache():
+    _i18n_cache.clear()
 
 _ = tr
 

@@ -72,7 +72,7 @@ from q2rad.q2i18n import (
     get_tranlations,
 )
 from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder, open_document  # noqa F401
-from q2rad.q2utils import q2choice, tr
+from q2rad.q2utils import q2choice, tr, clear_i18n_cache
 from q2rad.q2make import make_binary
 
 from q2data2docx.q2data2docx import q2data2docx  # noqa F401
@@ -293,6 +293,10 @@ class Q2RadApp(Q2App):
         self.const = const
 
         sys.excepthook = self.handle_error
+
+    def set_lang(self, lang: str):
+        clear_i18n_cache()
+        super().set_lang(lang)
 
     def handle_error(self, exc_type, exc_value, exc_traceback):
         _logger.error(f"{exc_value}")
