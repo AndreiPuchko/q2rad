@@ -40,6 +40,8 @@ app_tables = [
     "modules",
     "queries",
     "packages",
+    "locale",
+    "locale_po",
 ]
 
 
@@ -535,18 +537,26 @@ class AppManager(Q2Form):
         wait_table = Q2WaitShow(len(data))
         errors = []
         db.transaction()
+
+        # prepare locale tables
+        for lang in [x["lang"] for x in data["locale"]]:
+            db.cursor(f'delete from `locale` where lang="{lang}"')
+            db.cursor(f'delete from `locale_po` where lang="{lang}"')
+
         for table in sorted(data, key=lambda k: "" if k == "forms" else k):
             wait_table.step(table)
             if table not in db_tables:
                 continue
             wait_row = Q2WaitShow(len(data[table]))
-            if table != "packages":
+            # remove old app
+            if table != "packages" and table not in ["locale", "locale_po"]:
                 if prefix == "*":
                     db.cursor(f"delete from `{table}`")
                 elif prefix:
                     db.cursor(f'delete from `{table}` where substr(name,1,{len(prefix)}) = "{prefix}"')
                 else:
                     db.cursor(f'delete from `{table}` where substr(name,1,1) <> "_"')
+
             if db.last_sql_error:
                 errors.append(db.last_sql_error)
             for row in data[table]:

@@ -203,6 +203,7 @@ class Q2Locale(Q2Form):
 
     def clear_cache(self):
         clear_i18n_cache()
+        self.q2_app.create_menu()
 
     def create_form(self):
         self.add_control("lang", _("Language"), datatype="char", datalen=10, pk="*")
@@ -250,7 +251,7 @@ class Q2LocalePo(Q2Form):
 
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", nogrid=1, noform=1)
-        self.add_control("lang", _("Language"), datatype="char", datalen=10, disabled=1)
-        self.add_control("msgid", _("Key"), datatype="char", datalen=255, disabled=1)
+        self.add_control("lang", _("Language"), datatype="char", datalen=10, disabled=1, index=1)
+        self.add_control("msgid", _("Key"), datatype="char", datalen=220, disabled=1, index=1)
         self.add_control("msgstr", _("Translation"), datatype="text")
         self.add_control("context", _("Context"), datatype="char", datalen=100, disabled=1)
