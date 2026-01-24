@@ -182,6 +182,14 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                     datalen=1,
                     valid=self.database_valid,
                 )
+                self.add_control(
+                    "index",
+                    _("Make index"),
+                    control="check",
+                    datatype="char",
+                    datalen=1,
+                    valid=self.database_valid,
+                )
                 self.add_control("/s")
                 self.add_control("/")
             self.add_control("/")  # Linked
@@ -497,6 +505,7 @@ return round_(num(price)*num(quantity), 0)""",
     def database_valid(self):
         self.w.pk.set_enabled(self.s.migrate)
         self.w.ai.set_enabled(self.s.migrate)
+        self.w.index.set_enabled(self.s.migrate)
         name = self.prev_form.r.name
         id = self.r.id
         id_where = ""

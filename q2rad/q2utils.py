@@ -65,6 +65,7 @@ def tr(s):
 def clear_i18n_cache():
     _i18n_cache.clear()
 
+
 _ = tr
 
 
@@ -117,6 +118,7 @@ class Q2Form(_Q2Form):
         mess="",
         tag="",
         eat_enter=None,
+        index=None,
         hotkey="",
         style="",
         **args,
@@ -161,6 +163,7 @@ class Q2Form(_Q2Form):
             mess,
             tag,
             eat_enter,
+            index,
             hotkey,
             style,
             **args,
