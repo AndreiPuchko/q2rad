@@ -722,14 +722,12 @@ msgid "Sources"
 msgstr "Источники"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:268
-#, fuzzy
 msgid "Translation sources"
-msgstr "Переводы"
+msgstr "Источники"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:275
-#, fuzzy
 msgid "All translations"
-msgstr "Переводы"
+msgstr "Все переводы"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:110
 msgid "Column name"
@@ -919,9 +917,8 @@ msgid "Manage"
 msgstr "Управление"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:634
-#, fuzzy
 msgid " && Language"
-msgstr "Язык"
+msgstr " && Язык"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:635
 msgid "Style"
