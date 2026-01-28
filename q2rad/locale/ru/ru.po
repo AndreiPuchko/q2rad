@@ -1311,7 +1311,7 @@ msgstr "Все"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:258
 msgid "Deleted"
-msgstr "Удалить"
+msgstr "Удаленные"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:259
 msgid "Inserted"
