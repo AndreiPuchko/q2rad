@@ -34,6 +34,14 @@ _ = tr
 _logger = logging.getLogger(__name__)
 
 
+def get_app_json():
+    app_json = AppManager().get_app_json()
+    for i, p in enumerate(app_json["packages"]):
+        if p["dev_mode"] == "*":
+            app_json["packages"].pop(i)
+    return app_json
+
+
 def create_q2apps_sqlite(dist_folder):
     database_folder_name = "databases"
     appsel = Q2AppSelect(f"{dist_folder}/q2apps.sqlite")
@@ -58,7 +66,10 @@ def create_q2apps_sqlite(dist_folder):
         database_name=os.path.abspath(f"{dababase_folder}/{database_name_prefix}_logic_storage.sqlite")
     )
     appsel.q2_app.migrate_db_logic(db_logic)
-    AppManager().import_json_app(AppManager().get_app_json(), db_logic)
+
+    app_json = get_app_json()
+    AppManager().import_json_app(app_json, db_logic)
+
     db_logic.close()
     db_logic = None
     appsel.db.close()
@@ -112,7 +123,9 @@ def create_q2apps_mysql(dist_folder):
     )
     db_data.close()
 
-    AppManager().import_json_app(AppManager().get_app_json(), db_logic)
+    app_json = get_app_json()
+    AppManager().import_json_app(app_json, db_logic)
+
     db_logic.close()
     mysql3388server.stop()
     db_logic = None

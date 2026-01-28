@@ -330,6 +330,9 @@ class AppManager(Q2Form):
         self.q2_app.run_module("version")
 
         app_json = self.get_app_json()
+        for i, p in enumerate(app_json["packages"]):
+            if p["dev_mode"] == "*":
+                app_json["packages"].pop(i)
 
         self.export_app(f"{self.q2_app.q2market_path}/{app_name}.json", app_json)
         if app_name == "demo_app":

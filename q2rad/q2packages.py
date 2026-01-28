@@ -35,6 +35,7 @@ class Q2Packages(Q2Form):
         self.add_control("package_name", _("Name"), datatype="char", datalen=100, pk="*")
         self.add_control("package_pipname", _("Pip name"), datatype="char", datalen=100)
         self.add_control("package_version", _("Version"), datatype="char", datalen=10)
+        self.add_control("dev_mode", _("Dev mode"), datatype="char", datalen=1, control="check")
         self.add_control("comment", _("Comment"), datatype="text")
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="packages")
@@ -42,16 +43,9 @@ class Q2Packages(Q2Form):
         model.set_order("package_name").refresh()
         self.set_model(model)
         self.add_action("/crud")
-        # self.add_action("Imp", self.imp)
         self.add_action("Install", self.install, eof_disabled=True)
         self.add_action("Uninstall", self.uninstall, eof_disabled=True)
         self.add_action("Versions", self.info, eof_disabled=True)
-
-    # def imp(self):
-    #     __import__(self.r.package_name)
-    #     current_version = self.q2_app.code_runner(
-    #         f"import {self.r.package_name};return {self.r.package_name}.__version__"
-    #     )()
 
     def uninstall(self):
         if q2AskYN(f"You are about tu uninstall package: {self.r.package_name}") == 2:
