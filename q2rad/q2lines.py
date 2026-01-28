@@ -506,15 +506,18 @@ return round_(num(price)*num(quantity), 0)""",
         self.w.pk.set_enabled(self.s.migrate)
         self.w.ai.set_enabled(self.s.migrate)
         self.w.index.set_enabled(self.s.migrate)
-        name = self.prev_form.r.name
-        id = self.r.id
-        id_where = ""
-        if self.crud_mode in ("EDIT", "VIEW"):
-            id_where = f" and id <> {id}"
-        sql = f"select * from lines where pk='*' and name = '{name}' {id_where}"
-        if not self.s.migrate or self.db.cursor(sql).row_count() > 0:
-            self.w.pk.set_disabled()
-            self.w.ai.set_disabled()
+        try:
+            name = self.prev_form.r.name
+            id = self.r.id
+            id_where = ""
+            if self.crud_mode in ("EDIT", "VIEW"):
+                id_where = f" and id <> {id}"
+            sql = f"select * from lines where pk='*' and name = '{name}' {id_where}"
+            if not self.s.migrate or self.db.cursor(sql).row_count() > 0:
+                self.w.pk.set_disabled()
+                self.w.ai.set_disabled()
+        except Exception as e:
+            pass
 
     def select_linked_table(self):
         choice = choice_table()

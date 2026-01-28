@@ -215,18 +215,19 @@ class Q2Locale(Q2Form):
         self.locales = [
             x["lang"] for x in q2cursor("select lang from locale", q2app.q2_app.db_logic).records()
         ]
-        for rec in q2cursor(collect_strings_sql, q2app.q2_app.db_logic).browse().records():
-            self.add_msg(rec)
+        for rec in q2cursor(collect_strings_sql, q2app.q2_app.db_logic).records():
+            self.add_msg(dict(rec))
         for x in q2cursor(collect_code_sql, q2app.q2_app.db_logic).records():
             words = extract_translatable(q2app.q2_app.code_compiler(x["msgid"])["script"])
             for rec in words:
-                self.add_msg(rec)
+                self.add_msg(dict(rec))
         self.refresh()
 
     def add_msg(self, rec):
         for lang in self.locales:
             rec["lang"] = lang
             msgid = rec["msgid"]
+            rec["msgstr"] = ""
             ensure_record(
                 table_name="locale_po",
                 where=f"msgid='{msgid}' and lang='{lang}'",
@@ -252,6 +253,37 @@ class Q2LocalePo(Q2Form):
     def create_form(self):
         self.add_control("id", "", datatype="int", pk="*", ai="*", nogrid=1, noform=1)
         self.add_control("lang", _("Language"), datatype="char", datalen=10, disabled=1, index=1)
-        self.add_control("msgid", _("Key"), datatype="char", datalen=220, disabled=1, index=1)
+        self.add_control("msgid", _("Key"), datatype="char", datalen=220, index=1)
         self.add_control("msgstr", _("Translation"), datatype="text")
         self.add_control("context", _("Context"), datatype="char", datalen=100, disabled=1)
+
+        self.add_action(
+            _("Key sources"),
+            self.sources1,
+            hotkey="F2",
+            eof_disabled=1,
+        )
+
+        self.add_action(
+            _("Translation sources"),
+            self.sources2,
+            hotkey="F3",
+            eof_disabled=1,
+        )
+
+        self.add_action(
+            _("All translations"),
+            self.all_transalitons,
+            hotkey="F4",
+            eof_disabled=1,
+        )
+
+    def sources1(self):
+        q2app.q2_app.run_finder(self.r.msgid)
+
+    def sources2(self):
+        q2app.q2_app.run_finder(self.r.msgstr)
+
+    def all_transalitons(self):
+        Q2LocalePo().run(where=f"msgid='{self.r.msgid}'")
+        self.refresh()

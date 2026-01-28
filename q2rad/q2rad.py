@@ -1277,7 +1277,7 @@ class Q2RadApp(Q2App):
     def run_locale(self):
         Q2Locale().run()
 
-    def run_finder(self):
+    def run_finder(self, search_string):
         class Q2Finder:
             def __init__(self, find_string):
                 self.find_string = find_string
@@ -1306,7 +1306,7 @@ class Q2RadApp(Q2App):
 
         finder = Q2Form("Finder")
 
-        finder.add_control("find_string", "Find string", datalen=150)
+        finder.add_control("find_string", "Find string", datalen=150, data=search_string)
         finder.add_control("/")
         finder.add_control("/h", "in")
         finder.add_control(
