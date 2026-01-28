@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-22 21:32+0100\n"
+"POT-Creation-Date: 2026-01-23 14:02+0100\n"
 "PO-Revision-Date: 2026-01-21 13:30+0100\n"
 "Last-Translator: Gemini\n"
 "Language-Team: none\n"
@@ -201,6 +201,7 @@ msgstr "Тип"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:35
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2queries.py:53
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:286
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:70
 msgid "Name"
 msgstr "Имя"
 
@@ -664,50 +665,51 @@ msgstr "Обновить"
 msgid "After close"
 msgstr "После закрытия"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:168
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:163
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:651
 msgid "Locale"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:183
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:178
 msgid "Translations"
 msgstr "Переводы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:190
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:185
 msgid "Collect"
 msgstr "Собрать"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:197
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:242
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:192
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:237
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:85
 msgid "Language"
 msgstr "Язык"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:198
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:193
 msgid "Name (English)"
 msgstr "Название (Английский)"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:199
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:194
 msgid "Native name"
 msgstr "Название (Родной язык)"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:200
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:195
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:122
 msgid "Disabled"
 msgstr "Отключено"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:227
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:222
 msgid "Tranlations"
 msgstr "Переводы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:243
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:238
 msgid "Key"
 msgstr "Ключ"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:244
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:239
 msgid "Translation"
 msgstr "Перевод"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:245
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:240
 msgid "Context"
 msgstr "контекст"
 
@@ -997,6 +999,7 @@ msgid "Vertical alignment"
 msgstr "Вертикальное выравнивание"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:840
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:50
 msgid "Font"
 msgstr "Шрифт"
 
@@ -1244,6 +1247,10 @@ msgstr "Это удалит все дочерние элементы! Продо
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:2625
 msgid "Remove rows?"
 msgstr "Удалить строки?"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:51
+msgid "Size"
+msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:75
 msgid "Change font"

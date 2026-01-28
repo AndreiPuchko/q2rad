@@ -258,7 +258,7 @@ class Q2LocalePo(Q2Form):
         self.add_control("context", _("Context"), datatype="char", datalen=100, disabled=1)
 
         self.add_action(
-            _("Key sources"),
+            _("Sources"),
             self.sources1,
             hotkey="F2",
             eof_disabled=1,

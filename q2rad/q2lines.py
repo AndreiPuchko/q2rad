@@ -184,7 +184,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 )
                 self.add_control(
                     "index",
-                    _("Make index"),
+                    _("Index"),
                     control="check",
                     datatype="char",
                     datalen=1,
