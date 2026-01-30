@@ -1374,6 +1374,33 @@ class Q2RadApp(Q2App):
             if form_dic[x]:
                 form_dic[x] = _(form_dic[x])
 
+        mem = form = Q2Form(form_dic["title"])
+        form._name = name
+        form.no_view_action = False if form_dic["view_action"] else True
+        form.ok_button = form_dic["ok_button"]
+        form.cancel_button = form_dic["cancel_button"]
+
+        form.valid = self.code_runner(form_dic["form_valid"], form)
+        form.form_refresh = self.code_runner(form_dic["form_refresh"], form)
+
+        form.after_form_closed = self.code_runner(form_dic["after_form_closed"], form)
+
+        form.before_form_build = self.code_runner(form_dic["before_form_build"], form)
+        form.before_grid_build = self.code_runner(form_dic["before_grid_build"], form)
+
+        form.before_form_show = self.code_runner(form_dic["before_form_show"], form)
+        form.after_form_show = self.code_runner(form_dic["after_form_show"], form)
+
+        form.before_grid_show = self.code_runner(form_dic["before_grid_show"], form)
+        form.after_grid_show = self.code_runner(form_dic["after_grid_show"], form)
+
+        form.before_crud_save = self.code_runner(form_dic["before_crud_save"], form)
+        form.after_crud_save = self.code_runner(form_dic["after_crud_save"], form)
+
+        form.before_delete = self.code_runner(form_dic["before_delete"], form)
+        form.after_delete = self.code_runner(form_dic["after_delete"], form)
+
+        # add controls
         sql = f"""
             select
                 `column`
@@ -1409,35 +1436,9 @@ class Q2RadApp(Q2App):
             order by seq
             """
         cu: Q2Cursor = q2cursor(sql, self.db_logic)
-
-        mem = form = Q2Form(form_dic["title"])
-        form._name = name
-        form.no_view_action = False if form_dic["view_action"] else True
-        form.ok_button = form_dic["ok_button"]
-        form.cancel_button = form_dic["cancel_button"]
-
-        form.valid = self.code_runner(form_dic["form_valid"], form)
-        form.form_refresh = self.code_runner(form_dic["form_refresh"], form)
-
-        form.after_form_closed = self.code_runner(form_dic["after_form_closed"], form)
-
-        form.before_form_build = self.code_runner(form_dic["before_form_build"], form)
-        form.before_grid_build = self.code_runner(form_dic["before_grid_build"], form)
-
-        form.before_form_show = self.code_runner(form_dic["before_form_show"], form)
-        form.after_form_show = self.code_runner(form_dic["after_form_show"], form)
-
-        form.before_grid_show = self.code_runner(form_dic["before_grid_show"], form)
-        form.after_grid_show = self.code_runner(form_dic["after_grid_show"], form)
-
-        form.before_crud_save = self.code_runner(form_dic["before_crud_save"], form)
-        form.after_crud_save = self.code_runner(form_dic["after_crud_save"], form)
-
-        form.before_delete = self.code_runner(form_dic["before_delete"], form)
-        form.after_delete = self.code_runner(form_dic["after_delete"], form)
-
-        # add controls
         for control in cu.records():
+            if control.get("noform") and control.get("nogrid"):
+                continue
             control["valid"] = self.code_runner(control["valid"], form)
             if control.get("_show"):
                 control["show"] = self.code_runner(control["_show"], form)

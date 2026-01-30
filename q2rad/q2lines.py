@@ -115,7 +115,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
             self.add_control("gridlabel", _("Grid label"), datatype="char", datalen=100)
             self.add_control("mess", _("Tooltip"), datatype="char", datalen=200)
             if self.add_control("/h"):
-                self.add_control("seq", _("Sequence number"), datatype="int")
+                self.add_control("seq", _("Sequence number"), datatype="int", index=1)
                 self.add_control("nogrid", _("No grid"), control="check", datalen=1)
                 self.add_control("noform", _("No form"), control="check", datalen=1)
                 self.add_control("check", _("Has checkbox"), control="check", datalen=1)
