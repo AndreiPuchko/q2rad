@@ -76,7 +76,7 @@ msgstr "Имя формы"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:223
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:237
 msgid "?"
-msgstr "?"
+msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:81
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:238
@@ -276,12 +276,12 @@ msgstr "Имя"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:284
 msgid "You are about to reinstall platform packages?"
-msgstr "Вы собираетесь переустановить программные пакеты платформы"
+msgstr "Вы собираетесь переустановить программные пакеты платформы. Уверены?"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:289
 msgid ""
 "You are about to reinstall platform packages from github.com! Are you sure?"
-msgstr "Вы собираетесь переустановить программыне пакеты платформы с GitHub"
+msgstr "Вы собираетесь переустановить программыне пакеты платформы с GitHub. Уверены?"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:298
 msgid "No App URL!"
@@ -1143,7 +1143,7 @@ msgstr "Добавить строку ниже"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1689
 msgid "Move row up"
-msgstr "Сдвинуть строку вверх?"
+msgstr "Сдвинуть строку вверх"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1690
 msgid "Move row down"
@@ -1151,7 +1151,7 @@ msgstr "Сдвинуть строку вниз"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1692
 msgid "Remove row"
-msgstr "Удалить строки?"
+msgstr "Удалить строки"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1694
 msgid "Merge selection"
@@ -1335,7 +1335,7 @@ msgstr "Вы уверены?"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:304
 msgid "Restore row"
-msgstr "Восстановить строки?"
+msgstr "Восстановить строки"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:308
 msgid "Info"
