@@ -1437,7 +1437,7 @@ class Q2RadApp(Q2App):
             """
         cu: Q2Cursor = q2cursor(sql, self.db_logic)
         for control in cu.records():
-            if control.get("noform") and control.get("nogrid"):
+            if control.get("noform") and control.get("nogrid") and not control.get("pk"):
                 continue
             control["valid"] = self.code_runner(control["valid"], form)
             if control.get("_show"):
