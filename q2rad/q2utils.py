@@ -360,8 +360,10 @@ class q2cursor(Q2Cursor):
     def q2form(self):
         form = Q2Form(self.sql)
         form.db = self._q2_db
+        form.add_control("/vr")
         for x in self.record(0):
             form.add_control(x, x, datalen=250)
+        form.add_control("/")
         form.set_model(Q2CursorModel(self))
         return form
 
