@@ -461,7 +461,7 @@ class Q2RadApp(Q2App):
         cu = q2cursor(
             """
                 select
-                    forms.form_table as `table`
+                    forms_.form_table as `table`
                     , `lines`.column
                     , `lines`.datatype
                     , `lines`.datalen
@@ -471,14 +471,27 @@ class Q2RadApp(Q2App):
                     , `lines`.related
                     , `lines`.ai
                     , `lines`.pk
-                from `lines`, forms
-                where forms.name = `lines`.name
+                    , `lines`.index
+                from `lines`, (select `name`, `form_table`, seq from forms where `form_table` <> ""
+
+                                union
+
+                                select `lines`.pic as `name`, `forms`.form_table as `table`, `forms`.seq
+                                from `lines`, `forms`
+                                where `lines`.name = `forms`.name
+                                    and control='form'
+                                    and `forms`.form_table <> ""
+                                    and pic<>"") forms_
+                where forms_.name = `lines`.name
                     and form_table <>'' and migrate <>''
-                order by forms.seq, `lines`.seq, forms.name
+                    and control <> 'form'
+                order by forms_.seq, forms_.name, `lines`.seq
                 """,
             self.db_logic,
         )
         for column in cu.records():
+            if column["column"].startswith("/"):
+                continue
             data_schema.add(**column)
         for form in (
             Q2Constants(),
@@ -1446,6 +1459,8 @@ class Q2RadApp(Q2App):
             for x in lines_translate:
                 if control[x]:
                     control[x] = _(control[x])
+            if control["control"] == "form":
+                control["widget"] = self.get_form(control["pic"])
             form.add_control(**control)
             run_module("_e_control", _locals=locals())
 

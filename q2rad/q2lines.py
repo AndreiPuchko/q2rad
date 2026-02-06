@@ -59,6 +59,7 @@ WIDGETS = (
     "spin",
     "image",
     "widget",
+    "form",
     "label",
 )
 # "date;"
@@ -73,7 +74,7 @@ WIDGETS = (
 # "toolbar;"
 # "toolbutton;"
 
-HAS_PIC = "radio;" "combo;" "list;" "line;"
+HAS_PIC = "radio;combo;list;line;form;"
 
 
 class Q2Lines(Q2Form, Q2_save_and_run):
@@ -139,6 +140,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                     datatype="char",
                     datalen=15,
                 )
+                self.add_control("pic_form", _("?"), control="button", migrate=0, valid=self.select_form_form)
                 self.add_control("pic", _("Control data"), datatype="char", datalen=250)
                 self.add_control("/")
 
@@ -334,6 +336,11 @@ return round_(num(price)*num(quantity), 0)""",
                     print(last_error(q2app.q2_app.db_logic))
             self.refresh()
 
+    def select_form_form(self):
+        choice = choice_form()
+        if choice:
+            self.s.pic = choice["name"]
+
     def get_next_sequence(self, form_name):
         seq = (
             int_(
@@ -503,6 +510,22 @@ return round_(num(price)*num(quantity), 0)""",
 
     def control_valid(self):
         self.w.pic.set_enabled(self.s.control in HAS_PIC)
+
+        if self.s.control == "form":
+            self.w.pic.label.set_visible(False)
+            self.w.pic_form.set_visible(True)
+
+            self.w.datatype.set_enabled(False)
+            self.w.datalen.set_enabled(False)
+            self.w.datadec.set_enabled(False)
+        else:
+            self.w.pic.label.set_visible(True)
+            self.w.pic_form.set_visible(False)
+
+            self.w.datatype.set_enabled(True)
+            self.w.datalen.set_enabled(True)
+            self.w.datadec.set_enabled(True)
+            self.datatype_valid()
 
     def database_valid(self):
         self.w.pk.set_enabled(self.s.migrate)
