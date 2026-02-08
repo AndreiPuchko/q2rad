@@ -437,7 +437,7 @@ class Q2RadApp(Q2App):
         else:
             self.set_title(f"{self.selected_application.get('name', '')}")
         self.run_module("autorun")
-        self.run_module("_autorun")
+        # self.run_module("_autorun")
 
         if go_to_q2market and (
             max(
@@ -1406,6 +1406,7 @@ class Q2RadApp(Q2App):
 
         form.before_grid_show = self.code_runner(form_dic["before_grid_show"], form)
         form.after_grid_show = self.code_runner(form_dic["after_grid_show"], form)
+        form.grid_index_changed = self.code_runner(form_dic["grid_index_changed"], form)
 
         form.before_crud_save = self.code_runner(form_dic["before_crud_save"], form)
         form.after_crud_save = self.code_runner(form_dic["after_crud_save"], form)
