@@ -195,6 +195,14 @@ class Q2Forms(Q2Form, Q2_save_and_run):
                 control="code",
             )
             self.add_control("/")
+            self.add_control("/v")
+            self.add_control(
+                "grid_index_changed",
+                label=_("On Current Row Change"),
+                nogrid="*",
+                control="code",
+            )
+            self.add_control("/")
 
         if self.add_control("/t", _("Form")):
             self.add_control("/vs")
