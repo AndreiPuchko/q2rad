@@ -304,6 +304,28 @@ class Q2Form(_Q2Form):
         form.add_action(_("Restore row"), lambda: restore(form), eof_disabled="*")
         form.run()
 
+    def open_raw_table(self):
+        table = self.model.get_table_name()
+        order = self.model.get_order()
+        where = self.model.get_where()
+        form_cursor: Q2Cursor = self.db.table(
+            table_name=table,
+            order=order,
+            where=where,
+        )
+        form_model = Q2CursorModel(form_cursor)
+
+        form = Q2Form(table)
+        form.db = self.db
+        form.add_control("/vr")
+        for x in form_cursor.get_record(0):
+            form.add_control(x, x, datalen=250)
+        form.add_control("/")
+        form.set_model(form_model)
+        form.add_action("/crud")
+        form.run()
+        self.refresh()
+
     def grid_data_info(self):
         form = Q2Form(_("Info"))
         form.add_control("/")
@@ -315,6 +337,10 @@ class Q2Form(_Q2Form):
         )
         form.add_control("order", _(q2app.GRID_DATA_INFO_ORDER), data=self.model.get_order(), readonly=True)
         form.add_control("where", _(q2app.GRID_DATA_INFO_FILTER), data=self.model.get_where(), readonly=True)
+        if self.model.get_table_name():
+            form.add_control(
+                "go_table", _("Raw table"), control="button", datalen=15, valid=self.open_raw_table
+            )
         form.add_control("/")
         form.add_control(
             "columns",
