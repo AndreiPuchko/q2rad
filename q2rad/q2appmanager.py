@@ -542,7 +542,7 @@ class AppManager(Q2Form):
         db.transaction()
 
         # prepare locale tables
-        for lang in [x["lang"] for x in data["locale"]]:
+        for lang in [x["lang"] for x in data.get("locale", {})]:
             db.cursor(f'delete from `locale` where lang="{lang}"')
             db.cursor(f'delete from `locale_po` where lang="{lang}"')
 
