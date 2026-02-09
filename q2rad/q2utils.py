@@ -337,10 +337,11 @@ class Q2Form(_Q2Form):
         )
         form.add_control("order", _(q2app.GRID_DATA_INFO_ORDER), data=self.model.get_order(), readonly=True)
         form.add_control("where", _(q2app.GRID_DATA_INFO_FILTER), data=self.model.get_where(), readonly=True)
-        if self.model.get_table_name():
-            form.add_control(
-                "go_table", _("Raw table"), control="button", datalen=15, valid=self.open_raw_table
-            )
+        if q2app.q2_app.dev_mode:
+            if self.model.get_table_name():
+                form.add_control(
+                    "go_table", _("Raw table"), control="button", datalen=15, valid=self.open_raw_table
+                )
         form.add_control("/")
         form.add_control(
             "columns",
