@@ -471,7 +471,7 @@ class Q2RadApp(Q2App):
                     , `lines`.related
                     , `lines`.ai
                     , `lines`.pk
-                    , `lines`.index
+                    , `lines`.`index`
                 from `lines`, (select `name`, `form_table`, seq from forms where `form_table` <> ""
 
                                 union
