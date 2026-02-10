@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-28 10:36+0100\n"
+"POT-Creation-Date: 2026-01-28 12:33+0100\n"
 "PO-Revision-Date: 2026-01-28 12:40+0100\n"
 "Last-Translator: Gemini AI\n"
 "Language-Team: German\n"
@@ -281,7 +281,8 @@ msgstr "Sie sind dabei, die Plattform-Pakete neu zu installieren?"
 msgid ""
 "You are about to reinstall platform packages from github.com! Are you sure?"
 msgstr ""
-"Sie sind dabei, Plattform-Pakete von github.com neu zu installieren! Sind Sie sicher?"
+"Sie sind dabei, Plattform-Pakete von github.com neu zu installieren! Sind "
+"Sie sicher?"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:298
 msgid "No App URL!"
@@ -1137,7 +1138,7 @@ msgstr "Bearbeiten"
 msgid "Add row above"
 msgstr "Zeile darüber hinzufügen"
 
-#: q2rad\q2rad\q2reports.py:1687
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1687
 msgid "Add row below"
 msgstr "Zeile unterhalb hinzufügen"
 
@@ -1295,7 +1296,9 @@ msgstr "Änderungsprotokoll"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:253
 msgid "Select viewing mode for changelog: only current row or all rows?"
-msgstr "Anzeigemodus für Änderungsprotokoll wählen: nur aktuelle Zeile oder alle Zeilen?"
+msgstr ""
+"Anzeigemodus für Änderungsprotokoll wählen: nur aktuelle Zeile oder alle "
+"Zeilen?"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:255
 msgid "Cancel"
