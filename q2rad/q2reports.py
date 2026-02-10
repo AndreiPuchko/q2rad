@@ -660,7 +660,7 @@ class Q2ReportReport(Q2Form):
                 self.add_control("", control="toolbar", tag="report_action", actions=actions)
                 self.add_control(
                     "efs",
-                    "Editors font size",
+                    "Editor font size",
                     datatype="int",
                     control="spin",
                     data=8,
