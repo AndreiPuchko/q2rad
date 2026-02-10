@@ -335,6 +335,17 @@ class Q2RadApp(Q2App):
 
     def install_binary_build(self):
         if self.frozen and self.binary_url:
+            if os.path.isfile(sfx_path := os.path.join("..", f"{os.path.basename(self.binary_url)}.exe")):
+                if (
+                    q2ask(
+                        _(
+                            "An installation file was detected. "
+                            "It is no longer needed. Do you want to delete it?"
+                        )
+                    )
+                    == 2
+                ):
+                    os.remove(sfx_path)
             _new_binary_build = read_url(f"{self.binary_url}.ver").decode("utf8")
             if _new_binary_build > self.binary_build:
                 if (
