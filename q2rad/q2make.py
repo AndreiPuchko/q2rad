@@ -207,6 +207,7 @@ app.run()
     packages = " ".join(
         [f" --collect-data {x['name']}" for x in q2cursor(get_packages_sql, self.db_logic).records()]
     )
+    packages += " ".join(f" --collect-data {x}" for x in ["q2rad", "q2gui"])
     packages += " --collect-all pip "
     terminal.run(f"cd '{make_folder}'")
     w = q2wait()
