@@ -371,10 +371,11 @@ class Q2RadApp(Q2App):
                     self.close()
 
     def subwindow_count_changed(self):
-        if super().subwindow_count_changed() == 0:
+        if (swc := super().subwindow_count_changed()) == 0:
             self.enable_menu("File|Open")
         else:
             self.disable_menu("File|Open")
+        return swc
 
     def on_new_tab(self):
         if self.db_logic is not None:
