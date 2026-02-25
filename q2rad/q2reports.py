@@ -646,7 +646,7 @@ class Q2ReportReport(Q2Form):
         if self.add_control("/h"):
             self.add_control("anchor2", "**", control="label", nogrid=1)
             self.add_control("/")
-        if self.add_control("/h"):
+        if self.add_control("/h", tag="report_editor_container"):
             if self.add_control("/v"):
                 self.add_control("/h")
                 self.add_control(
@@ -1123,6 +1123,7 @@ class Q2ReportReport(Q2Form):
             self.anchor2.add_widget_below(w)
             w.show()
             self.content_editor.hide_all()
+            self.w.report_editor_container.set_size_policy("preferred", "preferred")
             self.w.style_panel.set_size_policy("maximum", "preffered")
             # self.style_button_pressed()
 
