@@ -1,3 +1,12 @@
+* report module
+```python
+seller_id = get("invoices", f"id = {rep.params.get('id')}", "seller_id")
+
+import get_bank_data
+
+sb=dotdict(get_bank_data(seller_id))
+```
+
 * run form and get selected row
 ```python
 myform = get_form("text_fragments")
