@@ -220,7 +220,7 @@ class Q2RadReport(Q2Report):
 
     def run(self, output_file="temp/repo.html", open_output_file=True):
         from q2rad.q2rad import run_module, run_form, get_form, get_report
-
+        rep = self
         _globals = {}
         _globals.update(locals())
 
@@ -248,26 +248,10 @@ class Q2RadReport(Q2Report):
             return real_worker
 
         if _module := self.report_content.get("module"):
-            code = q2app.q2_app.code_compiler(_module)
-            if code["code"]:
-                _globals.update(globals())
-                try:
-                    exec(code["code"], _globals)
-                    for key, value in _globals.items():
-                        self.set_data(value, key)
-                except Exception as error:
-                    from q2rad.q2rad import explain_error
-
-                    _logger.error(f"{error}")
-                    explain_error()
-            else:
-                msg = code["error"]
-                if threading.current_thread() is threading.main_thread():
-                    q2mess(f"{msg}".replace("\n", "<br>").replace(" ", "&nbsp;"))
-                print(f"{msg}")
-                print("-" * 25)
-                _logger.error(msg)
-                return
+            _globals.update(globals())
+            run_module(script=_module, _locals=_globals)
+            for key, value in _globals.items():
+                self.set_data(value, key)
 
         q2working(worker(), "W o r k i n g")
 
@@ -521,7 +505,7 @@ class Q2ContentEditor(Q2Form):
     def hide_all(self):
         if self.first_run and self.w.root:
             self.first_run = None
-            self.w.root.set_fixed_height(1.1)
+            self.w.root.set_fixed_height(1.3)
         self.hide_rows()
         self.hide_width()
         self.hide_height()
