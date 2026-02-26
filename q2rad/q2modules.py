@@ -86,6 +86,7 @@ class Q2Modules(Q2Form, Q2_save_and_run):
                 'myapp.app_description = "',
                 'myapp.app_title = "',
                 'myapp.binary_url = "',
+                'myapp.homepage_url = "',
             ]:
                 if x not in self.s.script:
                     self.s.script = x + '"\n' + self.s.script

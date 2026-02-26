@@ -304,6 +304,7 @@ class Q2RadApp(Q2App):
 
     def clear_app_info(self):
         self.app_url = None
+        self.homepage_url = None
         self.app_title = ""
         self.app_version = ""
         self.app_description = ""
@@ -703,7 +704,11 @@ class Q2RadApp(Q2App):
             about.append(f"<i>{self.app_description}</i>")
         if self.app_version:
             about.append(f"Uploaded: {self.app_version}")
-        if self.app_url:
+        if self.homepage_url:
+            about.append("")
+            about.append(f"""Homepage: <u><a href="{self.homepage_url}">{self.homepage_url}</a></u>""")
+            about.append("")
+        if self.app_url and not self.frozen:
             about.append(f"URL: <u>{self.app_url}</u>")
         about.append("")
         if self.binary_build:
