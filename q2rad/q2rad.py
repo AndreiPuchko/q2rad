@@ -1916,28 +1916,36 @@ class Q2RadApp(Q2App):
             return {"code": False, "error": err, "script": preprocessed}
 
     def code_runner(self, script, form=None, __name__="__main__"):
-        _form = form
+        class _Q2RadScriptRunner:
+            __slots__ = ("app", "script", "form", "name")
 
-        # to provide return ability for exec
-        def real_runner(**args):
-            __locals_dict = {
-                "RETURN": None,
-                "ReturnEvent": ReturnEvent,
-                "num": num,
-                "_logger": _logger,
-                "mem": _form,
-                "form": _form,
-                "self": self,
-                "q2_app": self,
-                "myapp": self,
-                "__name__": __name__,
-            }
-            for x in args:
-                __locals_dict[x] = args[x]
-            globals()["q2_app"] = self
-            return run_module(script=script, _locals=__locals_dict)
+            def __init__(self, app, script, form, name):
+                self.app = app
+                self.script = script
+                self.form = form
+                self.name = name
 
-        return real_runner
+            def __call__(self, **args):
+                locals_dict = {
+                    "RETURN": None,
+                    "ReturnEvent": ReturnEvent,
+                    "num": num,
+                    "_logger": _logger,
+                    "mem": self.form,
+                    "form": self.form,
+                    "self": self.app,
+                    "q2_app": self.app,
+                    "myapp": self.app,
+                    "__name__": self.name,
+                }
+
+                locals_dict.update(args)
+
+                globals()["q2_app"] = self.app
+
+                return run_module(script=self.script, _locals=locals_dict)
+
+        return _Q2RadScriptRunner(self, script, form, __name__)
 
     def run_module(self, name=""):
         return run_module(name)
