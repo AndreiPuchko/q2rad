@@ -18,7 +18,7 @@ import sys
 from q2db.cursor import Q2Cursor
 from q2db.db import Q2Db
 from q2gui.q2model import Q2CursorModel
-from q2gui.q2utils import int_, num, add_days
+from q2gui.q2utils import int_, num, add_days, diff_days_iso
 from q2gui import q2app
 from q2gui.q2dialogs import q2Mess, Q2WaitShow
 
