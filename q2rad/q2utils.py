@@ -634,6 +634,7 @@ class auto_filter:
             if make_tabs and cu.current_row() % self.lines_per_tab == 0:
                 self.mem.add_control("/t", f"={1 + cu.current_row() // self.lines_per_tab}")
                 self.mem.add_control("/f")
+            col["readonly"] = ""
             if col["control"] == "text":
                 col["control"] = "line"
                 col["datatype"] = "char"
