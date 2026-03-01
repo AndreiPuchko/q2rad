@@ -1,3 +1,16 @@
+* Form - run other form (custm filter/title/etc)
+```python
+#  in Before Form Show script
+where_list = []
+where_list.append(f"invoice_date >= '{const.date1}'")
+where_list.append(f"invoice_date <= '{const.date2}'")
+where_string = " and ".join(where_list)
+frm = get_form("invoices", where=where_string)
+frm.title= frm.title + f" [{format_date(const.date1)} - {format_date(const.date2)}]"
+frm.run()
+return False
+```
+
 * report module
 ```python
 seller_id = get("invoices", f"id = {rep.params.get('id')}", "seller_id")
@@ -70,11 +83,14 @@ for x in mem.controls:
         if mem.w.__getattr__(column).meta.get("check") and not mem.w.__getattr__(column).check.is_checked():
             mem.s.__setattr__(column, "")
         const.__setattr__(column, mem.s.__getattr__(column))```
+```
 
 * auto_filter form
 ```python
 #  in Build script
 auto_filter("sales", mem)
+# or
+auto_filter("invoices", mem=mem, dev=1)
 #  in Before Form Show script - initiate control value and turn it on
 mem.s.date____1=const.date1  # _*4
 mem.s.date____2 = const.date2
