@@ -242,7 +242,7 @@ def explain_error(tb=None, errtype=None):
     print(f"{msg}")
     print("-" * 25)
     _logger.error(msg)
-    if threading.current_thread() is threading.main_thread():
+    if threading.current_thread() is threading.main_thread() and "wrapped C/C++" not in msg:
         q2Mess(f"""{msg}""".replace("\n", "<br>").replace(" ", "&nbsp;").replace("\t", "&nbsp;" * 4))
     return msg
 
