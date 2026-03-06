@@ -145,7 +145,7 @@ def make_binary(self):
     # form.add_control("onefile", "One file", datatype="char", control="check")
     form.ok_button = 1
     form.cancel_button = 1
-    form.show_form("Build binary")
+    form.run_modal("Build binary")
     if not form.ok_pressed:
         return
 

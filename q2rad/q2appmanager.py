@@ -372,7 +372,7 @@ class AppManager(Q2Form):
             ftp_creds.add_control("password", _("Password"), pic="*", datalen=100, data=password)
             ftp_creds.ok_button = 1
             ftp_creds.cancel_button = 1
-            ftp_creds.run()
+            ftp_creds.run_modal()
             if ftp_creds.ok_pressed:
                 try:
                     ftp_upload([app_file_json, app_file_version], server, workdir, login, password)
@@ -463,7 +463,7 @@ class AppManager(Q2Form):
             valid=lambda: [st.s.__setattr__(x, 0 if st.s.__getattr__(x) else 1) for x in get_widgets()],
         )
         st.add_control("/")
-        st.run()
+        st.run_modal()
 
         if st.ok_pressed:
             self.selected_tables = [

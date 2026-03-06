@@ -143,7 +143,7 @@ class Q2Queries(Q2Form, Q2_save_and_run):
         )
         form.ok_button = 1
         form.cancel_button = 1
-        form.run()
+        form.run_modal()
         if form.ok_pressed:
             self.model.update({"name": self.r.name, "content": form.s.json})
             self.set_grid_index(self.current_row)

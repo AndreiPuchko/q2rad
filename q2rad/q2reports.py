@@ -153,11 +153,12 @@ class Q2RadReport(Q2Report):
 
             def repo_edit():
                 report_edit_form = Q2ReportEdit()
+                report_edit_form.non_modal = True
                 report_edit_form.after_form_show = lambda: report_edit_form.set_content(self.report_content)
                 report_edit_form.data.update(self.data)
                 report_edit_form.data_sets.update(self.data_sets)
                 report_edit_form.run()
-                form.close()
+                # form.close()
 
             if q2app.q2_app.dev_mode:
                 form.add_control("/s")
@@ -170,7 +171,7 @@ class Q2RadReport(Q2Report):
 
             form.cancel_button = 1
             form.do_not_save_geometry = 1
-            form.run()
+            form.run_modal()
             if form.heap.mode:
                 rez_name = f"temp/repo.{form.heap.mode}"
             else:
@@ -220,6 +221,7 @@ class Q2RadReport(Q2Report):
 
     def run(self, output_file="temp/repo.html", open_output_file=True):
         from q2rad.q2rad import run_module, run_form, get_form, get_report
+
         rep = self
         _globals = {}
         _globals.update(locals())
@@ -230,6 +232,13 @@ class Q2RadReport(Q2Report):
         self.data_cursors = {}
 
         data = {}
+        _prev_nav_state = q2app.q2_app.get_navigation_state()
+        # print(_prev_nav_state)
+        # q2app.q2_app.disable_toolbar(True)
+        # q2app.q2_app.disable_menubar(True)
+        # q2app.q2_app.disable_tabbar(True)
+        q2app.q2_app.disable_navigation()
+        
 
         def worker():
             def real_worker():
@@ -253,9 +262,16 @@ class Q2RadReport(Q2Report):
             for key, value in _globals.items():
                 self.set_data(value, key)
 
+        # print(q2app.q2_app.get_navigation_state())
         q2working(worker(), "W o r k i n g")
+        # print(q2app.q2_app.get_navigation_state())
+        res = super().run(output_file, data=data, open_output_file=open_output_file)
+        q2app.q2_app.set_navigation_state(_prev_nav_state)
+        # q2app.q2_app.enable_toolbar(_prev_toolbar_enabled)
+        # q2app.q2_app.enable_menubar(_prev_menubar_enabled)
+        # q2app.q2_app.enable_tabbar(_prev_tabbar_enabled)
 
-        return super().run(output_file, data=data, open_output_file=open_output_file)
+        return res
 
 
 class Q2Reports(Q2Form, Q2_save_and_run):
@@ -323,7 +339,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         )
         form.ok_button = 1
         form.cancel_button = 1
-        form.run()
+        form.run_modal()
         if form.ok_pressed:
             self.model.update({"name": self.r.name, "content": form.s.json})
             self.set_grid_index(self.current_row)
@@ -1486,7 +1502,7 @@ class Q2ReportColumns(Q2Form, ReportForm):
         form.add_control("/s")
         form.ok_button = 1
         form.cancel_button = 1
-        form.run()
+        form.run_modal()
         if form.ok_pressed:
             self.columns_data.widths[self.columns_sheet.current_column()] = (
                 f"{form.s.w}{'%' if form.s.p == '*' else ''}"
@@ -2063,7 +2079,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         # form.w._ok_button.set_focus()
 
         # form.after_form_show = after_form_show
-        form.run()
+        form.run_modal()
         if form.ok_pressed:
             if key not in self.rows_data.cells:
                 self.rows_data.cells[key] = {}
@@ -2179,7 +2195,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         )
         form.add_control("/")
 
-        form.run()
+        form.run_modal()
         if form.ok_pressed:
             # proceed = False23
             last_role = self.rows_data.role

@@ -160,6 +160,10 @@ def run_module(module_name=None, _globals={}, _locals={}, script="", import_only
                     "__name__": __name__,
                 }
             )
+            _prev_modal_mode = q2app.q2_app.modal_mode
+            _prev_nav_state = q2app.q2_app.get_navigation_state()
+            if not _prev_modal_mode and ".ok_pressed" in script:
+                q2app.q2_app.disable_navigation()
             try:
                 if _locals:
                     exec(code["code"], _globals, _locals)
@@ -171,6 +175,12 @@ def run_module(module_name=None, _globals={}, _locals={}, script="", import_only
                 pass
             except Exception as error:
                 explain_error()
+            finally:
+                if not _prev_modal_mode:
+                    q2app.q2_app.enable_navigation()
+                else:
+                    q2app.q2_app.set_navigation_state(_prev_nav_state)
+                    
 
     if ext_modules:
         res = None
@@ -572,7 +582,7 @@ class Q2RadApp(Q2App):
         ac.ok_button = 1
         ac.cancel_button = 1
         ac.after_form_show = lambda: ac.w.password.set_focus()
-        ac.run()
+        ac.run_modal()
         if ac.ok_pressed:
             self.last_root_password = ac.s.password
             return (ac.s.user, ac.s.password)
@@ -719,7 +729,7 @@ class Q2RadApp(Q2App):
         if text:
             about.append(text)
         about.append(f"<b>Python</b>: {sys.version}<p>")
-
+        self.disable_navigation()
         if not self.frozen:
             about.append("Versions:")
             about.append("<b>q2RAD</b>")
@@ -738,6 +748,7 @@ class Q2RadApp(Q2App):
                 about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
 
         q2Mess("<br>".join(about))
+        self.enable_navigation()
 
     def asset_file_loader(self, name):
         if name.endswith(".svg"):

@@ -306,7 +306,7 @@ class Q2AppSelect(Q2Form):
         pform.valid = valid
         pform.ok_button = 1
         pform.cancel_button = 1
-        pform.run()
+        pform.run_modal()
 
         if pform.ok_pressed:
             if pform.s.user1 == "" and pform.s.pass1 == "":
@@ -334,7 +334,7 @@ class Q2AppSelect(Q2Form):
         #     pinform.w.appname.set_style_sheet("color:green;font-weight:bold")
 
         # pinform.before_form_show = before_form_show
-        pinform.run()
+        pinform.run_modal()
         if pinform.ok_pressed:
             return pinform.s.pin
         else:
