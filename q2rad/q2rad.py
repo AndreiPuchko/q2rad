@@ -164,6 +164,7 @@ def run_module(module_name=None, _globals={}, _locals={}, script="", import_only
             _prev_nav_state = q2app.q2_app.get_navigation_state()
             if not _prev_modal_mode and ".ok_pressed" in script:
                 q2app.q2_app.disable_navigation()
+                q2app.q2_app.set_modal_mode()
             try:
                 if _locals:
                     exec(code["code"], _globals, _locals)
@@ -177,9 +178,8 @@ def run_module(module_name=None, _globals={}, _locals={}, script="", import_only
                 explain_error()
             finally:
                 if not _prev_modal_mode:
-                    q2app.q2_app.enable_navigation()
-                else:
-                    q2app.q2_app.set_navigation_state(_prev_nav_state)
+                    q2app.q2_app.set_modal_mode(_prev_modal_mode)
+                q2app.q2_app.set_navigation_state(_prev_nav_state)
                     
 
     if ext_modules:
@@ -397,12 +397,13 @@ class Q2RadApp(Q2App):
     def open_application(self, autoload_enabled=False):
         self.selected_application = {}
         self.set_title("Open Application")
-        Q2AppSelect().run(autoload_enabled)
+        Q2AppSelect()._run(autoload_enabled)
         if self.selected_application != {}:
             self.open_selected_app(True, migrate_db_data=True)
             if self.check_app_update() or self.check_ext_update():
                 self.open_selected_app()
             self.on_new_tab()
+            self.enable_navigation()
         else:
             self.close()
         self.subwindow_count_changed()
@@ -729,7 +730,7 @@ class Q2RadApp(Q2App):
         if text:
             about.append(text)
         about.append(f"<b>Python</b>: {sys.version}<p>")
-        self.disable_navigation()
+        _prev_navi_state = self.disable_navigation()
         if not self.frozen:
             about.append("Versions:")
             about.append("<b>q2RAD</b>")
@@ -746,9 +747,8 @@ class Q2RadApp(Q2App):
                     latest_version_text = _(" (Can't load package info)")
 
                 about.append(f"<b>{package}</b>: {current_version}{latest_version_text}")
-
         q2Mess("<br>".join(about))
-        self.enable_navigation()
+        self.set_navigation_state(_prev_navi_state)
 
     def asset_file_loader(self, name):
         if name.endswith(".svg"):

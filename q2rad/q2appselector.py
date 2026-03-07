@@ -511,7 +511,7 @@ class Q2AppSelect(Q2Form):
         if self._select_application(self.model.get_record(self.current_row)):
             self.close()
 
-    def run(self, autoload_enabled=True):
+    def _run(self, autoload_enabled=True):
         q2_app: Q2App = q2app.q2_app
         q2_app.clear_menu()
         q2_app.build_menu()
@@ -529,4 +529,4 @@ class Q2AppSelect(Q2Form):
             if cu.row_count() > 0:
                 if self._select_application(cu.record(0)):
                     return False
-        super().run()
+        super().run_modal()

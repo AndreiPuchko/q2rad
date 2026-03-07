@@ -189,12 +189,6 @@ class Q2RadReport(Q2Report):
                         co += 1
                         rez_name = f"{name}{co:03d}{ext}"
                         continue
-                # lockfile = f"{os.path.dirname(rez_name)}/.~lock.{os.path.basename(rez_name)}#"
-                # if os.path.isfile(lockfile):
-                #     co += 1
-                #     rez_name = f"{name}{co:03d}{ext}"
-                # else:
-                #     break
                 break
         return rez_name
 
@@ -219,6 +213,14 @@ class Q2RadReport(Q2Report):
             self.last_focus_widget.set_focus()
         q2app.q2_app.process_events()
 
+    def _cover_show(self):
+        self._cover_form = Q2Form(_("Wait..."))
+        self._cover_form.run()
+        self._cover_form.widget().parent().hide()
+
+    def _cover_close(self):
+        self._cover_form.close()
+
     def run(self, output_file="temp/repo.html", open_output_file=True):
         from q2rad.q2rad import run_module, run_form, get_form, get_report
 
@@ -226,19 +228,16 @@ class Q2RadReport(Q2Report):
         _globals = {}
         _globals.update(locals())
 
+        self._cover_show()
+
         output_file = self.prepare_output_file(output_file)
         if not output_file:
+            self._cover_close()
             return
         self.data_cursors = {}
 
         data = {}
-        _prev_nav_state = q2app.q2_app.get_navigation_state()
-        # print(_prev_nav_state)
-        # q2app.q2_app.disable_toolbar(True)
-        # q2app.q2_app.disable_menubar(True)
-        # q2app.q2_app.disable_tabbar(True)
-        q2app.q2_app.disable_navigation()
-        
+        _prev_nav_state = q2app.q2_app.disable_navigation()
 
         def worker():
             def real_worker():
@@ -262,14 +261,10 @@ class Q2RadReport(Q2Report):
             for key, value in _globals.items():
                 self.set_data(value, key)
 
-        # print(q2app.q2_app.get_navigation_state())
         q2working(worker(), "W o r k i n g")
-        # print(q2app.q2_app.get_navigation_state())
         res = super().run(output_file, data=data, open_output_file=open_output_file)
+        self._cover_close()
         q2app.q2_app.set_navigation_state(_prev_nav_state)
-        # q2app.q2_app.enable_toolbar(_prev_toolbar_enabled)
-        # q2app.q2_app.enable_menubar(_prev_menubar_enabled)
-        # q2app.q2_app.enable_tabbar(_prev_tabbar_enabled)
 
         return res
 
