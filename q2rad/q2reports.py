@@ -160,14 +160,14 @@ class Q2RadReport(Q2Report):
                 report_edit_form.run()
                 # form.close()
 
-            if q2app.q2_app.dev_mode:
-                form.add_control("/s")
-                form.add_control("/h")
-                form.add_control("/s")
-                form.add_control("edit", "Edit", control="button", datalen=8, valid=repo_edit)
-                form.add_control("/s")
-                form.add_control("/")
-                form.add_control("/s")
+            # if q2app.q2_app.dev_mode:
+            form.add_control("/s")
+            form.add_control("/h")
+            form.add_control("/s")
+            form.add_control("edit", "Edit", control="button", datalen=8, valid=repo_edit)
+            form.add_control("/s")
+            form.add_control("/")
+            form.add_control("/s")
 
             form.cancel_button = 1
             form.do_not_save_geometry = 1
@@ -415,8 +415,6 @@ class Q2ReportEdit(Q2Form):
         if q2app.q2_app.dev_mode:
             self.add_control("/t", "Query")
             self.add_control("ql", "", widget=self.query_edit, nogrid=1, migrate=0)
-            # self.add_control("/t", "Setup")
-            # self.add_control("before_script", "", control="code")
             self.add_control("/t", "Module")
             self.add_control("module", "", control="code")
             self.add_control("/t", "Comment")
