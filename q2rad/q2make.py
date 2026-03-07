@@ -186,6 +186,7 @@ app = Q2RadApp()
 app.binary_build = "{binary_build}"
 app.binary_url = "{binary_url}"
 app.app_title = "{q2app.q2_app.app_title}"
+app.dev_mode = False
 app.run()
     """
     open(f"{make_folder}/{binary_name}.py", "w").write(main)
