@@ -39,7 +39,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
 
         self.add_action("/crud")
         # self.add_seq_actions()
-        self.add_action("Run", self.form_runner, hotkey="F4", tag="orange")
+        self.add_action(_("Run"), self.form_runner, hotkey="F4", tag="orange")
         self.add_action("Copy to", icon="❖", worker=self.copy_to)
 
     def create_form(self):
@@ -148,7 +148,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         self.system_controls.insert(2, self._save_and_run_control)
 
     def form_runner(self):
-        self.prev_form.run_action("Run")
+        self.prev_form.run_action(_("Run"))
 
     def copy_to(self):
         rows = self.get_grid_selected_rows()

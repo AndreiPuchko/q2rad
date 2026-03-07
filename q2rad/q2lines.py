@@ -92,7 +92,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         self.add_action("/crud")
         # self.add_seq_actions()
 
-        self.add_action("Run", self.form_runner, hotkey="F4", tag="orange")
+        self.add_action(_("Run"), self.form_runner, hotkey="F4", tag="orange")
         self.add_action("Fill from DB", self.filler)
         self.add_action("Fill from CSV", self.csv_filler)
         self.add_action("-")
@@ -495,7 +495,7 @@ return round_(num(price)*num(quantity), 0)""",
             self.s.ai = ""
 
     def form_runner(self):
-        self.prev_form.run_action("Run")
+        self.prev_form.run_action(_("Run"))
 
     def before_form_show(self):
         if self.crud_mode == "NEW" and self.prev_form and self.prev_form.r.form_table:
