@@ -439,20 +439,20 @@ class Q2RadApp(Q2App):
             _logger.info("The local MySQL 5.5 server has terminated.")
 
     def open_selected_app(self, go_to_q2market=False, migrate_db_data=True):
-        wait = Q2WaitShow(5, "Loading app> ")
-        wait.step("Prepare")
+        wait = Q2WaitShow(5, _("Loading app> "))
+        wait.step(_("Prepare"))
         self.clear_app_info()
-        wait.step("Migrate logic DB")
+        wait.step(_("Migrate logic DB"))
         self.migrate_db_logic(self.db_logic)
         if migrate_db_data:
-            wait.step("Migrate data DB")
+            wait.step(_("Migrate data DB"))
             self.migrate_db_data()
         else:
-            wait.step("Create menus")
+            wait.step(_("Create menus"))
             self.create_menu()
-        wait.step("looking for updates")
+        wait.step(_("Looking for updates"))
         self.process_events()
-        wait.step("Done!")
+        wait.step(_("Done!"))
         wait.close()
         self.update_app_packages()
 
