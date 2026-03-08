@@ -366,7 +366,7 @@ class Q2Form(_Q2Form):
                     where = "" if where == "" else f" where {where}"
                     order = self.model.get_order()
                     order = "" if order == "" else f" order by {order}"
-                    query = f"select * from {query} {where} {order}"
+                    query = f"select * from `{query}` {where} {order}"
                 form.query_edit.set_content({"queries": {"query": query}})
 
             form.after_form_show = after_form_show
