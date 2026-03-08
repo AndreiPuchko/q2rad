@@ -148,7 +148,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         self.system_controls.insert(2, self._save_and_run_control)
 
     def form_runner(self):
-        self.prev_form.run_action(_("Run"))
+        self.q2_app.run_form(self.r.name)        
 
     def copy_to(self):
         rows = self.get_grid_selected_rows()

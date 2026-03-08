@@ -495,7 +495,7 @@ return round_(num(price)*num(quantity), 0)""",
             self.s.ai = ""
 
     def form_runner(self):
-        self.prev_form.run_action(_("Run"))
+        self.q2_app.run_form(self.r.name)
 
     def before_form_show(self):
         if self.crud_mode == "NEW" and self.prev_form and self.prev_form.r.form_table:
