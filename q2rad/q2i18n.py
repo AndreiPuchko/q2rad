@@ -226,7 +226,7 @@ class Q2Locale(Q2Form):
     def add_msg(self, rec):
         for lang in self.locales:
             rec["lang"] = lang
-            msgid = rec["msgid"]
+            msgid = rec["msgid"].rstrip()
             rec["msgstr"] = ""
             ensure_record(
                 table_name="locale_po",
