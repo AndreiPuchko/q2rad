@@ -1,3 +1,11 @@
+* widget - valid script variables
+```python
+is_changed
+data
+widget
+widget.last_data
+```
+
 * Form - run other form (custm filter/title/etc)
 ```python
 #  in Before Form Show script
