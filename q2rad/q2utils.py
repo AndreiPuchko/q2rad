@@ -441,7 +441,7 @@ def q2choice(records=[], title=_("Make your choice"), column_title=["Column"]):
         tag="select",
         eof_disabled=1,
     )
-    setta.run()
+    setta.run_modal()
     if setta.heap.selected is not None:
         return setta.model.get_record(setta.heap.selected_row)
     else:
