@@ -268,7 +268,21 @@ app.run()
 
         if os.path.isfile(send_build_file := f"send_build_{binary_name}.bat"):
             if q2ask("Send build to web?") == 2:
-                subprocess.run(send_build_file, check=True)
+                red_on = "<font color=red size=+1>"
+                red_off = "</font"
+
+                result = subprocess.run(send_build_file, capture_output=True, text=True)
+
+                if result.returncode == 0:
+                    q2mess(_(f"Successfully sent build to the website.\n\n{result.stdout}"))
+                else:
+                    q2mess(
+                        (
+                            _(f"{red_on}Failed to send build to the website.{red_off}\n\n\n\n")
+                            + _(f"Stdout: {result.stdout}\n\n")
+                            + _(f"Exit code: {result.returncode}")
+                        )
+                    )
 
     w.close()
     print("Done")
