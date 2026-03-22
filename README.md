@@ -30,9 +30,13 @@ and download file for your OS:
 
 
 ## Install & run - Python script
-**Windows**
+**Windows (wget)**
 ```bash
 wget https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py  -O get-q2rad.py | py get-q2rad.py; del get-q2rad.py
+```
+**Windows (curl)**
+```bash
+curl https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad.py | python
 ```
 **Linux**
 ```bash
