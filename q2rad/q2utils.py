@@ -361,7 +361,7 @@ class Q2Form(_Q2Form):
 
             def after_form_show():
                 query = self.model.get_table_name()
-                if not query.strip().lower().startswith("select "):
+                if not query.strip().lower().replace("\n", " ").startswith("select "):
                     where = self.model.get_where()
                     where = "" if where == "" else f" where {where}"
                     order = self.model.get_order()
