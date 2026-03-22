@@ -72,7 +72,7 @@ from q2rad.q2i18n import (
     get_tranlations,
 )
 from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder, open_document  # noqa F401
-from q2rad.q2utils import q2choice, tr, clear_i18n_cache
+from q2rad.q2utils import tr, clear_i18n_cache
 from q2rad.q2make import make_binary
 
 from q2data2docx.q2data2docx import q2data2docx  # noqa F401
@@ -180,7 +180,6 @@ def run_module(module_name=None, _globals={}, _locals={}, script="", import_only
                 if not _prev_modal_mode:
                     q2app.q2_app.set_modal_mode(_prev_modal_mode)
                 q2app.q2_app.set_navigation_state(_prev_nav_state)
-                    
 
     if ext_modules:
         res = None
@@ -341,7 +340,7 @@ class Q2RadApp(Q2App):
 
     def on_start(self):
         if not os.path.isfile("poetry.lock"):
-            self.load_assets()
+            self.make_start_helpers()
             self.check_packages_update()
         self.install_binary_build()
         self.open_application(autoload_enabled=True)
@@ -399,7 +398,7 @@ class Q2RadApp(Q2App):
         self.set_title("Open Application")
         Q2AppSelect()._run(autoload_enabled)
         if self.selected_application != {}:
-            self.open_selected_app(True, migrate_db_data=True)
+            self.open_selected_app(True, migrate_db_data=False)
             if self.check_app_update() or self.check_ext_update():
                 self.open_selected_app()
             self.on_new_tab()
@@ -447,14 +446,13 @@ class Q2RadApp(Q2App):
         if migrate_db_data:
             wait.step(_("Migrate data DB"))
             self.migrate_db_data()
-        else:
-            wait.step(_("Create menus"))
-            self.create_menu()
+        wait.step(_("Create menus"))
+        self.create_menu()
         wait.step(_("Looking for updates"))
         self.process_events()
+        self.update_app_packages()
         wait.step(_("Done!"))
         wait.close()
-        self.update_app_packages()
 
         self.run_module("manifest")
         self.run_module("version")
@@ -463,7 +461,6 @@ class Q2RadApp(Q2App):
         else:
             self.set_title(f"{self.selected_application.get('name', '')}")
         self.run_module("autorun")
-        # self.run_module("_autorun")
 
         if go_to_q2market and (
             max(
@@ -511,7 +508,7 @@ class Q2RadApp(Q2App):
                 where forms_.name = `lines`.name
                     and form_table <>'' and migrate <>''
                     and control <> 'form'
-                order by forms_.seq, forms_.name, `lines`.seq
+                order by forms_.seq, forms_.name, `lines`.pk desc, `lines`.seq
                 """,
             self.db_logic,
         )
@@ -779,43 +776,18 @@ class Q2RadApp(Q2App):
         u_file.write(content)
         u_file.close()
 
-    def load_assets(self, force_reload=False):
-        if os.path.isdir("assets") and force_reload is False:
-            return
-        if not os.path.isdir("assets"):
-            os.mkdir("assets")
-        # first run
-        # load icons
-        icons = [getattr(q2app, x) for x in dir(q2app) if x.endswith("ICON") and getattr(q2app, x) != ""]
-        icons.append("q2gui.ico")
-
-        errors = []
-
-        tasker = Q2Tasker("Downloading assets...")
-        for x in icons:
-            tasker.add(self.asset_file_loader, x, name=x)
-        rez = tasker.wait()
-
-        for x in icons:
-            if rez[x] is False:
-                errors.append(x)
-
-        if os.path.isfile("assets/q2gui.ico"):
-            shutil.copyfile("assets/q2gui.ico", "assets/q2rad.ico")
-
-        if errors:
-            q2Mess(_("<b>Loading failed for</b>:<br>") + "<br>".join(errors))
-            return
-
-        self.set_icon("assets/q2rad.ico")
-
+    def make_start_helpers(self, force_reload=False):
+        if not force_reload:
+            if sys.platform == "win32" and os.path.isfile("run_q2rad.bat"):
+                return
+            if sys.platform != "win32" and os.path.isfile("run_q2rad"):
+                return
         if os.path.isfile("poetry.lock"):
             return
 
         if not self.frozen:
             # create update_q2rad.sh
             self.write_reinstall_files()
-
             # create run_q2rad
             self.write_run_files()
             if sys.platform != "darwin":
@@ -1117,7 +1089,6 @@ class Q2RadApp(Q2App):
                 ):
                     data = json.load(open_url(self.app_url + ".json"))  # noqa F405
                     AppManager.import_json_app(data)
-                    # self.open_selected_app()
                     return True
 
     def check_ext_update(self, prefix="", force_update=False, _ext_url=""):
@@ -1167,7 +1138,6 @@ class Q2RadApp(Q2App):
                         AppManager.import_json_app(data, prefix=_prefix)
                         update("extensions", {"prefix": row["prefix"], "version": market_version})
                         updated = True
-        # self.open_selected_app()
         return updated
 
     def update_app_packages(self):
