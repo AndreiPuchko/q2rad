@@ -777,13 +777,15 @@ class Q2RadApp(Q2App):
         u_file.close()
 
     def make_start_helpers(self, force_reload=False):
-        if not force_reload:
-            if sys.platform == "win32" and os.path.isfile("run_q2rad.bat"):
-                return
-            if sys.platform != "win32" and os.path.isfile("run_q2rad"):
-                return
+        if os.path.isdir("assets") and force_reload is False:
+            return
+        if not os.path.isdir("assets"):
+            os.mkdir("assets")
         if os.path.isfile("poetry.lock"):
             return
+        self.asset_file_loader("q2gui.ico")
+        if os.path.isfile("assets/q2gui.ico") and not os.path.isfile("assets/q2rad.ico"):
+            shutil.copyfile("assets/q2gui.ico", "assets/q2rad.ico")
 
         if not self.frozen:
             # create update_q2rad.sh
@@ -800,6 +802,7 @@ class Q2RadApp(Q2App):
             self.write_restore_file(
                 "run_q2rad",
                 ("" if "win32" in sys.platform else "#!/bin/bash\n")
+                + ('cd "$(dirname "$0")"' if sys.platform == "darwin" else "")
                 + (
                     "start q2rad\\scripts\\pythonw.exe -m q2rad"
                     if "win32" in sys.platform
