@@ -290,7 +290,7 @@ class AppManager(Q2Form):
             q2app.q2_app.update_from_git()
 
     def reload_assets(self):
-        q2app.q2_app.load_assets(True)
+        q2app.q2_app.make_start_helpers(True)
 
     def export_q2market(self):
         self.q2_app.run_module("manifest")

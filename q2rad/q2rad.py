@@ -299,7 +299,7 @@ class Q2RadApp(Q2App):
         #     self.style_file = qss_file
         #     self.set_style_sheet()
 
-        self.set_icon("assets/q2rad.ico")
+        # self.set_icon("assets/q2rad.ico")
 
         self.const = const
 
@@ -339,8 +339,8 @@ class Q2RadApp(Q2App):
             open(f"{desktop}/q2rad.desktop", "w").writelines("\n".join(desktop_entry))
 
     def on_start(self):
+        self.make_start_helpers()
         if not os.path.isfile("poetry.lock"):
-            self.make_start_helpers()
             self.check_packages_update()
         self.install_binary_build()
         self.open_application(autoload_enabled=True)
@@ -781,12 +781,12 @@ class Q2RadApp(Q2App):
             return
         if not os.path.isdir("assets"):
             os.mkdir("assets")
+        q2gui_ico_file_path = str(q2app.files("q2gui").joinpath("icons/q2gui.ico"))
+        if os.path.isfile(q2gui_ico_file_path) and not os.path.isfile("assets/q2rad.ico"):
+            shutil.copyfile(q2gui_ico_file_path, "assets/q2rad.ico")
+
         if os.path.isfile("poetry.lock"):
             return
-        self.asset_file_loader("q2gui.ico")
-        if os.path.isfile("assets/q2gui.ico") and not os.path.isfile("assets/q2rad.ico"):
-            shutil.copyfile("assets/q2gui.ico", "assets/q2rad.ico")
-
         if not self.frozen:
             # create update_q2rad.sh
             self.write_reinstall_files()
