@@ -49,33 +49,19 @@ curl https://raw.githubusercontent.com/AndreiPuchko/q2rad/main/install/get-q2rad
 ## Install & run - terminal
 **Windows (Powershell)**
 ```bash
-mkdir q2rad ;`
-cd q2rad ;`
-py -m pip install --upgrade pip ;`
-py -m venv q2rad;q2rad/scripts/activate ;`
-py -m pip install --upgrade q2rad ;`
-q2rad
+mkdir q2rad;`
+cd q2rad;`
+py -m venv q2rad;
+q2rad/Scripts/python -m pip install q2rad;`
+q2rad/Scripts/q2rad
 ```
-**Linux**
-```bash
-sudo apt install python3-venv python3-pip -y &&\
-    mkdir -p q2rad && \
-    cd q2rad && \
-    python3 -m pip install --upgrade pip && \
-    python3 -m venv q2rad && \
-    source q2rad/bin/activate && \
-    python3 -m pip install --upgrade q2rad && \
-    q2rad
-```
-**macOS**
+**Linux/macOS**
 ```bash
 mkdir -p q2rad && \
-    cd q2rad && \
-    python3 -m pip install --upgrade pip && \
-    python3 -m venv q2rad && \
-    source q2rad/bin/activate && \
-    python3 -m pip install --upgrade q2rad && \
-    q2rad
+cd q2rad && \
+python3 -m venv q2rad && \
+q2rad/bin/python3 -m pip install --upgrade q2rad && \
+q2rad/bin/q2rad
 ```
 ## Concept:
 Application as a database
