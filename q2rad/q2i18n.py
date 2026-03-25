@@ -28,6 +28,9 @@ from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run, tr, clea
 from q2rad.q2utils import Q2Form
 
 import ast
+import os
+import gettext
+from pathlib import Path
 
 _ = tr
 
@@ -159,11 +162,29 @@ def extract_translatable(code: str) -> list[dict]:
 
 
 def get_tranlations():
+    _lng = []
     langs = [{"lang": "en", "name": "English", "native_name": ""}]
+    _lng.append("en")
     for lang in q2cursor(
         "select * from locale where disabled=''", q2_db=q2app.q2app.q2_app.db_logic
     ).records():
         langs.append(lang)
+        _lng.append(lang["lang"])
+    q2gui_locale = Path(q2app.files("q2gui")) / "locale"
+    for tr_folder in Path(q2gui_locale).iterdir():
+        if not tr_folder.is_dir():
+            continue
+        lang = tr_folder.name
+        if lang in _lng:
+            continue
+        t = gettext.translation("q2gui", q2gui_locale, languages=[lang], fallback=True)
+        langs.append(
+            {
+                "lang": lang,
+                "name": t.gettext("__lang_name__"),
+                "native_name": t.gettext("__lang_native__"),
+            }
+        )
     return langs
 
 
