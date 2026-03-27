@@ -19,6 +19,7 @@ import string
 import threading
 import subprocess
 import html
+import re
 
 from q2rad import Q2Form as _Q2Form
 from q2db.cursor import Q2Cursor
@@ -607,6 +608,7 @@ class auto_filter:
         self.form_name = form_name
         self.mem = mem
         self.filter_columns = []
+        self.child_forms = {}
         self.exclude = exclude
         self.mem.ok_button = True
         self.mem.cancel_button = True
@@ -622,11 +624,54 @@ class auto_filter:
         else:
             exclude_columns = ""
 
+        acu = q2cursor(
+            f"""
+                select child_form, child_where
+                    , forms.form_table as child_table
+                    , forms.title as child_title
+                from `actions`, forms
+                where `actions`.name  = '{self.form_name}'
+                    and `actions`.child_form = forms.name
+                    and child_form <> ''
+                    and child_where <> ''
+                order by `actions`.seq
+            """,
+            self.mem.q2_app.db_logic,
+        )
+
+        if acu.row_count() > 0:
+            self.child_forms = {x["child_form"]: x for x in acu.records()}
+
+        manual_controls_count = len(self.mem.controls)
+
+        if self.dev:
+            self.mem.add_control("dev", _("Dev"), control="button", valid=self._dev)
+
+        if self.child_forms:
+            self.mem.add_control(
+                "/t", get("forms", f"name='{self.form_name}'", "title", self.mem.q2_app.db_logic)
+            )
+
+        self.make_cols(self.form_name, exclude_columns)
+
+        if self.child_forms:
+            for key, x in self.child_forms.items():
+                self.mem.add_control("/t", x["child_title"])
+                self.make_cols(x["child_form"], prefix=key)
+
+        if manual_controls_count > 0:
+            for x in range(manual_controls_count):
+                self.mem.controls.append(self.mem.controls.pop(0))
+
+        self._valid = self.mem.valid
+        self.mem.valid = self.valid
+
+    def make_cols(self, form_name, exclude_columns="", prefix=""):
         cu = q2cursor(
             f"""
                 select *
                 from `lines`
-                where name  = '{self.form_name}'
+                where name  = '{form_name}'
                     and migrate<>''
                     and (label <>'' or gridlabel <> '')
                     and noform = ''
@@ -636,14 +681,14 @@ class auto_filter:
             self.mem.q2_app.db_logic,
         )
 
-        manual_controls_count = len(self.mem.controls)
         make_tabs = cu.row_count() > self.lines_per_tab
         if not make_tabs:
             self.mem.add_control("/f")
-        self.mem.add_control("dev", _("Dev"), control="button", valid=self._dev)
         for col in cu.records():
             if col["column"] in self.exclude:
                 continue
+            if prefix:
+                col["column"] = f"_{prefix}_{col['column']}"
             if make_tabs and cu.current_row() % self.lines_per_tab == 0:
                 self.mem.add_control("/t", f"={1 + cu.current_row() // self.lines_per_tab}")
                 self.mem.add_control("/f")
@@ -652,7 +697,7 @@ class auto_filter:
                 col["control"] = "line"
                 col["datatype"] = "char"
             col = Q2Controls.validate(col)
-            self.filter_columns.append(cu.r.column)
+            self.filter_columns.append({"c": cu.r.column, "p": prefix})
             if col["datatype"] in ["date"] or (
                 col.get("num")
                 and col.get("to_form", "") == ""
@@ -682,13 +727,9 @@ class auto_filter:
 
                 self.mem.add_control(**col)
         self.mem.add_control("/")
-        if manual_controls_count > 0:
-            for x in range(manual_controls_count):
-                self.mem.controls.append(self.mem.controls.pop(0))
-        self._valid = self.mem.valid
-        self.mem.valid = self.valid
 
     def _dev(self):
+        indent = "    "
         controls = [
             {
                 key: value
@@ -707,8 +748,36 @@ class auto_filter:
 
         json_data = json.dumps(controls, indent=2, ensure_ascii=True)
         where_code = ["where_list = []"]
+        for p in self.child_forms:
+            where_code.append(f"_{p}_where_list = []")
+
         for x in self.filter_columns:
-            where_code.extend(self.mem.prepare_where(x, dev=True))
+            if x["p"]:
+                cond_str_list = self.mem.prepare_where(x["c"], dev=True)
+                # q2Mess(cond_str_list)
+                for idx, value in enumerate(cond_str_list):
+                    cond_str_list[idx] = value.replace(f'"_{x["p"]}_', '"').replace(
+                        "where_list.", f"_{x['p']}_where_list."
+                    )
+                where_code.extend(cond_str_list)
+            else:
+                where_code.extend(self.mem.prepare_where(x["c"], dev=True))
+        where_code.append("")
+        for child_form in self.child_forms:
+            child_table = self.child_forms[child_form]["child_table"]
+            _id, _parent_id, _tail = self._parse_child_where(self.child_forms[child_form]["child_where"])
+            where_code.append(f"if _{child_form}_where_list:")
+            where_code.append(f'{indent}_{child_form}_where_str=" and ".join(_{child_form}_where_list)')
+            where_code.append(
+                f"{indent}_{child_form}_where_str= f'`{_id}` in"
+                + f" ( select `{_parent_id}` from `{child_table}` where "
+                + "{"
+                + f"_{child_form}_where_str"
+                + "}"
+                + " ) '"
+            )
+            where_code.append(f"{indent}where_list.append(_{child_form}_where_str)")
+
         where_code.append("")
         where_code.append('where_string = " and ".join(where_list)')
         where_code.append(f'q2_app.run_form("{self.form_name}", where=where_string)')
@@ -719,13 +788,67 @@ class auto_filter:
         f.add_control("where", "Where", control="codepython", data="\n".join(where_code))
         f.run()
 
+    def _parse_child_where(self, s: str):
+        PATTERN = re.compile(
+            r"""
+            (?P<left>[^\s=]+)\s*=\s*\{(?P<id1>[^}]+)\} |
+            \{(?P<id2>[^}]+)\}\s*=\s*(?P<right>[^\s=]+)
+            """,
+            re.VERBOSE | re.IGNORECASE,
+        )
+        m = PATTERN.search(s)
+        if not m:
+            return None, None, s
+
+        if m.group("id1"):
+            var_name = m.group("id1")
+            field_name = m.group("left")
+        else:
+            var_name = m.group("id2")
+            field_name = m.group("right")
+
+        # удаляем найденную часть
+        start, end = m.span()
+        tail = (s[:start] + s[end:]).strip()
+
+        # если остались условия — нормализуем начало
+        if tail:
+            # remove AND at the begin
+            tail = re.sub(r"^\s*and\s*", "", tail, flags=re.IGNORECASE)
+            # remove AND at the end
+            tail = re.sub(r"\s+and\s*$", "", tail, flags=re.IGNORECASE)
+            # remove double AND
+            tail = re.sub(r"\s+and\s+and\s+", " and ", tail, flags=re.IGNORECASE)
+            # if not tail.startswith(" and "):
+            #     tail = " and " + tail
+
+        return var_name, field_name, tail
+
     def valid(self):
         where = []
+        child_where = {}
         if custom_whr := self._valid():
             where.append(custom_whr)
         for x in self.filter_columns:
-            where.append(self.mem.prepare_where(x))
-        where_string = " and ".join([x for x in where if x])
+            if x["p"]:
+                cond_str = self.mem.prepare_where(x["c"])
+                cond_str = cond_str.replace(f"_{x['p']}_", "")
+                if cond_str:
+                    if x["p"] not in child_where:
+                        child_where[x["p"]] = []
+                    child_where[x["p"]].append(cond_str)
+            else:
+                if cond_str := self.mem.prepare_where(x["c"]):
+                    where.append(cond_str)
+        indent = " " * 4
+        for child_form, child_conds in child_where.items():
+            child_table = self.child_forms[child_form]["child_table"]
+            _id, _parent_id, _tail = self._parse_child_where(self.child_forms[child_form]["child_where"])
+            _whr = f"\n{indent}{indent * 2}and ".join([x for x in child_conds if x])
+            _cw = f" `{_id}` in (\n{indent * 2}select `{_parent_id}` from `{child_table}`\n{indent * 2}where {_whr}\n{indent * 2})"
+            where.append(_cw)
+
+        where_string = f"\n{indent}" + f"\n{indent}and ".join([x for x in where if x])
         q2app.q2_app.run_form(self.form_name, where=where_string)
         return False
 
