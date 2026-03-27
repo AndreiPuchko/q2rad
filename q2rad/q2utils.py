@@ -415,7 +415,7 @@ class q2cursor(Q2Cursor):
         return self
 
     def browse_modal(self):
-        self.browse()
+        return self.browse()
 
     def browse_nomodal(self):
         if self.row_count() <= 0:
@@ -606,7 +606,7 @@ class Q2_save_and_run:
 
 
 class auto_filter:
-    def __init__(self, form_name, mem, lines_per_tab=10, exclude=[], dev=False):
+    def __init__(self, form_name, mem, lines_per_tab=15, exclude=[], dev=False):
         self.form_name = form_name
         self.mem = mem
         self.filter_columns = []
@@ -630,7 +630,7 @@ class auto_filter:
             f"""
                 select child_form, child_where
                     , forms.form_table as child_table
-                    , forms.title as child_title
+                    , `actions`.action_text as child_title
                 from `actions`, forms
                 where `actions`.name  = '{self.form_name}'
                     and `actions`.child_form = forms.name
@@ -645,21 +645,22 @@ class auto_filter:
             self.child_forms = {x["child_form"]: x for x in acu.records()}
 
         manual_controls_count = len(self.mem.controls)
+        self.lines_per_tab -= manual_controls_count
 
         if self.dev:
             self.mem.add_control("dev", _("Dev"), control="button", valid=self._dev)
 
+        main_form_title = get("forms", f"name='{self.form_name}'", "title", self.mem.q2_app.db_logic)
         if self.child_forms:
-            self.mem.add_control(
-                "/t", get("forms", f"name='{self.form_name}'", "title", self.mem.q2_app.db_logic)
-            )
+            self.make_tabs = True
+            self.mem.add_control("/t", _(main_form_title))
 
-        self.make_cols(self.form_name, exclude_columns)
+        self.make_cols(self.form_name, exclude_columns, title=main_form_title)
 
         if self.child_forms:
             for key, x in self.child_forms.items():
-                self.mem.add_control("/t", x["child_title"])
-                self.make_cols(x["child_form"], prefix=key)
+                self.mem.add_control("/t", "     " + _(x["child_title"]))
+                self.make_cols(x["child_form"], prefix=key, title=x["child_title"])
 
         if manual_controls_count > 0:
             for x in range(manual_controls_count):
@@ -668,7 +669,7 @@ class auto_filter:
         self._valid = self.mem.valid
         self.mem.valid = self.valid
 
-    def make_cols(self, form_name, exclude_columns="", prefix=""):
+    def make_cols(self, form_name, exclude_columns="", prefix="", title=""):
         cu = q2cursor(
             f"""
                 select *
@@ -682,17 +683,24 @@ class auto_filter:
             """,
             self.mem.q2_app.db_logic,
         )
-
-        make_tabs = cu.row_count() > self.lines_per_tab
-        if not make_tabs:
+        if not self.make_tabs:
+            self.make_tabs = cu.row_count() > self.lines_per_tab
+        if not self.make_tabs:
             self.mem.add_control("/f")
         for col in cu.records():
             if col["column"] in self.exclude:
                 continue
+            if not col["label"]:
+                col["label"] = col["gridlabel"]
+            col["label"] = _(col["label"])
+            col["mess"] = _(col["mess"])
             if prefix:
                 col["column"] = f"_{prefix}_{col['column']}"
-            if make_tabs and cu.current_row() % self.lines_per_tab == 0:
-                self.mem.add_control("/t", f"={1 + cu.current_row() // self.lines_per_tab}")
+            if self.make_tabs and cu.current_row() % self.lines_per_tab == 0:
+                tab_index = 1 + cu.current_row() // self.lines_per_tab
+                if tab_index > 1:
+                    # self.mem.add_control("/t", _(f"{title}") + f"{'.' * tab_index}")
+                    self.mem.add_control("/t", _(f"{title}") + f".{tab_index}")
                 self.mem.add_control("/f")
             col["readonly"] = ""
             if col["control"] == "text":
@@ -712,11 +720,11 @@ class auto_filter:
                 )
             ):
                 self.mem.add_control("/h", cu.r.label, check=1)
-                col["label"] = "from"
+                col["label"] = _("from")
                 co = col["column"]
                 col["column"] = co + "____1"
                 self.mem.add_control(**col)
-                col["label"] = "to"
+                col["label"] = _("to")
                 col["column"] = co + "____2"
                 self.mem.add_control(**col)
                 self.mem.add_control("/s")
@@ -724,7 +732,7 @@ class auto_filter:
             # elif col.get("control", "") == "check":
             #     pass
             else:
-                col["label"] = cu.r.label
+                col["label"] = _(cu.r.label)
                 col["check"] = 1
 
                 self.mem.add_control(**col)
@@ -770,7 +778,7 @@ class auto_filter:
             _id, _parent_id, _tail = self._parse_child_where(self.child_forms[child_form]["child_where"])
             where_code.append(f"if _{child_form}_where_list:")
             if _tail:
-                where_code.append(f"{indent}_{child_form}_where_list.append(\"{_tail}\")")
+                where_code.append(f'{indent}_{child_form}_where_list.append("{_tail}")')
             where_code.append(f'{indent}_{child_form}_where_str=" and ".join(_{child_form}_where_list)')
             where_code.append(
                 f"{indent}_{child_form}_where_str= f'`{_id}` in"
@@ -855,6 +863,8 @@ class auto_filter:
             where.append(_cw)
 
         where_string = f"\n{indent}" + f"\n{indent}and ".join([x for x in where if x])
+        if not where_string.strip():
+            where_string = ""
         q2app.q2_app.run_form(self.form_name, where=where_string)
         return False
 
