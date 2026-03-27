@@ -95,12 +95,12 @@ for x in mem.controls:
 
 * auto_filter form
 ```python
-#  in Build script
+#  in After Form load script
 auto_filter("sales", mem)
 # or
 auto_filter("invoices", mem=mem, dev=1)
 #  in Before Form Show script - initiate control value and turn it on
-mem.s.date____1=const.date1  # _*4
+mem.s.date____1=const.date1  # ____ == _*4
 mem.s.date____2 = const.date2
 mem.w.date____1.set_checked()
 ```
