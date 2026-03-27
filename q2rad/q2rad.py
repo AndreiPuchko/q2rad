@@ -443,9 +443,9 @@ class Q2RadApp(Q2App):
         self.clear_app_info()
         wait.step(_("Migrate logic DB"))
         self.migrate_db_logic(self.db_logic)
-        if migrate_db_data:
-            wait.step(_("Migrate data DB"))
-            self.migrate_db_data()
+        # if migrate_db_data:
+        wait.step(_("Migrate data DB"))
+        self.migrate_db_data()
         wait.step(_("Create menus"))
         self.create_menu()
         wait.step(_("Looking for updates"))
