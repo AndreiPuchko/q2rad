@@ -394,16 +394,29 @@ class q2cursor(Q2Cursor):
         form.set_model(Q2CursorModel(self))
         return form
 
+    def no_record_mess(self):
+        q2Mess(
+            f"""Query<br>
+                    <b>{html.escape(self.sql)}</b><br>
+                    returned no records,<br>
+                    <font color=red>
+                    {self.last_sql_error()}
+                """
+        )
+
     def browse(self):
         if self.row_count() <= 0:
-            q2Mess(
-                f"""Query<br>
-                        <b>{html.escape(self.sql)}</b><br>
-                        returned no records,<br>
-                        <font color=red>
-                        {self.last_sql_error()}
-                    """
-            )
+            self.no_record_mess()
+        else:
+            self.q2form().run_modal()
+        return self
+
+    def browse_modal(self):
+        self.browse()
+
+    def browse_nomodal(self):
+        if self.row_count() <= 0:
+            self.no_record_mess()
         else:
             self.q2form().run()
         return self
