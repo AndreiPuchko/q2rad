@@ -46,6 +46,8 @@ _i18n_cache = {}
 
 
 def tr(s):
+    if s.strip() == "":
+        return ""
     if q2app.q2app.q2_app:
         if s in _i18n_cache:
             return _i18n_cache[s]
