@@ -663,21 +663,6 @@ class Q2RadApp(Q2App):
             self.open_application()
 
     def create_menu(self):
-        self.clear_menu()
-        self.add_menu(_("File") + "|" + _("About"), self.about, icon="info")
-        self.add_menu(_("File") + "|" + _("Manage"), self.run_app_manager, icon="tools")
-
-        lang_menu = _(" && Language") if len(get_tranlations()) > 1 else ""
-        self.add_menu(_("File") + "|" + _("Style") + lang_menu, self.run_stylesettings)
-        self.add_menu(_("File") + "|" + _("Constants"), self.run_constants)
-        if not self.frozen:
-            self.add_menu(_("File") + "|" + _("-"))
-            self.add_menu(_("File") + "|" + _("Open"), self.open_application, icon="open")
-        self.add_menu(_("File") + "|" + _("-"))
-        self.add_menu(_("File") + "|" + _("Close"), self.close, toolbar=1, icon="exit")
-
-        self.create_form_menu()
-
         if self.frozen:
             self.dev_mode = False
 
@@ -686,7 +671,22 @@ class Q2RadApp(Q2App):
             or os.path.isdir(self.q2market_path)
             or os.path.isfile(".dev")
         )
-        # self.dev_mode = False
+        
+        self.clear_menu()
+        self.add_menu(_("File") + "|" + _("About"), self.about, icon="info")
+        self.add_menu(_("File") + "|" + _("Manage"), self.run_app_manager, icon="tools")
+
+        lang_menu = _(" && Language") if len(get_tranlations()) > 1 else ""
+        self.add_menu(_("File") + "|" + _("Style") + lang_menu, self.run_stylesettings)
+        if self.dev_mode:
+            self.add_menu(_("File") + "|" + _("Constants"), self.run_constants)
+        if not self.frozen:
+            self.add_menu(_("File") + "|" + _("-"))
+            self.add_menu(_("File") + "|" + _("Open"), self.open_application, icon="open")
+        self.add_menu(_("File") + "|" + _("-"))
+        self.add_menu(_("File") + "|" + _("Close"), self.close, toolbar=1, icon="exit")
+
+        self.create_form_menu()
 
         if self.dev_mode:
             self.add_menu(_("Dev") + "|" + _("Forms"), self.run_forms)
@@ -703,8 +703,6 @@ class Q2RadApp(Q2App):
                 self.add_menu(_("Dev") + "|" + _("-"))
                 self.add_menu(_("Dev") + "|" + _("Make binary"), self.make_binary)
         self.build_menu()
-        # self.show_toolbar(False)
-        pass
 
     def about(self, text=""):
         about = []
