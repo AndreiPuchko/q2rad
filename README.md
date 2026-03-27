@@ -9,12 +9,7 @@
 ## [Read the docs](docs/index.md) 
 
 ## System requirements:
-Python >= 3.8.1
-
-on *Linux* and Python >=3.11 make sure you have pip and virtualenv installed, if not:
-```bash
-sudo apt install python3-pip python3-virtualenv
-```
+Python >= 3.9
 
 ## Install & run - Launcher (https://github.com/AndreiPuchko/q2radlauncher)
 
