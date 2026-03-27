@@ -767,6 +767,8 @@ class auto_filter:
             child_table = self.child_forms[child_form]["child_table"]
             _id, _parent_id, _tail = self._parse_child_where(self.child_forms[child_form]["child_where"])
             where_code.append(f"if _{child_form}_where_list:")
+            if _tail:
+                where_code.append(f"{indent}_{child_form}_where_list.append(\"{_tail}\")")
             where_code.append(f'{indent}_{child_form}_where_str=" and ".join(_{child_form}_where_list)')
             where_code.append(
                 f"{indent}_{child_form}_where_str= f'`{_id}` in"
@@ -844,6 +846,8 @@ class auto_filter:
         for child_form, child_conds in child_where.items():
             child_table = self.child_forms[child_form]["child_table"]
             _id, _parent_id, _tail = self._parse_child_where(self.child_forms[child_form]["child_where"])
+            if _tail:
+                child_conds.append(_tail)
             _whr = f"\n{indent}{indent * 2}and ".join([x for x in child_conds if x])
             _cw = f" `{_id}` in (\n{indent * 2}select `{_parent_id}` from `{child_table}`\n{indent * 2}where {_whr}\n{indent * 2})"
             where.append(_cw)
