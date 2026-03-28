@@ -189,7 +189,7 @@ def get_tranlations():
 
 
 class Q2Locale(Q2Form):
-    def __init__(self, title=_("Locale")):
+    def __init__(self, title=_("Locales")):
         super().__init__(title)
         self.no_view_action = True
         self.locales = []

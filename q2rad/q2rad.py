@@ -698,7 +698,7 @@ class Q2RadApp(Q2App):
             self.add_menu(_("Dev") + "|" + _("Finder"), self.run_finder)
             self.add_menu(_("Dev") + "|" + _("-"))
             self.add_menu(_("Dev") + "|" + _("Documentation"), self.read_the_docs)
-            self.add_menu(_("Dev") + "|" + _("Locale"), self.run_locale)
+            self.add_menu(_("Dev") + "|" + _("Locales"), self.run_locale)
             if not self.frozen:
                 self.add_menu(_("Dev") + "|" + _("-"))
                 self.add_menu(_("Dev") + "|" + _("Make binary"), self.make_binary)
