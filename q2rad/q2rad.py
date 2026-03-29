@@ -1146,7 +1146,7 @@ class Q2RadApp(Q2App):
             return
         extra_packages = [
             (x["package_name"], x["package_pipname"])
-            for x in q2cursor("select * from packages", self.db_logic).records()
+            for x in q2cursor("select * from packages where dev_mode=''", self.db_logic).records()
         ]
         self.check_packages_update(extra_packages)
 
