@@ -98,7 +98,7 @@ for x in mem.controls:
 #  in After Form load script
 auto_filter("sales", mem)
 # or
-auto_filter("invoices", mem=mem, dev=1)
+auto_filter("invoices", mem=mem, lines_per_tab=20,  dev=1, exclude=["id", "parent_id"])
 #  in Before Form Show script - initiate control value and turn it on
 mem.s.date____1=const.date1  # ____ == _*4
 mem.s.date____2 = const.date2
