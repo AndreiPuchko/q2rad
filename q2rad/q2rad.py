@@ -481,11 +481,13 @@ class Q2RadApp(Q2App):
 
     def migrate_db_data(self):
         data_schema = Q2DbSchema()
+        from q2gui.q2form import NO_DATA_WIDGETS
+        _no_data_controls = ",".join([f'"{x}"' for x in NO_DATA_WIDGETS])
         cu = q2cursor(
-            """
+            f"""
                 select
                     forms_.form_table as `table`
-                    , `lines`.column
+                    , `lines`.`column`
                     , `lines`.datatype
                     , `lines`.datalen
                     , `lines`.datadec
@@ -508,6 +510,8 @@ class Q2RadApp(Q2App):
                 where forms_.name = `lines`.name
                     and form_table <>'' and migrate <>''
                     and control <> 'form'
+                    and control not in ({_no_data_controls})
+                    and `column` <> ''
                 order by forms_.seq, forms_.name, `lines`.pk desc, `lines`.seq
                 """,
             self.db_logic,
