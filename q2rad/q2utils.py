@@ -34,6 +34,7 @@ from q2gui.q2app import Q2Actions
 from q2gui.q2app import Q2Controls
 from q2gui.q2utils import int_
 from q2rad.q2raddb import get, update, insert
+from q2gui.q2form import NO_DATA_WIDGETS
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -688,6 +689,8 @@ class auto_filter:
         if not self.make_tabs:
             self.mem.add_control("/f")
         for col in cu.records():
+            if col["control"] in NO_DATA_WIDGETS:
+                continue
             if col["column"] in self.exclude:
                 continue
             if not col["label"]:
