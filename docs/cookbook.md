@@ -1,3 +1,9 @@
+* text control - set maximum height for form
+```python
+#  in Before Form Show script
+form.w.text_control_name.set_maximum_height(5)  # 5 - lines
+```
+
 * widget - valid script variables
 ```python
 is_changed
