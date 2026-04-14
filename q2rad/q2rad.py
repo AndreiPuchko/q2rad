@@ -574,7 +574,7 @@ class Q2RadApp(Q2App):
         return rez
 
     def get_db_admin_credential(self, name="", engine="", host="", port="", rootuser=""):
-        ac = Q2Form("Enter database admin credential")
+        ac = Q2Form(_("Enter database admin credential"))
         ac.add_control("name", _("Database name"), data=name, disabled=1)
         ac.add_control("engine", _("Engine"), data=engine, disabled=1)
         ac.add_control("host", _("Host"), data=host, disabled=1)
@@ -592,6 +592,15 @@ class Q2RadApp(Q2App):
     def _open_database(self, database_name, db_engine_name, host, port, password, user, guest_mode=None):
         db = None
         first_pass = 0
+        root_user = None
+        root_password = None
+        if (
+            self.windows_mysql_local_server
+            and db_engine_name == "mysql"
+            and self.windows_mysql_local_server_port == port
+        ):
+            root_user = "root"
+            root_password = ""
         while True:
             try:
                 db = q2working(
@@ -603,6 +612,8 @@ class Q2RadApp(Q2App):
                         guest_mode=guest_mode,
                         user=user,
                         password=password,
+                        root_user=root_user,
+                        root_password=root_password,
                     ),
                     mess=_("Opening database"),
                 )
@@ -675,7 +686,7 @@ class Q2RadApp(Q2App):
             or os.path.isdir(self.q2market_path)
             or os.path.isfile(".dev")
         )
-        
+
         self.clear_menu()
         self.add_menu(_("File") + "|" + _("About"), self.about, icon="info")
         self.add_menu(_("File") + "|" + _("Manage"), self.run_app_manager, icon="tools")
