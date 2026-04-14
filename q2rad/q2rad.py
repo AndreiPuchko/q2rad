@@ -346,7 +346,7 @@ class Q2RadApp(Q2App):
         self.open_application(autoload_enabled=True)
 
     def install_binary_build(self):
-        if self.frozen and self.binary_url:
+        if self.frozen and self.binary_url and sys.platform == "win32":
             if os.path.isfile(sfx_path := os.path.join("..", f"{os.path.basename(self.binary_url)}.exe")):
                 if (
                     q2ask(
@@ -597,7 +597,7 @@ class Q2RadApp(Q2App):
         if (
             self.windows_mysql_local_server
             and db_engine_name == "mysql"
-            and self.windows_mysql_local_server_port == port
+            and num(self.windows_mysql_local_server_port) == num(port)
         ):
             root_user = "root"
             root_password = ""
