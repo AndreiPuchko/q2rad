@@ -1493,25 +1493,29 @@ class Q2RadApp(Q2App):
         # add actions
 
         ext_actions = []
-        for row in q2cursor("select prefix from extensions order by seq").records():
+        for index, row in enumerate(q2cursor("select prefix from extensions order by seq").records()):
             ext_name = row["prefix"]
             if (
                 get("actions", f"name='{ext_name}{name}'", "name", q2app.q2_app.db_logic)
                 == f"{ext_name}{name}"
             ):
                 ext_actions.append(
-                    f"""select * from (select * from actions 
-                                        where name = '{ext_name}{name}' order by seq) qq"""
+                    f"""select * from (select *, {index + 2} as src_index
+                        from actions
+                        where name = '{ext_name}{name}') qq"""
                 )
         ext_actions.append(
-            f"""select * from (select * from actions 
-                                        where name = '_{name}' order by seq) qq"""
+            f"""select * from
+                    (select *, 1 as src_index from actions where name = '_{name}') qq"""
         )
         if ext_actions:
             ext_select = " union all  " + " union all  ".join(ext_actions)
         else:
             ext_select = ""
-        sql = f"select * from (select * from actions where name = '{name}' order by seq ) qq {ext_select}"
+        sql = f"""select *
+                from (select *, 0 as src_index from actions where name = '{name}') qq
+                    {ext_select}
+                order by src_index, seq"""
         cu = q2cursor(sql, self.db_logic)
         for action in cu.records():
             for x in actions_translate:
