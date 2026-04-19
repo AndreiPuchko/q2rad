@@ -510,7 +510,7 @@ class Q2RadApp(Q2App):
                 where forms_.name = `lines`.name
                     and form_table <>'' and migrate <>''
                     and control <> 'form'
-                    and control not in ({_no_data_controls})
+                    and (control not in ({_no_data_controls}) OR control IS NULL)
                     and `column` <> ''
                 order by forms_.seq, forms_.name, `lines`.pk desc, `lines`.seq
                 """,
