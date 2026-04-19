@@ -308,6 +308,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
                     {
                         "name": self.s.name,
                         "column": "id",
+                        "control": "line",
                         "noform": "*",
                         "nogrid": "*",
                         "datatype": "int",
