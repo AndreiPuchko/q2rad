@@ -612,6 +612,7 @@ class auto_filter:
         self.mem = mem
         self.filter_columns = []
         self.child_forms = {}
+        self.make_tabs = False
         self.exclude = exclude
         self.mem.ok_button = True
         self.mem.cancel_button = True
@@ -654,15 +655,16 @@ class auto_filter:
         main_form_title = get("forms", f"name='{self.form_name}'", "title", self.mem.q2_app.db_logic)
         if self.child_forms:
             self.make_tabs = True
-            self.mem.add_control("/t", _(main_form_title))
+            # self.mem.add_control("/t", _(main_form_title))
 
         self.make_cols(self.form_name, exclude_columns, title=main_form_title)
 
         if self.child_forms:
             for key, x in self.child_forms.items():
-                self.mem.add_control("/t", "     " + _(x["child_title"]))
+                # self.mem.add_control("/t", "     " + _(x["child_title"]))
                 self.make_cols(x["child_form"], prefix=key, title=x["child_title"])
-
+        if self.make_tabs:
+            self.mem.add_control("/")
         if manual_controls_count > 0:
             for x in range(manual_controls_count):
                 self.mem.controls.append(self.mem.controls.pop(0))
@@ -687,6 +689,9 @@ class auto_filter:
         if not self.make_tabs:
             self.make_tabs = cu.row_count() > self.lines_per_tab
         if not self.make_tabs:
+            self.mem.add_control("/f")
+        else:
+            self.mem.add_control("/t", title)
             self.mem.add_control("/f")
         for col in cu.records():
             if col["control"] in NO_DATA_WIDGETS:
