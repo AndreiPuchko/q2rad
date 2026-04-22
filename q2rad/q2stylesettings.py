@@ -28,7 +28,7 @@ _logger = logging.getLogger(__name__)
 
 class AppStyleSettings(Q2Form):
     def __init__(self, title=""):
-        super().__init__("Style Settings")
+        super().__init__(_("Style Settings"))
 
     def on_init(self):
         self.color_modes = {"dark": "Dark", "light": "Light", "clean": "Clean"}

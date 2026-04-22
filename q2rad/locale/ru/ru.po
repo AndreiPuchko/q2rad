@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-14 12:05+0200\n"
+"POT-Creation-Date: 2026-04-22 12:26+0200\n"
 "PO-Revision-Date: 2026-01-21 13:30+0100\n"
 "Last-Translator: Gemini\n"
 "Language-Team: none\n"
@@ -1016,7 +1016,7 @@ msgstr "Закрыть"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:716
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:718
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:719
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:652
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:653
 msgid "Dev"
 msgstr "Разработка"
 
@@ -1332,6 +1332,10 @@ msgstr "Это удалит все дочерние элементы! Продо
 msgid "Remove rows?"
 msgstr "Удалить строки?"
 
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:31
+msgid "Style Settings"
+msgstr "Настройки стиля"
+
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:52
 msgid "Size"
 msgstr "Размер"
@@ -1433,11 +1437,11 @@ msgstr "Выбрать форму"
 msgid "Save and run"
 msgstr "Сохранить и запустить"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:726
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:731
 msgid "from"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:730
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:735
 msgid "to"
 msgstr ""
 

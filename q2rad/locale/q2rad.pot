@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-14 12:05+0200\n"
+"POT-Creation-Date: 2026-04-22 12:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1002,7 +1002,7 @@ msgstr ""
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:716
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:718
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:719
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:652
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:653
 msgid "Dev"
 msgstr ""
 
@@ -1318,6 +1318,10 @@ msgstr ""
 msgid "Remove rows?"
 msgstr ""
 
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:31
+msgid "Style Settings"
+msgstr ""
+
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:52
 msgid "Size"
 msgstr ""
@@ -1417,10 +1421,10 @@ msgstr ""
 msgid "Save and run"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:726
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:731
 msgid "from"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:730
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:735
 msgid "to"
 msgstr ""
