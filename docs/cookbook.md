@@ -82,21 +82,33 @@ form.add_control(**myapp.get_form("another_form_name").c.control_name)
 #  in Before Form Show script
 for x in mem.controls:
     column = x["column"]
-    if column and not column.startswith("/"):
+    if column and not column.startswith("/")  and column != "inv_num_rules":
         mem.s.__setattr__(column, const.__getattr__(column))
         if mem.w.__getattr__(column).meta.get("check"):
             value = mem.s.__getattr__(column)
             if mem.c.__getattr__(column)["num"]:
                 value = num(value)
             if value:
-                mem.w.__getattr__(column).check.set_checked()
+                mem.w.__getattr__(column).set_checked()
+# process subform data (if exists)
+for x in mem.w.inv_num_rules.q2_form.controls:
+    column = x["column"]
+    if column and not column.startswith("/"):
+        mem.w.inv_num_rules.q2_form.s.__setattr__(column, const.__getattr__(column))
+############################################
 #  in Valid script
 for x in mem.controls:
     column = x["column"]
-    if column and not column.startswith("/"):
-        if mem.w.__getattr__(column).meta.get("check") and not mem.w.__getattr__(column).check.is_checked():
+    if column and not column.startswith("/") and column != "inv_num_rules":
+        if mem.w.__getattr__(column).meta.get("check") and not mem.w.__getattr__(column).is_checked():
             mem.s.__setattr__(column, "")
-        const.__setattr__(column, mem.s.__getattr__(column))```
+        const.__setattr__(column, mem.s.__getattr__(column))
+# process subform data (if exists)
+if form.widgets()["inv_num_rules"].is_enabled():
+    for x in mem.w.inv_num_rules.q2_form.controls:
+        column = x["column"]
+        if column and not column.startswith("/"):
+            const.__setattr__(column, mem.w.inv_num_rules.q2_form.s.__getattr__(column))
 ```
 
 * auto_filter form
