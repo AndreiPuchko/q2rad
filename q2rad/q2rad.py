@@ -377,7 +377,7 @@ class Q2RadApp(Q2App):
                     new_build_file_path = os.path.join("_new_build", "new_build.exe")
                     open(new_build_file_path, "wb").write(new_build_content)
                     subprocess.Popen(
-                        [new_build_file_path, f"-shortcut-name={self.app_title}", "."],
+                        [new_build_file_path, "-no-shortcut", "."],
                         creationflags=subprocess.CREATE_NEW_CONSOLE,
                     )
                     self.close()
