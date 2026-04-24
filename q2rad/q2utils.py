@@ -128,7 +128,8 @@ class Q2Form(_Q2Form):
         **args,
     ):
         if isinstance(to_form, str) and to_form != "":
-            to_form = q2app.q2_app.get_form(to_form)
+            _to_form = to_form
+            to_form = lambda: q2app.q2_app.get_form(_to_form)
         return super().add_control(
             column,
             label,
