@@ -692,7 +692,7 @@ class auto_filter:
         if not self.make_tabs:
             self.mem.add_control("/f")
         else:
-            self.mem.add_control("/t", title)
+            self.mem.add_control("/t", tr(title))
             self.mem.add_control("/f")
         for col in cu.records():
             if col["control"] in NO_DATA_WIDGETS:
@@ -709,7 +709,7 @@ class auto_filter:
                 tab_index = 1 + cu.current_row() // self.lines_per_tab
                 if tab_index > 1:
                     # self.mem.add_control("/t", _(f"{title}") + f"{'.' * tab_index}")
-                    self.mem.add_control("/t", _(f"{title}") + f".{tab_index}")
+                    self.mem.add_control("/t", tr(title) + f".{tab_index}")
                 self.mem.add_control("/f")
             col["readonly"] = ""
             if col["control"] == "text":
