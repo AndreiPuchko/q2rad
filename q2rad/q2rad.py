@@ -1261,13 +1261,14 @@ class Q2RadApp(Q2App):
                 if form_dic[x]:
                     form_dic[x] = _(form_dic[x])
 
+            _menu_path = "|".join([_(mp) for mp in form_dic["menu_path"].split("|")])
             if form_dic["menu_separator"]:
-                self.add_menu(form_dic["menu_path"] + "|-")
+                self.add_menu(_menu_path + "|-")
 
             menu_path = (
-                form_dic["menu_path"]
+                _menu_path
                 + "|"
-                + (form_dic["menu_text"] if form_dic["menu_text"] else form_dic["title"])
+                + _(form_dic["menu_text"] if form_dic["menu_text"] else form_dic["title"])
             )
 
             self.add_menu(

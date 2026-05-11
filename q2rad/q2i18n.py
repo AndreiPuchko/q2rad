@@ -35,7 +35,8 @@ from pathlib import Path
 _ = tr
 
 
-forms_translate = ["title", "menu_path", "menu_text", "menu_before", "menu_tiptext"]
+# forms_translate = ["title", "menu_path", "menu_text", "menu_before", "menu_tiptext"]
+forms_translate = ["title", "menu_text", "menu_before", "menu_tiptext"]
 lines_translate = ["label", "gridlabel", "mess"]
 actions_translate = ["action_text", "action_mess"]
 
@@ -236,8 +237,13 @@ class Q2Locale(Q2Form):
         self.locales = [
             x["lang"] for x in q2cursor("select lang from locale", q2app.q2_app.db_logic).records()
         ]
-        for rec in q2cursor(collect_strings_sql, q2app.q2_app.db_logic).records():
+        for rec in q2cursor(collect_strings_sql, q2app.q2_app.db_logic).browse().records():
             self.add_msg(dict(rec))
+        for rec in q2cursor("select menu_path as msgid from forms", q2app.q2_app.db_logic).browse().records():
+            for mpath in rec["msgid"].split("|"):
+                _rec = dict(rec)
+                _rec["msgid"] = mpath
+                self.add_msg(dict(_rec))
         for x in q2cursor(collect_code_sql, q2app.q2_app.db_logic).records():
             words = extract_translatable(q2app.q2_app.code_compiler(x["msgid"])["script"])
             for rec in words:
@@ -245,6 +251,8 @@ class Q2Locale(Q2Form):
         self.refresh()
 
     def add_msg(self, rec):
+        if rec["msgid"].strip() == "":
+            return
         for lang in self.locales:
             rec["lang"] = lang
             msgid = rec["msgid"].rstrip()
