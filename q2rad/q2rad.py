@@ -1270,15 +1270,8 @@ class Q2RadApp(Q2App):
                 + (form_dic["menu_text"] if form_dic["menu_text"] else form_dic["title"])
             )
 
-            def menu_worker(name):
-                def real_worker():
-                    self.run_form(name)
-
-                return real_worker
-
             self.add_menu(
                 menu_path,
-                # worker=menu_worker(x["name"]),
                 worker=partial(self.run_form, form_dic["name"]),
                 toolbar=form_dic["toolbar"],
                 before=form_dic["menu_before"],
