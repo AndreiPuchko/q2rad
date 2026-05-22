@@ -493,6 +493,11 @@ return round_(num(price)*num(quantity), 0)""",
         if not self.s.migrate:
             self.s.pk = ""
             self.s.ai = ""
+        else:
+            if self.s.datatype in HAS_DATALEN and int_(self.s.datalen) <= 0:
+                q2mess(_("The datalen value must be entered!"))
+                self.w.datalen.set_focus()
+                return False
 
     def form_runner(self):
         self.q2_app.run_form(self.r.name)
