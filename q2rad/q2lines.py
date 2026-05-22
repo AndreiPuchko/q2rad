@@ -205,7 +205,13 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         datalen=3,
                         valid=self.select_linked_table,
                     )
-                    self.add_control("to_table", gridlabel=_("To table"), datatype="char", datalen=100)
+                    self.add_control(
+                        "to_table",
+                        gridlabel=_("To table"),
+                        datatype="char",
+                        datalen=100,
+                        valid=self.validate_linked_data,
+                    )
                     self.add_control("/")
                 if self.add_control("/h", _("To field")):
                     self.add_control(
@@ -553,6 +559,7 @@ return round_(num(price)*num(quantity), 0)""",
         choice = choice_table()
         if choice:
             self.s.to_table = choice["table"]
+            self.validate_linked_data()
 
     def select_linked_table_pk(self):
         if self.s.to_table:
@@ -571,3 +578,38 @@ return round_(num(price)*num(quantity), 0)""",
         choice = choice_form()
         if choice:
             self.s.to_form = choice["name"]
+
+    def validate_linked_data(self):
+        if self.s.to_table != "":
+            if self.s.to_column == "":
+                self.s.to_column = self.db.get(
+                    "lines",
+                    f"""pk='*' and name = 
+                        (select name 
+                        from forms 
+                        where form_table='{self.s.to_table}'
+                        order by seq
+                        limit 1
+                        )""",
+                    "column",
+                )
+            if self.s.related == "":
+                self.s.related = self.db.get(
+                    "lines",
+                    f"""control in ('line', 'text')
+                        and datatype in ('char', 'varchar', 'text', 'longtext')
+                        and name = (select name 
+                        from forms 
+                        where form_table='{self.s.to_table}'
+                        order by seq
+                        limit 1
+                        )""",
+                    "column",
+                )
+            if self.s.to_form == "":
+                self.s.to_form = self.db.get(
+                    "forms",
+                    f"form_table='{self.s.to_table}' limit 1",
+                    "name",
+                )
+        return True
