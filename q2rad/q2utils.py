@@ -379,6 +379,108 @@ class Q2Form(_Q2Form):
         form.add_control("/")
         form.run()
 
+    def get_data_error(self):
+        def parse_update_error(message):
+            pattern = re.compile(
+                r"For\s+([a-zA-Z_]\w*)\.([a-zA-Z_]\w*)\s+not found value\s+'([^']+)'\s+in table\s+([a-zA-Z_]\w*)\.([a-zA-Z_]\w*)",
+                re.IGNORECASE,
+            )
+
+            match = pattern.search(message)
+            if not match:
+                return None
+
+            source_table, source_field, value, target_table, target_field = match.groups()
+
+            return {
+                "source_table": get_form_title(source_table),
+                "source_field": get_column_label(source_table, source_field),
+                "target_table": get_form_title(target_table),
+                "target_field": get_column_label(target_table, target_field),
+                "value": value,
+            }
+
+        def parse_delete_error(message):
+            pattern = re.compile(
+                r'Row in\s+"([^"]+)"\."([^"]+)"=([^\s]+)\s+can not to be deleted,'
+                r'\s+because\s+it used in table\s+"([^"]+)"\."([^"]+)"',
+                re.IGNORECASE,
+            )
+
+            match = pattern.search(message)
+            if not match:
+                return None
+
+            target_table, target_field, value, source_table, source_field = match.groups()
+
+            return {
+                "target_table": get_form_title(target_table),
+                "target_field": get_column_label(target_table, target_field),
+                "value": value,
+                "source_table": get_form_title(source_table),
+                "source_field": get_column_label(source_table, source_field),
+            }
+
+        data_error = super().get_data_error()
+
+        if "for update:" in data_error or "for insert:" in data_error:
+            if er := parse_update_error(data_error):
+                data_error = (
+                    _("Update failed: related record is missing. ")
+                    + "<br>"
+                    + _("The value")
+                    + f" <b>{er['value']}</b> "
+                    + _("in field")
+                    + f" <b>{er['source_field']}</b> "
+                    + _("does not exist in table")
+                    + f" <b>{er['target_table']}</b> "
+                    + _("(field")
+                    + f" <b>{er['target_field']}</b>). "
+                    + _("Please enter a valid value from")
+                    + f" <b>{er['target_table']}</b> "
+                    + _("and try again.")
+                )
+        elif "for delete:" in data_error:
+            if er := parse_delete_error(data_error):
+                data_error = (
+                    _("Delete failed: record is in use. ")
+                    + _("The record with value")
+                    + f" <b>{er['value']}</b> "
+                    + _("in field")
+                    + f" <b>{er['target_field']}</b> "
+                    + _("of table")
+                    + f" <b>{er['target_table']}</b> "
+                    + _("is used in field")
+                    + f" <b>{er['source_field']}</b> "
+                    + _("of table")
+                    + f" <b>{er['source_table']}</b>. "
+                    + _("Remove related records first and try again.")
+                )
+
+        return data_error
+
+
+def get_form_title(form_table=""):
+    res = q2app.q2_app.db_logic.get("forms", f"form_table ='{form_table}' order by seq", "title")
+    return _(res) if res else form_table
+
+
+def get_column_label(form_table="", column=""):
+    res = q2app.q2_app.db_logic.get(
+        "lines",
+        f"""
+                                        column = '{column}'
+                                        and name = (select name 
+                                                    from forms 
+                                                    where form_table='{form_table}'
+                                                    order by seq
+                                                    limit 1
+                                                    )
+                                    order by seq""",
+        "label",
+    )
+    return _(res) if res else column
+
 
 class q2cursor(Q2Cursor):
     def __init__(self, sql="", q2_db=None, data=[]):
