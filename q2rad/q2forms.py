@@ -24,6 +24,7 @@ from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
 from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run, tr
 from q2rad.q2utils import Q2Form
+from q2rad.q2raddb import get
 
 
 _ = tr
@@ -302,26 +303,30 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         super().after_crud_save()
         if self.crud_mode != "EDIT":
             if self.s.form_table:
-                ai = "*" if q2ask("Set AUTOINCREMENT for primary key?") == 2 else ""
-                self.db.insert(
-                    "lines",
-                    {
-                        "name": self.s.name,
-                        "column": "id",
-                        "control": "line",
-                        "noform": "*",
-                        "nogrid": "*",
-                        "datatype": "int",
-                        "migrate": "*",
-                        "pk": "*",
-                        "ai": ai,
-                    },
-                )
-                self.db.insert(
-                    "actions",
-                    {
-                        "name": self.s.name,
-                        "action_mode": "1",
-                    },
-                )
+                if self.crud_mode == "NEW" or not self.db.get("lines", f"name='{self.s.name}' and pk='*'"):
+                    ai = "*" if q2ask("Set AUTOINCREMENT for primary key?") == 2 else ""
+                    self.db.insert(
+                        "lines",
+                        {
+                            "name": self.s.name,
+                            "column": "id",
+                            "control": "line",
+                            "noform": "*",
+                            "nogrid": "*",
+                            "datatype": "int",
+                            "migrate": "*",
+                            "pk": "*",
+                            "ai": ai,
+                        },
+                    )
+                if self.crud_mode == "NEW" or not self.db.get(
+                    "actions", f"name='{self.s.name}' and action_mode=1"
+                ):
+                    self.db.insert(
+                        "actions",
+                        {
+                            "name": self.s.name,
+                            "action_mode": "1",
+                        },
+                    )
                 self.refresh()
