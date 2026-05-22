@@ -427,7 +427,7 @@ class Q2Form(_Q2Form):
             if er := parse_update_error(data_error):
                 data_error = (
                     _("Update failed: related record is missing. ")
-                    + "<br>"
+                    + "<br><br>"
                     + _("The value")
                     + f" <b>{er['value']}</b> "
                     + _("in field")
@@ -436,14 +436,15 @@ class Q2Form(_Q2Form):
                     + f" <b>{er['target_table']}</b> "
                     + _("(field")
                     + f" <b>{er['target_field']}</b>). "
-                    + _("Please enter a valid value from")
+                    + _("Please enter(select) a valid value from")
                     + f" <b>{er['target_table']}</b> "
-                    + _("and try again.")
+                    + _(" and try again.")
                 )
         elif "for delete:" in data_error:
             if er := parse_delete_error(data_error):
                 data_error = (
                     _("Delete failed: record is in use. ")
+                    + "<br><br>"
                     + _("The record with value")
                     + f" <b>{er['value']}</b> "
                     + _("in field")
@@ -454,7 +455,10 @@ class Q2Form(_Q2Form):
                     + f" <b>{er['source_field']}</b> "
                     + _("of table")
                     + f" <b>{er['source_table']}</b>. "
-                    + _("Remove related records first and try again.")
+                    + "<br>"
+                    + _(" Remove records that use this value from ")
+                    + f" <b>{er['source_table']}</b> "
+                    + _(" and try again.")
                 )
 
         return data_error

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-14 12:05+0200\n"
+"POT-Creation-Date: 2026-05-22 17:54+0200\n"
 "PO-Revision-Date: 2026-01-21 13:30+0100\n"
 "Last-Translator: Gemini\n"
 "Language-Team: none\n"
@@ -19,7 +19,7 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:42
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:64
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:65
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:95
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:303
 msgid "Run"
@@ -30,14 +30,14 @@ msgid "Action text"
 msgstr "Текст действия"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:51
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:70
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:71
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:113
 msgid "Main"
 msgstr "Главная"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:53
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:44
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:73
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:74
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:119
 msgid "Sequence number"
 msgstr "Порядковый номер"
@@ -68,7 +68,7 @@ msgid "Disabled for empty grid"
 msgstr "Отключено для пустой таблицы"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:77
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:502
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:609
 msgid "Form name"
 msgstr "Имя формы"
 
@@ -76,18 +76,18 @@ msgstr "Имя формы"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:91
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:95
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:139
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:128
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:139
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:129
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:140
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:143
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:202
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:213
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:225
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:239
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:219
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:231
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:245
 msgid "?"
 msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:81
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:240
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:246
 msgid "Open list of existing forms"
 msgstr "Открыть список существующих форм"
 
@@ -101,7 +101,7 @@ msgid "Child where"
 msgstr "Условие (where) дочерней формы"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:92
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:226
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:232
 msgid "Open list of existing columns"
 msgstr "Открыть список существующих колонок"
 
@@ -118,8 +118,8 @@ msgid "Ask;Always;Newer"
 msgstr "Спрашивать;Всегда;Более новые"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:117
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:207
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:253
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:208
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:259
 msgid "Form"
 msgstr "Форма"
 
@@ -132,7 +132,7 @@ msgstr "Скрипт действия"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:137
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:42
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:49
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:266
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:272
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:57
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:39
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2queries.py:67
@@ -142,9 +142,9 @@ msgid "Comment"
 msgstr "Комментарий"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:138
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:150
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:152
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:267
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:151
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:153
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:273
 msgid "Comments"
 msgstr "Комментарии"
 
@@ -203,7 +203,7 @@ msgstr "Тип"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:35
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:43
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:177
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:67
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:68
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2market.py:34
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:41
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2packages.py:35
@@ -274,7 +274,7 @@ msgid "From q2Market"
 msgstr "Из q2Market"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:222
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:124
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:125
 msgid "Data"
 msgstr "Данные"
 
@@ -432,7 +432,7 @@ msgid "Allow to change App"
 msgstr "Разрешить изменение приложения"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:174
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:455
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:562
 msgid "Select"
 msgstr "Выбрать"
 
@@ -449,7 +449,7 @@ msgid "SQLite (*.sqlite);;All files(*.*)"
 msgstr "SQLite (*.sqlite);;Все файлы (*.*)"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:410
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:297
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:298
 msgid "Give me some NAME!!!"
 msgstr "Введите ИМЯ!!!"
 
@@ -499,251 +499,250 @@ msgstr "Описание"
 msgid "Path"
 msgstr "Путь"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:33
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:34
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:707
 msgid "Forms"
 msgstr "Формы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:47
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:48
 msgid "Lines"
 msgstr "Поля"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:54
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:55
 msgid "Actions"
 msgstr "Действия"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:63
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:64
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:165
 msgid "Migrate"
 msgstr "Миграция"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:72
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:73
 msgid "Title"
 msgstr "Заголовок"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:76
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:77
 msgid "Main menu"
 msgstr "Главное меню"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:77
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:78
 msgid "Menu bar path"
 msgstr "Путь в меню"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:78
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:79
 msgid "Menu text"
 msgstr "Текст меню"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:79
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:80
 msgid "Before path"
 msgstr "Перед путем"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:80
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:81
 msgid "Icon file name or char"
 msgstr "Имя файла иконки или символ"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:81
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:82
 msgid "Tip text"
 msgstr "Текст подсказки"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:85
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:86
 msgid "Add separator before"
 msgstr "Добавить разделитель перед"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:92
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:93
 msgid "Show in app toolbar"
 msgstr "Показывать на панели инструментов"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:103
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:104
 msgid "Add OK button"
 msgstr "Добавить кнопку ОК"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:110
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:111
 msgid "Add Cancel button"
 msgstr "Добавить кнопку Отмена"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:117
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:118
 msgid "Add view actions"
 msgstr "Добавить действия просмотра"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:125
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:126
 msgid "Data table"
 msgstr "Таблица данных"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:129
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:130
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:203
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:214
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:220
 msgid "Open list of existing tables"
 msgstr "Открыть список существующих таблиц"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:134
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:135
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1722
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1723
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1725
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:476
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:583
 msgid "Table"
 msgstr "Таблица"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:136
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:137
 msgid "Sort by"
 msgstr "Сортировать по"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:140
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:141
 msgid "Open column list"
 msgstr "Открыть список колонок"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:154
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:155
 msgid "After load"
 msgstr "После загрузки"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:157
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:158
 msgid "After Form load"
 msgstr "После загрузки формы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:161
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:162
 msgid "Build"
 msgstr "Сборка"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:166
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:167
 msgid "Before Form Build"
 msgstr "Перед сборкой формы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:174
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:175
 msgid "Before Grid Build"
 msgstr "Перед сборкой таблицы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:180
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:181
 msgid "Grid"
 msgstr "Таблица"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:185
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:186
 msgid "Before Grid Show"
 msgstr "Перед показом таблицы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:193
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:194
 msgid "After Grid Show"
 msgstr "После показа таблицы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:201
-#, fuzzy
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:202
 msgid "On Current Row Change"
 msgstr "Текущая строка"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:212
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:213
 msgid "Before Form Show"
 msgstr "Перед показом формы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:220
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:221
 msgid "After Form Show"
 msgstr "После показа формы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:226
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:566
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:581
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:606
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:227
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:673
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:688
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:713
 msgid "Save"
 msgstr "Сохранить"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:229
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:230
 msgid "Before save"
 msgstr "Перед сохранением"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:232
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:233
 msgid "After save"
 msgstr "После сохранения"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:235
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:236
 msgid "Delete"
 msgstr "Удалить"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:238
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:239
 msgid "Before delete"
 msgstr "Перед удалением"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:241
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:242
 msgid "After delete"
 msgstr "После удаления"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:244
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:245
 msgid "Valid"
 msgstr "Проверка (Valid)"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:251
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:252
 msgid "Refresh"
 msgstr "Обновить"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:258
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:259
 msgid "After close"
 msgstr "После закрытия"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:184
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:185
 msgid "__lang_name__"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:185
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:186
 msgid "__lang_native__"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:192
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:193
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:716
 msgid "Locales"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:207
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:208
 msgid "Translations"
 msgstr "Переводы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:214
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:215
 msgid "Collect"
 msgstr "Собрать"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:220
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:221
 msgid "Clear cache"
 msgstr "Очистить кэш"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:230
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:276
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:231
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:284
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:92
 msgid "Language"
 msgstr "Язык"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:231
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:232
 msgid "Name (English)"
 msgstr "Название (Английский)"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:232
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:233
 msgid "Native name"
 msgstr "Название (Родной язык)"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:233
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:234
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:123
 msgid "Disabled"
 msgstr "Отключено"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:261
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:269
 msgid "Tranlations"
 msgstr "Переводы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:277
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:285
 msgid "Key"
 msgstr "Ключ"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:278
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:286
 msgid "Translation"
 msgstr "Перевод"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:279
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:287
 msgid "Context"
 msgstr "контекст"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:282
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:290
 msgid "Sources"
 msgstr "Источники"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:289
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:297
 msgid "Translation sources"
 msgstr "Источники перевода"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:296
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2i18n.py:304
 msgid "All translations"
 msgstr "Все переводы"
 
@@ -826,43 +825,47 @@ msgid "Linked"
 msgstr "Связанный"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:199
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:208
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:210
 msgid "To table"
 msgstr "К таблице"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:210
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:219
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:216
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:225
 msgid "To field"
 msgstr "К полю"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:221
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:233
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:227
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:239
 msgid "Data to show"
 msgstr "Отображаемые данные"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:236
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:245
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:242
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:251
 msgid "Form to open"
 msgstr "Форма для открытия"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:268
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:271
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:279
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:295
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:274
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:277
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:285
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:301
 msgid "Script When"
 msgstr "Скрипт When"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:276
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:282
 msgid "Script Show"
 msgstr "Скрипт Show"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:292
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:298
 msgid "Script Valid"
 msgstr "Скрипт Valid"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:300
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:306
 msgid "Stylesheet"
 msgstr "Таблица стилей (CSS)"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:504
+msgid "The datalen value must be entered!"
+msgstr "Нужно ввести длину поля"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2modules.py:51
 msgid "Module"
@@ -906,17 +909,14 @@ msgid "Loading app> "
 msgstr "Загрузка приложения> "
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:442
-#, fuzzy
 msgid "Prepare"
 msgstr "Подготовка данных"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:444
-#, fuzzy
 msgid "Migrate logic DB"
 msgstr "Миграция"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:447
-#, fuzzy
 msgid "Migrate data DB"
 msgstr "Миграция"
 
@@ -925,7 +925,6 @@ msgid "Create menus"
 msgstr "Создание меню"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:451
-#, fuzzy
 msgid "Looking for updates"
 msgstr "Проверить обновления"
 
@@ -1016,7 +1015,7 @@ msgstr "Закрыть"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:716
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:718
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:719
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:652
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:760
 msgid "Dev"
 msgstr "Разработка"
 
@@ -1332,6 +1331,10 @@ msgstr "Это удалит все дочерние элементы! Продо
 msgid "Remove rows?"
 msgstr "Удалить строки?"
 
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:31
+msgid "Style Settings"
+msgstr "Настройки стиля"
+
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2stylesettings.py:52
 msgid "Size"
 msgstr "Размер"
@@ -1348,98 +1351,151 @@ msgstr "Применить сразу"
 msgid "Reset to Arial, 12"
 msgstr "Установить Arial, 12"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:249
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:287
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:250
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:288
 msgid "Changelog"
 msgstr "История изменений"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:257
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:258
 msgid "Select viewing mode for changelog: only current row or all rows?"
 msgstr ""
 "Выберите режим просмотра истории: только для текущей строки или для всех?"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:259
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:260
 msgid "Cancel"
 msgstr "Отмена"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:260
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:261
 msgid "Current row"
 msgstr "Текущая строка"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:261
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:262
 msgid "All"
 msgstr "Все"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:262
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:263
 msgid "Deleted"
 msgstr "Удаленные"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:263
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:264
 msgid "Inserted"
 msgstr "Добавленные"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:264
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:265
 msgid "Updated"
 msgstr "Обновленные"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:291
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:292
 msgid "Mode"
 msgstr "Режим"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:292
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:293
 msgid "Time"
 msgstr "Время"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:301
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:302
 msgid "Are You sure?"
 msgstr "Вы уверены?"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:308
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:309
 msgid "Restore row"
 msgstr "Восстановить строки"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:334
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:335
 msgid "Info"
 msgstr "Информация"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:347
-#, fuzzy
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:348
 msgid "Raw table"
 msgstr "Таблица данных"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:429
+msgid "Update failed: related record is missing. "
+msgstr "Не удалось сохранить изменения: отсутствует связанная запись."
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:431
+msgid "The value"
+msgstr "Значение"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:433
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:450
+msgid "in field"
+msgstr "в поле"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:435
+msgid "does not exist in table"
+msgstr "не существует в таблице"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:437
+msgid "(field"
+msgstr "(поле"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:439
+msgid "Please enter(select) a valid value from"
+msgstr "Пожалуйста, введите(выберите) корректное значение из"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:441
+msgid "and try again."
+msgstr "и повторите попытку"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:446
+msgid "Delete failed: record is in use. "
+msgstr "Не удалось удалить: строка используется."
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:448
+msgid "The record with value"
+msgstr "Строка со значением "
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:452
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:456
+msgid "of table"
+msgstr "таблицы"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:454
+msgid "is used in field"
+msgstr "используется в поле"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:459
+msgid " Remove records that use this value from "
+msgstr " Удалите строки, которые используют это значение, из "
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:461
+msgid " and try again."
+msgstr "и повторите попытку."
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:536
 msgid "Make your choice"
 msgstr "Сделайте выбор"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:475
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:582
 msgid "Select table"
 msgstr "Выбрать таблицу"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:483
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:590
 msgid "Select column"
 msgstr "Выберать колонку"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:484
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:591
 msgid "Column"
 msgstr "Колонка"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:501
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:608
 msgid "Select form"
 msgstr "Выбрать форму"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:568
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:583
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:605
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:675
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:690
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:712
 msgid "Save and run"
 msgstr "Сохранить и запустить"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:726
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:838
 msgid "from"
-msgstr ""
+msgstr "из"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:730
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:842
 msgid "to"
-msgstr ""
+msgstr "в"
 
 #~ msgid "<b>Loading failed for</b>:<br>"
 #~ msgstr "<b>Загрузка не удалась для</b>:<br>"
