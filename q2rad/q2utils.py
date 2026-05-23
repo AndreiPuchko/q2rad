@@ -662,7 +662,7 @@ class Q2_save_and_run:
     def _save_and_run(self):
         if self.crud_mode == "EDIT":
             self._save()
-            self.run_action("Run")
+            self.run_action(_("Run"))
 
     def _save_and_run_disable(self):
         if self.crud_mode != "EDIT":
