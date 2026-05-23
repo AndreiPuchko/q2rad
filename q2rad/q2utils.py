@@ -380,47 +380,6 @@ class Q2Form(_Q2Form):
         form.run()
 
     def get_data_error(self):
-        def parse_update_error(message):
-            pattern = re.compile(
-                r"For\s+([a-zA-Z_]\w*)\.([a-zA-Z_]\w*)\s+not found value\s+'([^']+)'\s+in table\s+([a-zA-Z_]\w*)\.([a-zA-Z_]\w*)",
-                re.IGNORECASE,
-            )
-
-            match = pattern.search(message)
-            if not match:
-                return None
-
-            source_table, source_field, value, target_table, target_field = match.groups()
-
-            return {
-                "source_table": get_form_title(source_table),
-                "source_field": get_column_label(source_table, source_field),
-                "target_table": get_form_title(target_table),
-                "target_field": get_column_label(target_table, target_field),
-                "value": value,
-            }
-
-        def parse_delete_error(message):
-            pattern = re.compile(
-                r'Row in\s+"([^"]+)"\."([^"]+)"=([^\s]+)\s+can not to be deleted,'
-                r'\s+because\s+it used in table\s+"([^"]+)"\."([^"]+)"',
-                re.IGNORECASE,
-            )
-
-            match = pattern.search(message)
-            if not match:
-                return None
-
-            target_table, target_field, value, source_table, source_field = match.groups()
-
-            return {
-                "target_table": get_form_title(target_table),
-                "target_field": get_column_label(target_table, target_field),
-                "value": value,
-                "source_table": get_form_title(source_table),
-                "source_field": get_column_label(source_table, source_field),
-            }
-
         data_error = super().get_data_error()
 
         if self.db.last_error_data["action"] in ["UPDATE", "INSERT"]:
