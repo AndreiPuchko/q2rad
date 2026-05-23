@@ -423,43 +423,41 @@ class Q2Form(_Q2Form):
 
         data_error = super().get_data_error()
 
-        if "for update:" in data_error or "for insert:" in data_error:
-            if er := parse_update_error(data_error):
-                data_error = (
-                    _("Update failed: related record is missing. ")
-                    + "<br><br>"
-                    + _("The value")
-                    + f" <b>{er['value']}</b> "
-                    + _("in field")
-                    + f" <b>{er['source_field']}</b> "
-                    + _("does not exist in table")
-                    + f" <b>{er['target_table']}</b> "
-                    + _("(field")
-                    + f" <b>{er['target_field']}</b>). "
-                    + _("Please enter(select) a valid value from")
-                    + f" <b>{er['target_table']}</b> "
-                    + _(" and try again.")
-                )
-        elif "for delete:" in data_error:
-            if er := parse_delete_error(data_error):
-                data_error = (
-                    _("Delete failed: record is in use. ")
-                    + "<br><br>"
-                    + _("The record with value")
-                    + f" <b>{er['value']}</b> "
-                    + _("in field")
-                    + f" <b>{er['target_field']}</b> "
-                    + _("of table")
-                    + f" <b>{er['target_table']}</b> "
-                    + _("is used in field")
-                    + f" <b>{er['source_field']}</b> "
-                    + _("of table")
-                    + f" <b>{er['source_table']}</b>. "
-                    + "<br>"
-                    + _(" Remove records that use this value from ")
-                    + f" <b>{er['source_table']}</b> "
-                    + _(" and try again.")
-                )
+        if self.db.last_error_data["action"] in ["UPDATE", "INSERT"]:
+            data_error = (
+                _("Update failed: related record is missing. ")
+                + "<br><br>"
+                + _("The value")
+                + f" <b>{self.db.last_error_data['rejected_value']}</b> "
+                + _("in field")
+                + f" <b>{self.db.last_error_data['source_column']}</b> "
+                + _("does not exist in table")
+                + f" <b>{self.db.last_error_data['target_table']}</b> "
+                + _("(field")
+                + f" <b>{self.db.last_error_data['target_column']}</b>). "
+                + _("Please enter(select) a valid value from")
+                + f" <b>{self.db.last_error_data['target_table']}</b> "
+                + _(" and try again.")
+            )
+        elif self.db.last_error_data["action"] == "DELETE":
+            data_error = (
+                _("Delete failed: record is in use. ")
+                + "<br><br>"
+                + _("The record with value")
+                + f" <b>{self.db.last_error_data['rejected_value']}</b> "
+                + _("in field")
+                + f" <b>{self.db.last_error_data['source_column']}</b> "
+                + _("of table")
+                + f" <b>{self.db.last_error_data['source_table']}</b> "
+                + _("is used in field")
+                + f" <b>{self.db.last_error_data['target_column']}</b> "
+                + _("of table")
+                + f" <b>{self.db.last_error_data['target_table']}</b>. "
+                + "<br>"
+                + _(" Remove records that use this value from ")
+                + f" <b>{self.db.last_error_data['source_table']}</b> "
+                + _(" and try again.")
+            )
 
         return data_error
 
