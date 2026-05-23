@@ -511,6 +511,7 @@ return round_(num(price)*num(quantity), 0)""",
     def before_form_show(self):
         if self.crud_mode == "NEW" and self.prev_form and self.prev_form.r.form_table:
             self.s.migrate = "*"
+        self._save_and_run_disable()
         self.datatype_valid()
         self.control_valid()
         self.database_valid()

@@ -148,7 +148,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         self.system_controls.insert(2, self._save_and_run_control)
 
     def form_runner(self):
-        self.q2_app.run_form(self.r.name)        
+        self.q2_app.run_form(self.r.name)
 
     def copy_to(self):
         rows = self.get_grid_selected_rows()
@@ -174,13 +174,23 @@ class Q2Actions(Q2Form, Q2_save_and_run):
 
     def action_mode_valid(self):
         for x in [x for x in self.widgets()]:
+            print(x)
             if x.startswith("_"):
                 continue
             elif x.startswith("/"):
                 continue
             elif not hasattr(self.widgets()[x], "set_disabled"):
                 continue
-            elif x in ("action_mode", "ordnum", "comment", "seq", "name", "action_text", "crud_buttons"):
+            elif x in (
+                "action_mode",
+                "ordnum",
+                "comment",
+                "seq",
+                "name",
+                "action_text",
+                "crud_buttons",
+                "save_and_run_actions_visible",
+            ):
                 continue
             else:
                 self.widgets()[x].set_disabled(self.s.action_mode != "2")
@@ -210,5 +220,6 @@ class Q2Actions(Q2Form, Q2_save_and_run):
 
     def before_form_show(self):
         self.action_mode_valid()
+        self._save_and_run_disable()
         if self.s.action_worker != "":
             self.w.tab.set_tab(_("Action Script"))

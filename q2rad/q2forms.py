@@ -274,6 +274,9 @@ class Q2Forms(Q2Form, Q2_save_and_run):
             self.controls.delete("save_and_run_actions_visible")
         self.system_controls.insert(2, self._save_and_run_control)
 
+    def before_form_show(self):
+        self._save_and_run_disable()
+
     def select_data_storage_table(self):
         choice = choice_table()
         if choice:
