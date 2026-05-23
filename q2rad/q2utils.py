@@ -668,6 +668,8 @@ class Q2_save_and_run:
         if self.crud_mode != "EDIT":
             self.dev_actions.set_disabled(_("Save and run"))
             self.dev_actions.set_disabled(_("Save"))
+            self.dev_actions_visible.set_visible(_("Save and run"), False)
+            self.dev_actions_visible.set_visible(_("Save"), False)
 
 
 class auto_filter:
