@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 17:54+0200\n"
+"POT-Creation-Date: 2026-05-22 18:02+0200\n"
 "PO-Revision-Date: 2026-01-28 12:40+0100\n"
 "Last-Translator: Gemini AI\n"
 "Language-Team: German\n"
@@ -624,9 +624,8 @@ msgid "After Grid Show"
 msgstr "Nach Rasteranzeige"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:202
-#, fuzzy
 msgid "On Current Row Change"
-msgstr "Aktuelle Zeile"
+msgstr "Bei Änderung der aktuellen Zeile"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:213
 msgid "Before Form Show"
@@ -912,28 +911,24 @@ msgid "Loading app> "
 msgstr "App wird geladen> "
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:442
-#, fuzzy
 msgid "Prepare"
-msgstr "Daten vorbereiten..."
+msgstr "Vorbereiten"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:444
-#, fuzzy
 msgid "Migrate logic DB"
-msgstr "Migrieren"
+msgstr "Migrieren logic DB"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:447
-#, fuzzy
 msgid "Migrate data DB"
-msgstr "Migrieren"
+msgstr "Migrieren  data DB"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:449
 msgid "Create menus"
 msgstr "Menüs erstellen"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:451
-#, fuzzy
 msgid "Looking for updates"
-msgstr "Auf Updates prüfen"
+msgstr "Suche nach Updates"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:454
 msgid "Done!"
@@ -1414,9 +1409,8 @@ msgid "Info"
 msgstr "Info"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:348
-#, fuzzy
 msgid "Raw table"
-msgstr "Datentabelle"
+msgstr "Rohtabelle"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:429
 msgid "Update failed: related record is missing. "
@@ -1436,7 +1430,6 @@ msgid "does not exist in table"
 msgstr "existiert nicht in der Tabelle"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:437
-#, fuzzy
 msgid "(field"
 msgstr "(Feld"
 
@@ -1445,8 +1438,9 @@ msgid "Please enter(select) a valid value from"
 msgstr "Bitte wählen Sie einen gültigen Wert aus"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:441
-msgid "and try again."
-msgstr "und versuchen Sie es erneut."
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:461
+msgid " and try again."
+msgstr " und versuchen Sie es erneut."
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:446
 msgid "Delete failed: record is in use. "
@@ -1466,13 +1460,8 @@ msgid "is used in field"
 msgstr "wird im Feld verwendet"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:459
-#, fuzzy
 msgid " Remove records that use this value from "
 msgstr "Entfernen Sie Datensätze, die diesen Wert verwenden, aus"
-
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:461
-msgid " and try again."
-msgstr " und versuchen Sie es erneut."
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:536
 msgid "Make your choice"

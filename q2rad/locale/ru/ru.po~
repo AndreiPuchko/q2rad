@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 17:54+0200\n"
+"POT-Creation-Date: 2026-05-22 18:02+0200\n"
 "PO-Revision-Date: 2026-01-21 13:30+0100\n"
 "Last-Translator: Gemini\n"
 "Language-Team: none\n"
@@ -1435,8 +1435,9 @@ msgid "Please enter(select) a valid value from"
 msgstr "Пожалуйста, введите(выберите) корректное значение из"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:441
-msgid "and try again."
-msgstr "и повторите попытку"
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:461
+msgid " and try again."
+msgstr "и повторите попытку."
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:446
 msgid "Delete failed: record is in use. "
@@ -1458,10 +1459,6 @@ msgstr "используется в поле"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:459
 msgid " Remove records that use this value from "
 msgstr " Удалите строки, которые используют это значение, из "
-
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:461
-msgid " and try again."
-msgstr "и повторите попытку."
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:536
 msgid "Make your choice"
@@ -1496,9 +1493,6 @@ msgstr "из"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:842
 msgid "to"
 msgstr "в"
-
-#~ msgid "<b>Loading failed for</b>:<br>"
-#~ msgstr "<b>Загрузка не удалась для</b>:<br>"
 
 #~ msgid "Enabled"
 #~ msgstr "Разрешено"

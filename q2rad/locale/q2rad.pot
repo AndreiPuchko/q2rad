@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 18:02+0200\n"
+"POT-Creation-Date: 2026-05-24 22:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,7 @@ msgstr ""
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:65
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:95
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:303
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:665
 msgid "Run"
 msgstr ""
 
@@ -67,7 +68,7 @@ msgid "Disabled for empty grid"
 msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:77
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:609
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:566
 msgid "Form name"
 msgstr ""
 
@@ -124,7 +125,7 @@ msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:129
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:132
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:214
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:226
 msgid "Action Script"
 msgstr ""
 
@@ -430,7 +431,7 @@ msgid "Allow to change App"
 msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:174
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:562
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:519
 msgid "Select"
 msgstr ""
 
@@ -447,7 +448,7 @@ msgid "SQLite (*.sqlite);;All files(*.*)"
 msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:410
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:298
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:301
 msgid "Give me some NAME!!!"
 msgstr ""
 
@@ -577,7 +578,7 @@ msgstr ""
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1722
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1723
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1725
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:583
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:540
 msgid "Table"
 msgstr ""
 
@@ -634,9 +635,10 @@ msgid "After Form Show"
 msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:227
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:673
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:688
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:713
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:630
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:645
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:670
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:672
 msgid "Save"
 msgstr ""
 
@@ -1006,7 +1008,7 @@ msgstr ""
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:716
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:718
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:719
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:760
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:719
 msgid "Dev"
 msgstr ""
 
@@ -1399,87 +1401,92 @@ msgstr ""
 msgid "Raw table"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:429
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:387
 msgid "Update failed: related record is missing. "
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:431
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:389
 msgid "The value"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:433
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:450
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:391
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:407
 msgid "in field"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:435
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:393
 msgid "does not exist in table"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:437
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:395
 msgid "(field"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:439
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:397
 msgid "Please enter(select) a valid value from"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:441
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:461
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:399
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:418
 msgid " and try again."
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:446
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:403
 msgid "Delete failed: record is in use. "
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:448
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:405
 msgid "The record with value"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:452
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:456
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:409
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:413
 msgid "of table"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:454
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:411
 msgid "is used in field"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:459
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:416
 msgid " Remove records that use this value from "
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:536
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:493
 msgid "Make your choice"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:582
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:539
 msgid "Select table"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:590
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:547
 msgid "Select column"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:591
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:548
 msgid "Column"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:608
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:565
 msgid "Select form"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:675
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:690
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:712
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:566
+msgid "Form title"
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:632
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:647
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:669
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:671
 msgid "Save and run"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:838
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:797
 msgid "from"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:842
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:801
 msgid "to"
 msgstr ""
