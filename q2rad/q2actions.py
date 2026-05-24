@@ -174,7 +174,6 @@ class Q2Actions(Q2Form, Q2_save_and_run):
 
     def action_mode_valid(self):
         for x in [x for x in self.widgets()]:
-            print(x)
             if x.startswith("_"):
                 continue
             elif x.startswith("/"):
@@ -201,7 +200,10 @@ class Q2Actions(Q2Form, Q2_save_and_run):
     def select_child_form(self):
         choice = choice_form()
         if choice:
+            self.s.eof_disabled = "*"
             self.s.child_form = choice["name"]
+            if self.s.action_text == "":
+                self.s.action_text = choice["title"]
             if self.s.child_where == "":
                 parent_pk = q2cursor(
                     f"""select column
@@ -210,7 +212,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
                     """,
                     self.db,
                 ).r.column
-                self.s.child_where = parent_pk + "={%s}" % parent_pk
+                self.s.child_where = "={%s}" % parent_pk
 
     def select_child_foreign_key(self):
         if self.s.child_where.startswith("=") or self.s.child_where == "":
@@ -219,6 +221,9 @@ class Q2Actions(Q2Form, Q2_save_and_run):
                 self.s.child_where = choice["col"] + self.s.child_where
 
     def before_form_show(self):
+        if self.crud_mode != "EDIT":
+            if self.db.get("actions", f"name='{self.prev_form.r.name}' and action_mode=1"):
+                self.s.action_mode = 2
         self.action_mode_valid()
         self._save_and_run_disable()
         if self.s.action_worker != "":
