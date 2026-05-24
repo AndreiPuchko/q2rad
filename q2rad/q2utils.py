@@ -555,7 +555,7 @@ def choice_form():
             x
             for x in q2cursor(
                 """
-                select name
+                select name, title
                 from forms
                 order by name
                 """,
@@ -563,7 +563,7 @@ def choice_form():
             ).records()
         ],
         title=_("Select form"),
-        column_title=_("Form name"),
+        column_title=[_("Form name"), _("Form title")],
     )
 
 
