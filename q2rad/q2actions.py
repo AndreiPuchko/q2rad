@@ -213,6 +213,9 @@ class Q2Actions(Q2Form, Q2_save_and_run):
                     self.db,
                 ).r.column
                 self.s.child_where = "={%s}" % parent_pk
+                if child_column := self.db.get("lines", f"""name='{self.s.child_form}' 
+                                        and to_table='{self.prev_form.r.form_table}'""", "column")
+                    self.s.child_where = child_column + self.s.child_where
 
     def select_child_foreign_key(self):
         if self.s.child_where.startswith("=") or self.s.child_where == "":
