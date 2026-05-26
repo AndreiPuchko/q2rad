@@ -241,6 +241,8 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             self.w.tab.set_tab(_("Action Script"))
 
     def before_crud_save(self):
+        if not self.s.child_form:
+            return True
         if not (
             match := re.search(r"\s*(?P<child_col>\w+)\s*=\s*\{(?P<parent_col>\w+)\}.*", self.s.child_where)
         ):
@@ -254,7 +256,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         if not q2cursor(
             f"""select `column` 
                         from `lines` 
-                        where name='{self.prev_form.r.name}' and column='{parent_col}'
+                        where name='{self.prev_form.r.name}' and `column`='{parent_col}'
                         """,
             q2_db=self.db,
         ).r.column:
@@ -266,7 +268,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         elif not q2cursor(
             f"""select `column` 
                         from `lines` 
-                        where name='{self.s.child_form}' and column='{child_col}''
+                        where name='{self.s.child_form}' and `column`='{child_col}'
                         """,
             q2_db=self.db,
         ).r.column:
