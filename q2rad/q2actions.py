@@ -208,18 +208,21 @@ class Q2Actions(Q2Form, Q2_save_and_run):
                 self.s.action_text = choice["title"]
             if self.s.child_where == "":
                 parent_pk = q2cursor(
-                    f"""select column
-                        from lines
+                    f"""select `column`
+                        from `lines`
                         where name='{self.prev_form.r.name}' and pk='*'
                     """,
                     self.db,
                 ).r.column
                 self.s.child_where = "={%s}" % parent_pk
-                if child_column := self.db.get(
-                    "lines",
-                    f"""name='{self.s.child_form}' and to_table='{self.prev_form.r.form_table}'""",
-                    "column",
-                ):
+                child_column = q2cursor(
+                    f"""select `column` 
+                        from `lines` 
+                        where `name`='{self.s.child_form}' 
+                            and to_table='{self.prev_form.r.form_table}'""",
+                    q2_db=self.db,
+                ).r.column
+                if child_column:
                     self.s.child_where = child_column + self.s.child_where
 
     def select_child_foreign_key(self):
@@ -247,13 +250,26 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         child_form = self.s.child_form
         parent_col = match.group("parent_col")
         parent_form = self.prev_form.r.name
-        if not self.db.get("lines", f"name='{self.prev_form.r.name}' and column='{parent_col}'"):
+
+        if not q2cursor(
+            f"""select `column` 
+                        from `lines` 
+                        where name='{self.prev_form.r.name}' and column='{parent_col}'
+                        """,
+            q2_db=self.db,
+        ).r.column:
             q2mess(
                 _("Column <b>%(parent_col)s</b> was not found in the parent form <b>%(parent_form)s</b>.")
                 % locals()
             )
             return False
-        elif not self.db.get("lines", f"name='{self.s.child_form}' and column='{child_col}'"):
+        elif not q2cursor(
+            f"""select `column` 
+                        from `lines` 
+                        where name='{self.s.child_form}' and column='{child_col}''
+                        """,
+            q2_db=self.db,
+        ).r.column:
             q2mess(
                 _("Column <b>%(child_col)s</b> was not found in the child form <b>%(child_form)s</b>.")
                 % locals()
