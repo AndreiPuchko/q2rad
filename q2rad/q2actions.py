@@ -18,6 +18,8 @@ from q2gui.q2model import Q2CursorModel
 from q2rad.q2raddb import last_error, insert
 from q2rad.q2utils import q2cursor, choice_form, choice_column, Q2_save_and_run, Q2Form, int_
 from q2gui import q2app
+from q2gui.q2dialogs import q2mess
+import re
 
 from q2rad.q2utils import tr
 
@@ -106,7 +108,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             self.add_control(
                 "child_copy_mode",
                 _("Copy mode"),
-                pic=_("Ask;Always;Newer"),
+                pic=_("Ask;Always;Never"),
                 control="radio",
                 datatype="int",
             )
@@ -213,8 +215,11 @@ class Q2Actions(Q2Form, Q2_save_and_run):
                     self.db,
                 ).r.column
                 self.s.child_where = "={%s}" % parent_pk
-                if child_column := self.db.get("lines", f"""name='{self.s.child_form}' 
-                                        and to_table='{self.prev_form.r.form_table}'""", "column")
+                if child_column := self.db.get(
+                    "lines",
+                    f"""name='{self.s.child_form}' and to_table='{self.prev_form.r.form_table}'""",
+                    "column",
+                ):
                     self.s.child_where = child_column + self.s.child_where
 
     def select_child_foreign_key(self):
@@ -231,3 +236,27 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         self._save_and_run_disable()
         if self.s.action_worker != "":
             self.w.tab.set_tab(_("Action Script"))
+
+    def before_crud_save(self):
+        if not (
+            match := re.search(r"\s*(?P<child_col>\w+)\s*=\s*\{(?P<parent_col>\w+)\}.*", self.s.child_where)
+        ):
+            q2mess(_("Check child where string."))
+            return False
+        child_col = match.group("child_col")
+        child_form = self.s.child_form
+        parent_col = match.group("parent_col")
+        parent_form = self.prev_form.r.name
+        if not self.db.get("lines", f"name='{self.prev_form.r.name}' and column='{parent_col}'"):
+            q2mess(
+                _("Column <b>%(parent_col)s</b> was not found in the parent form <b>%(parent_form)s</b>.")
+                % locals()
+            )
+            return False
+        elif not self.db.get("lines", f"name='{self.s.child_form}' and column='{child_col}'"):
+            q2mess(
+                _("Column <b>%(child_col)s</b> was not found in the child form <b>%(child_form)s</b>.")
+                % locals()
+            )
+            return False
+        return True

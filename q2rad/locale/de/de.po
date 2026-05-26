@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-24 22:21+0200\n"
+"POT-Creation-Date: 2026-05-26 09:26+0200\n"
 "PO-Revision-Date: 2026-01-28 12:40+0100\n"
 "Last-Translator: Gemini AI\n"
 "Language-Team: German\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:42
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:44
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:65
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:95
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:303
@@ -25,55 +25,55 @@ msgstr ""
 msgid "Run"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:49
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:51
 msgid "Action text"
 msgstr "Aktionstext"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:51
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:53
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:71
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:113
 msgid "Main"
 msgstr "Haupt"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:53
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:55
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:44
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:74
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:119
 msgid "Sequence number"
 msgstr "Sequenznummer"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:57
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:59
 msgid "Action mode"
 msgstr "Aktionsmodus"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:63
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:65
 msgid "Action message"
 msgstr "Aktionsmeldung"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:64
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:66
 msgid "Action icon"
 msgstr "Aktionssymbol"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:65
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:67
 msgid "Hot key"
 msgstr "Tastenkürzel"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:66
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:68
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:130
 msgid "Tag"
 msgstr "Tag"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:69
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:71
 msgid "Disabled for empty grid"
 msgstr "Deaktiviert für leeres Raster"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:77
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:79
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:566
 msgid "Form name"
 msgstr "Formularname"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:80
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:91
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:82
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:93
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:95
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:139
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:129
@@ -86,50 +86,50 @@ msgstr "Formularname"
 msgid "?"
 msgstr "?"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:81
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:83
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:246
 msgid "Open list of existing forms"
 msgstr "Liste bestehender Formulare öffnen"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:86
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:88
 msgid "Child form"
 msgstr "Unterformular"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:88
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:97
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:90
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:99
 msgid "Child where"
 msgstr "Unterformular-Filter (Where)"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:92
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:94
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:232
 msgid "Open list of existing columns"
 msgstr "Liste bestehender Spalten öffnen"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:101
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:103
 msgid "Don't show"
 msgstr "Nicht anzeigen"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:108
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:110
 msgid "Copy mode"
 msgstr "Kopiermodus"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:109
-msgid "Ask;Always;Newer"
-msgstr "Fragen;Immer;Neuer"
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:111
+msgid "Ask;Always;Never"
+msgstr "Nachfragen; Immer; Nie"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:117
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:119
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:208
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:259
 msgid "Form"
 msgstr "Formular"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:129
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:132
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:226
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:131
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:134
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:238
 msgid "Action Script"
 msgstr "Aktionsskript"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:137
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:139
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2constants.py:42
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2extensions.py:49
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:272
@@ -141,12 +141,33 @@ msgstr "Aktionsskript"
 msgid "Comment"
 msgstr "Kommentar"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:138
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:140
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:151
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:153
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:273
 msgid "Comments"
 msgstr "Kommentare"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:244
+msgid "Check child where string."
+msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:252
+#, python-format
+msgid ""
+"Column <b>%(parent_col)s</b> was not found in the parent form "
+"<b>%(parent_form)s</b>."
+msgstr "Spalte <b>%(parent_col)s</b> wurde im übergeordneten Formular "
+"<b>%(parent_form)s</b> nich gefunden."
+
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:258
+#, python-format
+msgid ""
+"Column <b>%(child_col)s</b> was not found in the child form "
+"<b>%(child_form)s</b>."
+msgstr "Spalte <b>%(child_col)s</b> wurde im untergeordneten Formular "
+"<b>%(child_form)s</b> nich gefunden."
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:50
 msgid "Manage q2Application"
@@ -1503,6 +1524,3 @@ msgstr ""
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:801
 msgid "to"
 msgstr ""
-
-#~ msgid "<b>Loading failed for</b>:<br>"
-#~ msgstr "<b>Laden fehlgeschlagen für</b>:<br>"
