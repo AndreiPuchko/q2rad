@@ -108,7 +108,7 @@ class Q2Lines(Q2Form, Q2_save_and_run):
         from q2rad.q2forms import Q2Forms
 
         self.add_control("id", "", datatype="int", pk="*", ai="*", noform=1, nogrid=1)
-        self.add_control("column", _("Column name"), datalen=50)
+        self.add_control("column", _("Column name"), datalen=50, valid=self.column_valid)
         self.add_control("/")
         if self.add_control("/t", _("Main")):
             self.add_control("/f")
@@ -614,3 +614,15 @@ return round_(num(price)*num(quantity), 0)""",
                     "name",
                 )
         return True
+
+    def column_valid(self):
+        if self.crud_mode != "NEW" or self.w.column.last_data:
+            return True
+        if self.s.column.startswith("id") or self.s.column.endswith("_id"):
+            self.s.datatype = "int"
+        elif "text" in self.s.column or "comment" in self.s.column:
+            self.s.datatype = "text"
+            self.s.control = "text"
+        elif "code" in self.s.column:
+            self.s.datatype = "text"
+            self.s.control = "code"
