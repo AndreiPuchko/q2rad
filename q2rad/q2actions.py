@@ -188,6 +188,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
                 "comment",
                 "seq",
                 "name",
+                "tab",
                 "action_text",
                 "crud_buttons",
                 "save_and_run_actions_visible",
