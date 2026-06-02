@@ -225,7 +225,7 @@ class Q2QueryEdit(Q2Form):
             return content
 
     def after_form_show(self):
-        self.w.run_query_button.fix_default_height()
+        # self.w.run_query_button.fix_default_height()
         self.w.hot_key_action.set_visible(0)
         self.query_list.grid_index_changed()
         self.query_list.w.form__grid.set_focus()
@@ -285,7 +285,7 @@ class Q2QueryList(Q2Form):
                 sql = sql.replace(x, f"{value}")
             else:
                 sql = sql.replace(x, f"'{value}'")
-        q2cursor(sql, q2_db=self.query_editor_form._db).browse()
+        q2cursor(sql, q2_db=self.query_editor_form._db).browse_nomodal()
 
     def prepare_dataset_json(self):
         dataset_json = {"params": {}}
