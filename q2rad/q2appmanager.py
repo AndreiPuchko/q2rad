@@ -157,6 +157,7 @@ class AppManager(Q2Form):
                     self.add_control("/")
 
                 if self.add_control("/h", ""):
+                    self.add_control("/h", _("Open"))
                     self.add_control(
                         "exts",
                         _("Extensions"),
@@ -164,12 +165,23 @@ class AppManager(Q2Form):
                         # datalen=13,
                         valid=q2app.q2_app.run_extensions,
                     )
+                    self.add_control("/")
 
+                    self.add_control("/s")
+                    if self.add_control("/h", _("Edit")):
+                        self.add_control(
+                            "show_json",
+                            _("as JSON"),
+                            control="button",
+                            mess=_("Edit application as JSON"),
+                            valid=self.app_json_editor,
+                        )
+                        self.add_control("/")
                     self.add_control("/s")
                     if self.add_control("/h", _("Export")):
                         self.add_control(
                             "save_app",
-                            _("As JSON file"),
+                            _("as JSON file"),
                             control="button",
                             # datalen=13,
                             valid=self.export_app,
@@ -177,20 +189,18 @@ class AppManager(Q2Form):
                         if os.path.isdir(self.q2_app.q2market_path):
                             self.add_control(
                                 "save_app_2_market",
-                                _("Export to q2Market"),
+                                _("to q2Market"),
                                 control="button",
                                 # datalen=14,
                                 valid=self.export_q2market,
                                 style="background:LightCoral; ; font-weight:bold",
                             )
                         self.add_control("/")
-
                     self.add_control("/s")
-
                     if self.add_control("/h", _("Import")):
                         self.add_control(
                             "load_app",
-                            _("From JSON file"),
+                            _("from JSON file"),
                             control="button",
                             mess=_("Excluding _ prefixes"),
                             # datalen=10,
@@ -198,7 +208,7 @@ class AppManager(Q2Form):
                         )
                         self.add_control(
                             "load_app_all",
-                            _("From JSON file *"),
+                            _("from JSON file *"),
                             mess=_("Import all, including _ prefixes"),
                             control="button",
                             # datalen=10,
@@ -208,7 +218,7 @@ class AppManager(Q2Form):
                         if self.q2_app.app_url:
                             self.add_control(
                                 "load_q2market_app",
-                                _("From q2Market"),
+                                _("from q2Market"),
                                 control="button",
                                 # datalen=10,
                                 valid=self.import_q2market,
@@ -259,7 +269,7 @@ class AppManager(Q2Form):
                 if self.add_control("/h", _("Export")):
                     self.add_control(
                         "save_data",
-                        _("As JSON file"),
+                        _("as JSON file"),
                         control="button",
                         datalen=10,
                         valid=self.export_data,
@@ -269,7 +279,7 @@ class AppManager(Q2Form):
                 if self.add_control("/h", _("Import")):
                     self.add_control(
                         "load_app",
-                        _("From JSON file"),
+                        _("from JSON file"),
                         control="button",
                         datalen=10,
                         valid=self.import_data,
@@ -279,6 +289,30 @@ class AppManager(Q2Form):
             self.add_control("/")
 
         self.cancel_button = 1
+
+    def app_json_editor(self):
+        def clean_json(data):
+            if isinstance(data, dict):
+                return {
+                    k: clean_json(v)
+                    for k, v in data.items()
+                    if v not in ("", "0") and not k.startswith("q2") and k != "id"
+                }
+            elif isinstance(data, list):
+                return [clean_json(item) for item in data]
+            return data
+
+        app_json = q2working(AppManager._get_app_json, _("Prepare data..."))
+
+        form = Q2Form("Show JSON")
+        form.add_control("/v")
+        form.add_control(
+            "json",
+            control="code_json",
+            data=json.dumps(clean_json(app_json), indent=2),
+        )
+        form.cancel_button = 1
+        form.run()
 
     def reinstall(self):
         if q2ask(_("You are about to reinstall platform packages?")) == 2:

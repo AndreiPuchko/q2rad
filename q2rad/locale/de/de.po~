@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-26 09:23+0200\n"
+"POT-Creation-Date: 2026-05-26 09:26+0200\n"
 "PO-Revision-Date: 2026-01-28 12:40+0100\n"
 "Last-Translator: Gemini AI\n"
 "Language-Team: German\n"
@@ -151,6 +151,23 @@ msgstr "Kommentare"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:244
 msgid "Check child where string."
 msgstr ""
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:252
+#, python-format
+msgid ""
+"Column <b>%(parent_col)s</b> was not found in the parent form "
+"<b>%(parent_form)s</b>."
+msgstr "Spalte <b>%(parent_col)s</b> wurde im übergeordneten Formular "
+"<b>%(parent_form)s</b> nich gefunden."
+
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:258
+#, python-format
+msgid ""
+"Column <b>%(child_col)s</b> was not found in the child form "
+"<b>%(child_form)s</b>."
+msgstr "Spalte <b>%(child_col)s</b> wurde im untergeordneten Formular "
+"<b>%(child_form)s</b> nich gefunden."
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:50
 msgid "Manage q2Application"
@@ -1507,13 +1524,3 @@ msgstr ""
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:801
 msgid "to"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Column "
-#~ msgstr "Spalte"
-
-#~ msgid " not found in the parent form "
-#~ msgstr " Nicht im übergeordneten Formular gefunden "
-
-#~ msgid " not found in the child form "
-#~ msgstr " nicht im untergeordneten Formular gefunden "
