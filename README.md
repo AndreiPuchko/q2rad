@@ -6,7 +6,7 @@
     q2gui       (https://pypi.org/project/q2gui)  
     q2report    (https://pypi.org/project/q2report)  
 
-## [Read the docs](docs/index.md) 
+## [Read the docs](https://datatodoc.de/docs/q2rad) 
 
 ## System requirements:
 Python >= 3.9
