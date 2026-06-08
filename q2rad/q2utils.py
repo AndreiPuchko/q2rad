@@ -20,6 +20,7 @@ import threading
 import subprocess
 import html
 import re
+import json
 
 from q2rad import Q2Form as _Q2Form
 from q2db.cursor import Q2Cursor
@@ -828,7 +829,6 @@ class auto_filter:
                 controls[idx]["datatype"] = "char"
                 controls[idx]["control"] = "line"
                 controls[idx]["datalen"] = "100"
-        import json
 
         json_data = json.dumps(controls, indent=2, ensure_ascii=True)
         where_code = ["where_list = []"]
@@ -962,3 +962,16 @@ def ftp_upload(files=[], server="", workdir="", login="", password=""):
         localfile.close()
     connection.quit()
     w.close()
+
+
+def check_json_text(text):
+    try:
+        json_data = json.loads(text)
+        return json_data
+    except Exception as e:
+        q2Mess(
+            _("The edited text is not valid JSON. Please correct the syntax and try again.")
+            + +"<br><br>"
+            + f"{e}"
+        )
+        return False
