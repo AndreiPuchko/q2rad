@@ -1,3 +1,15 @@
+* add controls into system_controls area
+```python
+# in Before Form Build script
+form.ext_system_controls.add_control(
+            "go",
+            "Show message",
+            control="button",
+            valid=lambda: q2mess("Message"),
+        )
+```
+
+
 * set grid filter (WHERE) and order (ORDER BY)
 ```python
 # in Before Grid Show script
