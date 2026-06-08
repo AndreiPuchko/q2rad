@@ -330,20 +330,21 @@ class AppManager(Q2Form):
         self.cancel_button = 1
 
     def app_json_editor(self):
+        form = Q2Form("Edit as JSON")
         app_json = q2working(AppManager._get_app_json, _("Prepare data..."))
-        app_json_text = json.dumps(clean_json(app_json), ensure_ascii=False, indent=2)
-        form = Q2Form("Show JSON")
+        form.heap.app_json_text = json.dumps(clean_json(app_json), ensure_ascii=False, indent=2)
+
         form.add_control("/v")
         form.add_control(
             "json",
             control="code_json",
-            data=app_json_text,
+            data=form.heap.app_json_text,
         )
         form.ok_button = 1
         form.cancel_button = 1
 
         def json_save():
-            if app_json_text != form.s.json:
+            if form.heap.app_json_text != form.s.json:
                 try:
                     json_data = json.loads(form.s.json)
                 except Exception as e:
@@ -355,11 +356,19 @@ class AppManager(Q2Form):
                         )
                     )
                     return False
+                form.heap.app_json_text = form.s.json
                 if q2ask(_("Do you want to create an app snapshot before applying the changes?")):
                     AppManager.make_snapshot(_("Before applying direct JSON edits"))
                 self.import_json_app(json_data)
                 self.q2_app.migrate_db_data()
 
+        form.ext_system_controls.add_control(
+            "go",
+            _("Apply Changes"),
+            control="button",
+            mess=_("Apply changes without closing this window"),
+            valid=json_save,
+        )
         form.valid = json_save
 
         form.run()
