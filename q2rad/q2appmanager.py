@@ -14,19 +14,23 @@
 
 
 from q2db.db import Q2Db
+from q2db.cursor import Q2Cursor
+from q2gui.q2model import Q2CursorModel
 from q2gui.q2utils import num
 from q2gui import q2app
 from q2gui.q2dialogs import q2AskYN, q2Mess, Q2WaitShow, q2ask, q2working
 
 from q2rad import Q2Form
 from q2terminal.q2terminal import Q2Terminal
-from q2rad.q2raddb import insert, update, get
+from q2rad.q2raddb import insert, update, get, last_error, delete
 from datetime import datetime
 from urllib.parse import urlparse
 from q2rad.q2utils import ftp_upload
 
 import json
 import os
+import gzip
+import base64
 
 from q2rad.q2utils import tr
 
@@ -43,6 +47,35 @@ app_tables = [
     "locale",
     "locale_po",
 ]
+
+
+def clean_json(data):
+    if isinstance(data, dict):
+        return {
+            k: clean_json(v)
+            for k, v in data.items()
+            if v not in ("", "0")
+            and not k.startswith("q2_mode")
+            and not k.startswith("q2_time")
+            and k != "id"
+        }
+    elif isinstance(data, list):
+        return [clean_json(item) for item in data]
+    return data
+
+
+def encode_json(data):
+    """Converts a Python object into a gzip+Base64 string.."""
+    json_bytes = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    compressed = gzip.compress(json_bytes)
+    return base64.b64encode(compressed).decode("ascii")
+
+
+def decode_json(text):
+    """Restores a Python object from a gzip+Base64 string."""
+    compressed = base64.b64decode(text.encode("ascii"))
+    json_bytes = gzip.decompress(compressed)
+    return json.loads(json_bytes.decode("utf-8"))
 
 
 class AppManager(Q2Form):
@@ -164,6 +197,12 @@ class AppManager(Q2Form):
                         control="button",
                         # datalen=13,
                         valid=q2app.q2_app.run_extensions,
+                    )
+                    self.add_control(
+                        "snapshots",
+                        _("Snapshots"),
+                        control="button",
+                        valid=q2app.q2_app.run_snapshots,
                     )
                     self.add_control("/")
 
@@ -291,27 +330,38 @@ class AppManager(Q2Form):
         self.cancel_button = 1
 
     def app_json_editor(self):
-        def clean_json(data):
-            if isinstance(data, dict):
-                return {
-                    k: clean_json(v)
-                    for k, v in data.items()
-                    if v not in ("", "0") and not k.startswith("q2") and k != "id"
-                }
-            elif isinstance(data, list):
-                return [clean_json(item) for item in data]
-            return data
-
         app_json = q2working(AppManager._get_app_json, _("Prepare data..."))
-
+        app_json_text = json.dumps(clean_json(app_json), ensure_ascii=False, indent=2)
         form = Q2Form("Show JSON")
         form.add_control("/v")
         form.add_control(
             "json",
             control="code_json",
-            data=json.dumps(clean_json(app_json), indent=2),
+            data=app_json_text,
         )
+        form.ok_button = 1
         form.cancel_button = 1
+
+        def json_save():
+            if app_json_text != form.s.json:
+                try:
+                    json_data = json.loads(form.s.json)
+                except Exception as e:
+                    q2Mess(
+                        _(
+                            "The edited text is not valid JSON. Please correct the syntax and try again."
+                            + "<br><br>"
+                            + f"{e}"
+                        )
+                    )
+                    return False
+                if q2ask(_("Do you want to create an app snapshot before applying the changes?")):
+                    AppManager.make_snapshot(_("Before applying direct JSON edits"))
+                self.import_json_app(json_data)
+                self.q2_app.migrate_db_data()
+
+        form.valid = json_save
+
         form.run()
 
     def reinstall(self):
@@ -660,3 +710,98 @@ class AppManager(Q2Form):
         wait_table.close()
         if errors:
             q2Mess("<br>".join(errors))
+
+    @staticmethod
+    def make_snapshot(comment=""):
+        app_json = encode_json(clean_json(AppManager._get_app_json()))
+        snapshot = {"created_at": datetime.now().strftime(r"%Y-%m-%d %H:%M:%S"), "comment": comment}
+        db = q2app.q2_app.db_logic
+        insert("snapshots", snapshot, q2_db=db)
+        insert("snapshot_data", {"snapshot_id": snapshot["id"], "gzip_json_data": app_json}, q2_db=db)
+
+
+class Q2AppSnapshots(Q2Form):
+    def __init__(self, title=_("App snapshots")):
+        super().__init__(title)
+        self.no_view_action = True
+
+    def before_grid_build(self):
+        self.remove_action(_("Copy"))
+
+    def on_init(self):
+        self.create_form()
+        self.db = q2app.q2_app.db_logic
+        cursor: Q2Cursor = self.db.table(table_name="snapshots", order="created_at desc")
+        model = Q2CursorModel(cursor)
+        self.set_model(model)
+        self.add_action("/crud")
+        self.add_action("-")
+        self.add_action(_("Show"), self.show_json)
+        self.add_action(_("Restore"), self.restore_app)
+
+    def create_form(self):
+        self.add_control("id", "", datatype="int", pk="*", ai="*", nogrid=1, noform=1)
+        self.add_control("created_at", _("Created at"), datatype="char", datalen=19)
+        self.add_control("comment", _("Comment"), datatype="text")
+
+    def restore_app(self):
+        answer = q2ask(
+            _("Restore app from snapshot?<br>The current state will be lost."),
+            buttons=[_("Save snapshot and restore"), _("Restore only"), _("Cancel")],
+        )
+        if answer == 1:
+            AppManager.make_snapshot(_("Before restoring snapshot"))
+            self.refresh()
+        if answer in [1, 2]:
+            json_data = decode_json(
+                get("snapshot_data", f"snapshot_id={self.r.id}", "gzip_json_data", q2_db=self.db)
+            )
+            AppManager.import_json_app(json_data)
+            self.q2_app.migrate_db_data()
+
+    def show_json(self):
+        json_data = decode_json(
+            get("snapshot_data", f"snapshot_id={self.r.id}", "gzip_json_data", q2_db=self.db)
+        )
+        form = Q2Form("Show JSON")
+        form.add_control("/v")
+        form.add_control(
+            "json",
+            control="code_json",
+            data=json.dumps(json_data, indent=2, ensure_ascii=False),
+        )
+        form.cancel_button = 1
+        form.run_modalless()
+
+    def before_form_show(self):
+        if self.crud_mode == "EDIT":
+            self.w.created_at.set_disabled()
+        else:
+            self.s.created_at = datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
+
+    def after_crud_save(self):
+        if self.crud_mode == "NEW":
+            app_json = encode_json(clean_json(AppManager._get_app_json()))
+            if not insert(
+                "snapshot_data", {"snapshot_id": self.s.id, "gzip_json_data": app_json}, q2_db=self.db
+            ):
+                q2Mess(last_error(q2_db=self.db))
+
+    def before_delete(self):
+        record_to_be_deleted = self.model.get_record(self._row_to_be_deleted)
+        if not delete("snapshot_data", {"snapshot_id": record_to_be_deleted["id"]}, q2_db=self.db):
+            q2Mess(last_error(q2_db=self.db))
+
+
+class Q2AppSnapshotsJson(Q2Form):
+    def on_init(self):
+        self.create_form()
+        self.db = q2app.q2_app.db_logic
+        cursor: Q2Cursor = self.db.table(table_name="snapshot_data", order="")
+        model = Q2CursorModel(cursor)
+        self.set_model(model)
+
+    def create_form(self):
+        self.add_control("id", "", datatype="int", pk="*", ai="*", nogrid=1, noform=1)
+        self.add_control("snapshot_id", "", datatype="int", to_table="snapshots", to_column="id")
+        self.add_control("gzip_json_data", "", datatype="longtext")

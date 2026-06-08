@@ -50,7 +50,7 @@ from q2rad.q2raddb import *  # noqa:F403
 
 from q2gui import q2app
 from q2rad.q2utils import q2cursor, round_
-from q2rad.q2appmanager import AppManager
+from q2rad.q2appmanager import AppManager, Q2AppSnapshots, Q2AppSnapshotsJson
 from q2rad.q2stylesettings import AppStyleSettings
 from q2terminal.q2terminal import Q2Terminal
 from q2rad.q2appselector import Q2AppSelect
@@ -544,6 +544,8 @@ class Q2RadApp(Q2App):
             Q2Packages(),
             Q2Locale(),
             Q2LocalePo(),
+            Q2AppSnapshots(),
+            Q2AppSnapshotsJson(),
         ):
             for x in form.get_table_schema():
                 data_schema.add(**x)
@@ -1266,9 +1268,7 @@ class Q2RadApp(Q2App):
                 self.add_menu(_menu_path + "|-")
 
             menu_path = (
-                _menu_path
-                + "|"
-                + _(form_dic["menu_text"] if form_dic["menu_text"] else form_dic["title"])
+                _menu_path + "|" + _(form_dic["menu_text"] if form_dic["menu_text"] else form_dic["title"])
             )
 
             self.add_menu(
@@ -1296,6 +1296,9 @@ class Q2RadApp(Q2App):
 
     def run_extensions(self):
         Q2Extensions().run()
+
+    def run_snapshots(self):
+        Q2AppSnapshots().run()
 
     def run_locale(self):
         Q2Locale().run()
