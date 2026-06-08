@@ -1,3 +1,20 @@
+* set grid filter (WHERE) and order (ORDER BY)
+```python
+# in Before Grid Show script
+form.set_where("col1='2'")
+form.set_order("col1 desc")
+```
+
+* set form title
+```python
+# CRUD form - in Before Form Show script
+form.crud_form.set_title("New Title")
+# GRID - in Before Grid Show script - for
+form.grid_form.set_title("New Title")
+# Dialog form - in Before Form Show script
+form.widget().set_title("New Title")
+```
+
 * text control - set maximum height for form
 ```python
 #  in Before Form Show script
