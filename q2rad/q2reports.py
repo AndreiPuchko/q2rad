@@ -2115,7 +2115,7 @@ class Q2ReportRows(Q2Form, ReportForm):
                     form.w.ds_fields.set_data([])
 
             def ds_fields_valid():
-                form.w.content.insert(form.s.ds_fields)
+                form.w.content.insert("{" + form.s.ds_fields + "}")
 
             form.add_control("ds", _("Query name"), control="list", pic=";".join(ds), valid=ds_valid)
             form.add_control("/")
@@ -2139,7 +2139,7 @@ class Q2ReportRows(Q2Form, ReportForm):
             form.add_control("/v")
 
             def fields_valid():
-                form.w.content.insert(form.s.fields)
+                form.w.content.insert("{" + form.s.fields + "}")
 
             form.add_control("fields", _("Columns"), control="list", dblclick=fields_valid)
             form.add_control("/")
@@ -2147,7 +2147,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         if form.add_control("/t", _("Parameters")):
 
             def params_valid():
-                form.w.content.insert(form.s.params)
+                form.w.content.insert("{" + form.s.params + "}")
 
             form.add_control(
                 "params", control="list", pic=";".join(self.get_queries_params()), dblclick=params_valid
