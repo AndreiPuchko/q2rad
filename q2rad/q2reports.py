@@ -31,9 +31,9 @@ from q2rad.q2utils import *
 import json
 import os
 import logging
-import threading
+
 from q2rad.q2utils import Q2Form
-from q2rad.q2utils import tr
+from q2rad.q2utils import tr, q2choice
 
 _ = tr
 
@@ -477,7 +477,6 @@ class Q2ContentEditor(Q2Form):
             self.add_control("groupby", "GroupBy", datalen=10)
             self.add_control("data_source", "Source", pic="1;2;3", control="combo", datalen=10)
             self.add_control("print_when", "Print when")
-            self.add_control("print_after", "calc after")
             self.add_control("print_after", "calc after")
             self.add_control("new_page_before", "On new page", control="check")
             self.add_control("new_page_after", "New page after", control="check")
@@ -2076,31 +2075,118 @@ class Q2ReportRows(Q2Form, ReportForm):
         else:
             self.edit_cell_content()
 
+    def get_datasources(self):
+        return self.report_report_form.report_edit_form.query_edit.query_list.model.records
+
+    def get_queries_params(self):
+        return [
+            x["name"]
+            for x in self.report_report_form.report_edit_form.query_edit.query_list.get_params().model.records
+            if x["hidden"] == ""
+        ]
+
+    def get_datasource_cursor(self, name=""):
+        sql = self.report_report_form.report_edit_form.query_edit.query_list.prepare_sql(name)
+        return q2cursor(sql)
+
+    def get_db_tables(self):
+        return [x for x in q2app.q2_app.db_data.db_schema.get_schema_tables() if not x.startswith("log_")]
+
     def edit_cell_content(self):
         key = f"{self.rows_sheet.current_row()},{self.rows_sheet.current_column()}"
         cell_data = self.rows_data.cells.get(key, {})
         form = Q2Form(_("Edit cell content"))
-        form.add_control("/v")
-        form.add_control("content", control="code", data=self.rows_sheet.get_text())
+        form.add_control("/vs")
+        form.add_control("/h")
         form.add_control("format", "Format", control="line", data=cell_data.get("format", ""))
         form.add_control("name", "Name", control="line", data=cell_data.get("name", ""))
+        form.add_control("/")
+        form.add_control("content", control="code", data=self.rows_sheet.get_text())
+        if form.add_control("/t", _("Datasources")):
+            ds = [x["name"] for x in self.get_datasources()]
+            form.add_control("/h")
+            form.add_control("/v")
+
+            def ds_valid():
+                cu = self.get_datasource_cursor(form.s.ds)
+                if cu.row_count() > 0:
+                    form.w.ds_fields.set_data(";".join([x for x in cu.get_record(0)]))
+                else:
+                    form.w.ds_fields.set_data([])
+
+            def ds_fields_valid():
+                form.w.content.insert(form.s.ds_fields)
+
+            form.add_control("ds", _("Query name"), control="list", pic=";".join(ds), valid=ds_valid)
+            form.add_control("/")
+            form.add_control("/v")
+            form.add_control("ds_fields", _("Columns"), control="list", dblclick=ds_fields_valid)
+            form.add_control("/")
+            form.add_control("/")
+        if form.add_control("/t", _("Tables")):
+            db_tables = self.get_db_tables()
+
+            def tables_valid():
+                columns = [x for x in q2app.q2_app.db_data.db_schema.get_schema_columns(form.s.tables)]
+                form.w.fields.set_data(";".join(columns))
+
+            form.add_control("/h")
+            form.add_control("/v")
+            form.add_control(
+                "tables", _("Tables"), control="list", pic=";".join(db_tables), valid=tables_valid
+            )
+            form.add_control("/")
+            form.add_control("/v")
+
+            def fields_valid():
+                form.w.content.insert(form.s.fields)
+
+            form.add_control("fields", _("Columns"), control="list", dblclick=fields_valid)
+            form.add_control("/")
+            form.add_control("/")
+        if form.add_control("/t", _("Parameters")):
+
+            def params_valid():
+                form.w.content.insert(form.s.params)
+
+            form.add_control(
+                "params", control="list", pic=";".join(self.get_queries_params()), dblclick=params_valid
+            )
+        # if form.add_control("/t", _("Functions and Variables")):
+        #     form.add_control("/h")
+        #     form.add_control("types", control="list", pic="Functions;Variables")
+        #     form.add_control("values", control="list", pic="Datasources;Params;Tables;Functions")
+        #     form.add_control("/")
+        form.add_control("/")
         form.ok_button = 1
         form.cancel_button = 1
 
+        def after_form_show():
+            ds_valid()
+            tables_valid()
+            for x in form.controls:
+                if x["control"] == "list":
+                    form.w.__getattr__(x["column"]).set_maximum_width(140)
+                    form.w.__getattr__(x["column"]).set_maximum_height(1110)
+
+        form.after_form_show = after_form_show
+
         # def after_form_show():
         # form.w._ok_button.set_focus()
-
         # form.after_form_show = after_form_show
-        form.run_modal()
-        if form.ok_pressed:
+        def valid():
             if key not in self.rows_data.cells:
                 self.rows_data.cells[key] = {}
-            cell_data["data"] = form.s.content
-            cell_data["format"] = form.s.format
-            cell_data["name"] = form.s.name
+            self.report_report_form.content_editor.s.data = cell_data["data"] = form.s.content
+            self.report_report_form.content_editor.s.format = cell_data["format"] = form.s.format
+            self.report_report_form.content_editor.s.name = cell_data["name"] = form.s.name
             self.rows_sheet.set_text(form.s.content)
+
             self._repaint()
             # self.report_report_form.show_cell_content(cell_data)
+
+        form.valid = valid
+        form.run_modalless()
 
     def edit_row_height(self):
         height = self.rows_sheet.get_cell_text(
@@ -2153,10 +2239,11 @@ class Q2ReportRows(Q2Form, ReportForm):
         form.ok_button = 1
         form.cancel_button = 1
 
-        roles_list = "free;table;tree;header;footer"
+        # roles_list = "free;table;tree;header;footer"
+        roles_list = "free;table"
 
         def role_valid():
-            form.w.data_source.set_disabled(form.s.role != "table")
+            form.w._data_source.set_disabled(form.s.role != "table")
             if form.w.group:
                 form.w.group.set_disabled(form.s.role != "table")
 
@@ -2172,13 +2259,23 @@ class Q2ReportRows(Q2Form, ReportForm):
                 datalen=10,
                 valid=role_valid,
             )
-            form.add_control(
-                "data_source",
-                _("Datasource"),
-                data=self.rows_data.data_source,
-                disabled=self.rows_data.role != "table",
-                datalen=100,
-            )
+            if form.add_control("/h", _("Datasource"), tag="_data_source"):
+
+                def select_ds():
+                    qs = self.get_datasources()
+                    if res := q2choice(
+                        [{"name": x["name"]} for x in qs], title=_("Select datasource"), column_title=["Name"]
+                    ):
+                        form.s.data_source = res["name"]
+
+                form.add_control("ds_list", "?", control="button", datalen=2, valid=select_ds)
+                form.add_control(
+                    "data_source",
+                    data=self.rows_data.data_source,
+                    datalen=100,
+                )
+                form.add_control("/s")
+                form.add_control("/")
 
         if self.rows_data.role in ["group_header", "group_footer"]:  # group
             form.add_control(
@@ -2189,27 +2286,30 @@ class Q2ReportRows(Q2Form, ReportForm):
                 disabled=0,
             )
 
-        form.add_control("print_when", _("Print when"), data=self.rows_data.print_when)
-        form.add_control("print_after", _("After print"), data=self.rows_data.print_after)
+        # form.add_control("print_when", _("Print when"), data=self.rows_data.print_when)
+        # form.add_control("print_after", _("After print"), data=self.rows_data.print_after)
         form.add_control("/")
-        form.add_control("/h")
-        form.add_control(
-            "new_page_before",
-            _("New page before"),
-            control="check",
-            data=self.rows_data.new_page_before,
-        )
-        form.add_control(
-            "new_page_after",
-            _("New page after"),
-            control="check",
-            data=self.rows_data.new_page_after,
-        )
-        form.add_control("/")
+        # form.add_control("/h")
+        # form.add_control(
+        #     "new_page_before",
+        #     _("New page before"),
+        #     control="check",
+        #     data=self.rows_data.new_page_before,
+        # )
+        # form.add_control(
+        #     "new_page_after",
+        #     _("New page after"),
+        #     control="check",
+        #     data=self.rows_data.new_page_after,
+        # )
+        # form.add_control("/")
 
-        form.run_modal()
-        if form.ok_pressed:
-            # proceed = False23
+        def after_form_show():
+            role_valid()
+
+        form.after_form_show = after_form_show
+
+        def valid():
             last_role = self.rows_data.role
             new_role = form.s.role
             if self.rows_data.role == "table" and new_role != "table":
@@ -2240,6 +2340,9 @@ class Q2ReportRows(Q2Form, ReportForm):
                 self.add_table_footer()
 
             self.set_rows_role_text()
+
+        form.valid = valid
+        form.run_modalless()
 
     def style_button_pressed(self):
         self.w.style_button.action_set_visible("Table", self.rows_data.role == "table")

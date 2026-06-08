@@ -271,8 +271,18 @@ class Q2QueryList(Q2Form):
             self.model.insert({"name": x, "sql": content[x]})
         self.refresh()
 
-    def sql_runner(self):
-        sql = self.r.sql
+    def get_params(self):
+        return self.query_editor_form.param_list
+
+    def prepare_sql(self, query_name=""):
+        if query_name:
+            sql = ""
+            for x in self.model.records:
+                if x["name"] == query_name:
+                    sql = x["sql"]
+                    break
+        else:
+            sql = self.r.sql
         params = re_find_param.findall(sql)
         for x in params:
             value = self.query_editor_form.param_list.get_param(x)
@@ -280,6 +290,10 @@ class Q2QueryList(Q2Form):
                 sql = sql.replace(x, f"{value}")
             else:
                 sql = sql.replace(x, f"'{value}'")
+        return sql
+
+    def sql_runner(self):
+        sql = self.prepare_sql()
         q2cursor(sql, q2_db=self.query_editor_form._db).browse_nomodal()
 
     def prepare_dataset_json(self):
