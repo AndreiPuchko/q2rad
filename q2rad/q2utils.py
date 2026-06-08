@@ -646,7 +646,7 @@ class Q2_save_and_run:
         if save_only is False:
             self.dev_actions_visible.add_action(_("Save and run"), worker=self._save_and_run, hotkey="F4")
 
-        self.add_control(
+        self.ext_system_controls.add_control(
             "save_and_run_actions_visible",
             "",
             actions=self.dev_actions_visible,
