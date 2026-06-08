@@ -23,7 +23,7 @@ from q2gui.q2utils import dotdict, set_dict_default, num, int_
 from q2report.q2report import Q2Report, Q2Report_rows
 from q2rad.q2queries import re_find_param
 from q2rad.q2queries import Q2QueryEdit
-from q2rad.q2utils import q2cursor, Q2_save_and_run
+from q2rad.q2utils import q2cursor, Q2_save_and_run, check_json_text
 from q2gui import q2app
 from q2gui.q2dialogs import Q2WaitShow, q2WaitMax, q2WaitStep, q2working
 from q2rad.q2raddb import *
@@ -304,40 +304,58 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         self.add_action("-")
         self.add_action("JSON", self.edit_json, eof_disabled=1)
 
-    def before_form_build(self):
-        if self._save_and_run_control is None:
-            self._save_and_run_control = self.controls.get("save_and_run_actions_visible")
-            self.controls.delete("save_and_run_actions_visible")
-        self.system_controls.insert(2, self._save_and_run_control)
-
     def run_report(self):
         rep = Q2RadReport(self.r.content)
         rep.run()
 
     def edit_json(self):
         form = Q2Form("Edit report JSON")
-        json_editor_actions = Q2Actions()
 
-        def save_json():
+        def save_json_as_file():
+            if check_json_text(form.s.json) is False:
+                return
             json_file_name = form.q2_app.get_save_file_dialoq(filter="JSON(*.json)")[0]
             if json_file_name:
                 json_file_name = form.validate_impexp_file_name(json_file_name, "json")
                 open(json_file_name, "w", encoding="utf8").write(form.s.json)
 
-        json_editor_actions.add_action(_("Save as"), save_json, hotkey="")
+        def run_json():
+            if check_json_text(form.s.json) is False:
+                return
+            rep = Q2RadReport(form.s.json)
+            rep.run()
+
+        form.ext_system_controls.add_control("sa", _("Save as"), control="button", valid=save_json_as_file)
+        form.ext_system_controls.add_control("ru", _("Run"), control="button", valid=run_json)
         form.add_control("/v")
+        form.heap.app_json_text = self.r.content
         form.add_control(
             "json",
             control="code_json",
             data=self.r.content,
-            actions=json_editor_actions,
+            # actions=json_editor_actions,
         )
         form.ok_button = 1
         form.cancel_button = 1
-        form.run_modal()
-        if form.ok_pressed:
-            self.model.update({"name": self.r.name, "content": form.s.json})
-            self.set_grid_index(self.current_row)
+
+        def json_save():
+            if form.heap.app_json_text != form.s.json:
+                try:
+                    json_data = json.loads(form.s.json)
+                except Exception as e:
+                    q2Mess(
+                        _(
+                            "The edited text is not valid JSON. Please correct the syntax and try again."
+                            + "<br><br>"
+                            + f"{e}"
+                        )
+                    )
+                    return False
+                self.model.update({"name": self.r.name, "content": form.s.json})
+                self.set_grid_index(self.current_row)
+
+        form.valid = json_save
+        form.run_modalless()
 
     def before_form_show(self):
         self.maximized = True

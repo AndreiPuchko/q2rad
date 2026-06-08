@@ -32,7 +32,7 @@ import os
 import gzip
 import base64
 
-from q2rad.q2utils import tr
+from q2rad.q2utils import tr, check_json_text
 
 _ = tr
 
@@ -345,16 +345,7 @@ class AppManager(Q2Form):
 
         def json_save():
             if form.heap.app_json_text != form.s.json:
-                try:
-                    json_data = json.loads(form.s.json)
-                except Exception as e:
-                    q2Mess(
-                        _(
-                            "The edited text is not valid JSON. Please correct the syntax and try again."
-                            + "<br><br>"
-                            + f"{e}"
-                        )
-                    )
+                if (json_data:=check_json_text(form.s.json)) is False:
                     return False
                 form.heap.app_json_text = form.s.json
                 if q2ask(_("Do you want to create an app snapshot before applying the changes?")):
