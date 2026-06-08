@@ -341,6 +341,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
 
     def before_form_show(self):
         self.maximized = True
+        self._save_and_run_disable()
 
     def after_form_show(self):
         self.anchor: Q2Widget = self.w.anchor

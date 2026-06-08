@@ -315,12 +315,6 @@ return round_(num(price)*num(quantity), 0)""",
         self._add_save_and_run()
         self._add_save_and_run_visible()
 
-    def before_form_build(self):
-        if self._save_and_run_control is None:
-            self._save_and_run_control = self.controls.get("save_and_run_actions_visible")
-            self.controls.delete("save_and_run_actions_visible")
-        self.system_controls.insert(2, self._save_and_run_control)
-
     def alter_column(self):
         if self.r.migrate and q2AskYN(f"Alter column {self.r.column}?") == 2:
             record = self.get_current_record()
