@@ -320,7 +320,7 @@ class Q2QueryList(Q2Form):
 
         if dataset_json:
             json_form = Q2Form()
-            json_form.add_control("json", "", control="codejson", data=json.dumps(dataset_json, indent=2))
+            json_form.add_control("json", "", control="codejson", data=json.dumps(dataset_json, indent=2, ensure_ascii=False))
             json_form.ok_button = True
             json_form.show_form("JSON datasets")
 
