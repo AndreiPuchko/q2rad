@@ -518,7 +518,15 @@ class Q2ContentEditor(Q2Form):
             self.add_control("/s")
             self.add_control("/")
         if self.add_control("/h", tag="cell_panel", alignment="7"):
-            self.add_control("data", "Cell content", stretch=10, datalen=999, changed=self.changed_cell)
+            self.add_control("", "Cell content", control="label")
+            self.add_control(
+                "open_cell_editor",
+                "?",
+                control="button",
+                mess="Open cell content editor",
+                valid=self.open_cell_editor_callback,
+            )
+            self.add_control("data", "", stretch=10, datalen=999, changed=self.changed_cell)
             self.add_control("format", "Format", stretch=1, changed=self.changed_cell)
             self.add_control("name", "Name", stretch=1, changed=self.changed_cell)
             self.add_control("/s")
@@ -527,6 +535,7 @@ class Q2ContentEditor(Q2Form):
         self.width_callback = None
         self.height_callback = None
         self.cell_callback = None
+        self.open_cell_editor_callback = None
         self.first_run = True
 
     def hide_all(self):
@@ -581,10 +590,12 @@ class Q2ContentEditor(Q2Form):
         if self.w.cell_panel:
             self.w.cell_panel.hide()
         self.cell_callback = None
+        self.open_cell_editor_callback = None
 
-    def show_cell(self, data, format, name, callback):
+    def show_cell(self, data, format, name, callback, open_cell_editor_callback):
         self.hide_all()
         self.cell_callback = callback
+        self.open_cell_editor_callback = open_cell_editor_callback
         self.w.cell_panel.show()
         self.s.data = data
         self.s.format = format
@@ -593,6 +604,10 @@ class Q2ContentEditor(Q2Form):
     def changed_cell(self, text):
         if self.cell_callback:
             self.cell_callback(self.s.data, self.s.format, self.s.name)
+
+    def open_cell_editor_callback(self):
+        if self.open_cell_editor_callback:
+            self.open_cell_editor_callback()
 
 
 class Q2ReportReport(Q2Form):
@@ -2486,6 +2501,7 @@ class Q2ReportRows(Q2Form, ReportForm):
                 cell_data.get("format", ""),
                 cell_data.get("name", ""),
                 self.update_cell,
+                self.edit_cell_content,
             )
         self.in_focus_in = False
 
