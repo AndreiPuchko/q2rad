@@ -626,9 +626,10 @@ class Q2ReportReport(Q2Form):
         self.report_data = dotdict()
 
         self.set_default_report_content()
-
-        self.sizes_cell_style = """
-                background:lightsteelblue;
+        styles = self.q2_app.q2style.get_styles()
+        self.sizes_cell_style = f"""
+                background:{styles["background_disabled"]};
+                color:{styles["color_disabled"]};
                 text-align:center;
                 vertical-align:middle;
                 border-style:solid;
@@ -636,8 +637,8 @@ class Q2ReportReport(Q2Form):
                 """
 
         self.style_cell_style = f"""
-                background:
-                    {"palette(Dark)" if self.q2_app.q2style.color_mode == "dark" else "palette(Light)"};
+                background:{styles["background_control"]};
+                color:{styles["color"]};
                 text-align:center;
                 vertical-align:middle;
                 border-style:solid;
