@@ -287,7 +287,7 @@ class Q2Reports(Q2Form, Q2_save_and_run):
             "",
             datatype="longtext",
             control="codejson",
-            nogrid=0,
+            nogrid=1,
             noform=1,
         )
         self.add_control("comment", _("Comment"), datatype="text", noform=1)
@@ -2108,6 +2108,9 @@ class Q2ReportRows(Q2Form, ReportForm):
     def get_db_tables(self):
         return [x for x in q2app.q2_app.db_data.db_schema.get_schema_tables() if not x.startswith("log_")]
 
+    def get_db_table_columns(self, table):
+        return q2app.q2_app.db_data.db_schema.get_schema_columns(table)
+
     def edit_cell_content(self):
         key = f"{self.rows_sheet.current_row()},{self.rows_sheet.current_column()}"
         cell_data = self.rows_data.cells.get(key, {})
@@ -2131,7 +2134,12 @@ class Q2ReportRows(Q2Form, ReportForm):
                     form.w.ds_fields.set_data([])
 
             def ds_fields_valid():
-                form.w.content.insert("{" + form.s.ds_fields + "}")
+                if self.rows_data.data_source == form.s.ds or (
+                    "group_" in self.rows_data.role and self.parent_rows.rows_data.data_source == form.s.ds
+                ):
+                    form.w.content.insert(" {" + form.s.ds_fields + "} ")
+                else:
+                    form.w.content.insert(" {" + f"rep.d.{form.s.ds}.row(0).{form.s.ds_fields}" + "} ")
 
             form.add_control("ds", _("Query name"), control="list", pic=";".join(ds), valid=ds_valid)
             form.add_control("/")
@@ -2143,8 +2151,8 @@ class Q2ReportRows(Q2Form, ReportForm):
             db_tables = self.get_db_tables()
 
             def tables_valid():
-                columns = [x for x in q2app.q2_app.db_data.db_schema.get_schema_columns(form.s.tables)]
-                form.w.fields.set_data(";".join(columns))
+                columns = [x for x in self.get_db_table_columns(form.s.tables)]
+                form.w.fields.set_data(columns)
 
             form.add_control("/h")
             form.add_control("/v")
@@ -2155,7 +2163,11 @@ class Q2ReportRows(Q2Form, ReportForm):
             form.add_control("/v")
 
             def fields_valid():
-                form.w.content.insert("{" + form.s.fields + "}")
+                cols = [(key, value) for key, value in self.get_db_table_columns(form.s.tables).items()]
+                pk = max([key for key, value in cols if value.get("pk")])
+                formula = "{" + f"""get('{form.s.tables}', '{pk}="%s"' % {pk} ,'{form.s.fields}')""" + "}"
+                form.w.content.insert(formula)
+                # form.w.content.insert("{" + f"""get('{form.s.tables}', '{pk}=f"{{pk}}"','{form.s.fields}')""" + "}")
 
             form.add_control("fields", _("Columns"), control="list", dblclick=fields_valid)
             form.add_control("/")
@@ -2250,7 +2262,9 @@ class Q2ReportRows(Q2Form, ReportForm):
             self._repaint()
 
     def edit_data_role(self):
-        form = Q2Form(_("Rows data role"))
+        if self.rows_data.role not in ["free", "table", "group_header", "group_footer"]:
+            return
+        form = Q2Form(_("Rows data role") if self.rows_data.role in ["free", "table"] else _("Group by"))
         form.do_not_save_geometry = 1
         form.ok_button = 1
         form.cancel_button = 1
@@ -2259,7 +2273,8 @@ class Q2ReportRows(Q2Form, ReportForm):
         roles_list = "free;table"
 
         def role_valid():
-            form.w._data_source.set_disabled(form.s.role != "table")
+            if form.w._data_source:
+                form.w._data_source.set_disabled(form.s.role != "table")
             if form.w.group:
                 form.w.group.set_disabled(form.s.role != "table")
 
@@ -2294,13 +2309,27 @@ class Q2ReportRows(Q2Form, ReportForm):
                 form.add_control("/")
 
         if self.rows_data.role in ["group_header", "group_footer"]:  # group
+            form.add_control("/f")
+            form.add_control("/h", _("Grouping"), tag="_data_grouping")
+            cu = self.get_datasource_cursor(self.parent_rows.rows_data.data_source)
+            if cu.row_count() > 0:
+                cu_columns = [{"name": x} for x in cu.get_record(0)]
+
+                def select_group():
+                    self.parent_rows.rows_data.role
+                    if res := q2choice(cu_columns, title=_("Select column"), column_title=["Name"]):
+                        form.s.groupby = res["name"]
+
+                form.add_control("group_list", "?", control="button", datalen=2, valid=select_group)
+
             form.add_control(
                 "groupby",
-                _("Grouping"),
-                datalen=50,
+                "",
+                datalen=100,
                 data=self.rows_data.groupby,
                 disabled=0,
             )
+            form.add_control("/")
 
         # form.add_control("print_when", _("Print when"), data=self.rows_data.print_when)
         # form.add_control("print_after", _("After print"), data=self.rows_data.print_after)
