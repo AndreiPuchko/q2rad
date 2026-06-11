@@ -22,7 +22,7 @@ from q2gui import q2app
 
 from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
-from q2rad.q2utils import choice_table, choice_column, Q2_save_and_run, tr
+from q2rad.q2utils import choice_table, choice_form, choice_column, Q2_save_and_run, tr
 from q2rad.q2utils import Q2Form
 from q2rad.q2raddb import get
 
@@ -122,31 +122,50 @@ class Q2Forms(Q2Form, Q2_save_and_run):
             )
             self.add_control("/")
 
-            self.add_control("/f", _("Data"))
-            if self.add_control("/h", _("Data table")):
+            if self.add_control("/f", _("Data")):
+                if self.add_control("/h", _("Data table")):
+                    self.add_control(
+                        "select_table",
+                        _("?"),
+                        mess=_("Open list of existing tables"),
+                        control="button",
+                        datalen=3,
+                        valid=self.select_data_storage_table,
+                    )
+                    self.add_control("form_table", gridlabel=_("Table"), datalen=63)
+                    self.add_control("/")
+                if self.add_control("/h", _("Sort by")):
+                    self.add_control(
+                        "select_data_sort_column",
+                        _("?"),
+                        mess=_("Open column list"),
+                        control="button",
+                        datalen=3,
+                        valid=self.select_table_sort_column,
+                    )
+                    self.add_control("form_table_sort", "", datatype="char", datalen=100)
+                    self.add_control("/")
+                self.add_control("/")
+            if self.add_control("/h", _("Auto Filter Form")):
+
+                def select_child_form():
+                    choice = choice_form()
+                    if choice:
+                        self.s.filter_form = choice["name"]
+
                 self.add_control(
-                    "select_table",
+                    "Select_form",
                     _("?"),
-                    mess=_("Open list of existing tables"),
+                    mess=_("Open list of existing forms"),
                     control="button",
                     datalen=3,
-                    valid=self.select_data_storage_table,
+                    valid=select_child_form,
                 )
-                self.add_control("form_table", gridlabel=_("Table"), datalen=63)
+                self.add_control("filter_form", gridlabel=_("Filter form"), datatype="char", datalen=100)
+                self.add_control("lines_per_tab", _("Max lines per tab"), datatype="int")
                 self.add_control("/")
-            if self.add_control("/h", _("Sort by")):
-                self.add_control(
-                    "select_data_sort_column",
-                    _("?"),
-                    mess=_("Open column list"),
-                    control="button",
-                    datalen=3,
-                    valid=self.select_table_sort_column,
-                )
-                self.add_control("form_table_sort", "", datatype="char", datalen=100)
-                self.add_control("/")
-            self.add_control("/")
-            self.add_control("/s")
+
+            # self.add_control("/s")
 
         self.add_control("/t", _("Comments"))
         self.add_control("/f")

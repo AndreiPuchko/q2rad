@@ -49,7 +49,7 @@ from q2rad.q2actions import Q2Actions
 from q2rad.q2raddb import *  # noqa:F403
 
 from q2gui import q2app
-from q2rad.q2utils import q2cursor, round_
+from q2rad.q2utils import q2cursor, round_, num
 from q2rad.q2appmanager import AppManager, Q2AppSnapshots, Q2AppSnapshotsJson
 from q2rad.q2stylesettings import AppStyleSettings
 from q2terminal.q2terminal import Q2Terminal
@@ -482,6 +482,7 @@ class Q2RadApp(Q2App):
     def migrate_db_data(self):
         data_schema = Q2DbSchema()
         from q2gui.q2form import NO_DATA_WIDGETS
+
         _no_data_controls = ",".join([f'"{x}"' for x in NO_DATA_WIDGETS])
         cu = q2cursor(
             f"""
@@ -1563,6 +1564,11 @@ class Q2RadApp(Q2App):
                     )
             run_module("_e_action", _locals=locals())
         self.code_runner(form_dic["after_form_load"], form)()
+        if form_dic["filter_form"]:
+            lines_per_tab = 18
+            if lpt := num(form_dic["lines_per_tab"]):
+                lines_per_tab = lpt
+            auto_filter(form_dic["filter_form"], mem=form, lines_per_tab=lines_per_tab)
         return form
 
     def code_compiler(self, script: str):
