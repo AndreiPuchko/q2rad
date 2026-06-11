@@ -1,3 +1,18 @@
+* run filtered grid
+```python
+# in Before Form Show script
+# prepare filter(where) string
+where_list = []
+where_list.append(f"invoice_date >= '{const.date1}'")
+where_list.append(f"invoice_date <= '{const.date2}'")
+where_string = " and ".join(where_list)
+# load and run form with filter
+frm = get_form("invoices", where=where_string)
+frm.title= frm.title + f" [{format_date(const.date1)} - {format_date(const.date2)}]"
+frm.run()
+return False
+```
+
 * add controls into system_controls area
 ```python
 # in Before Form Build script
@@ -8,7 +23,6 @@ form.ext_system_controls.add_control(
             valid=lambda: q2mess("Message"),
         )
 ```
-
 
 * set grid filter (WHERE) and order (ORDER BY)
 ```python
@@ -167,10 +181,6 @@ ensure_empty_pk("table_name")
 * autorun - create constant
 ```python
 const.check("constant_name", "Description", "value")
-```
-* autorun - ensure empty primary key
-```python
-ensure_empty_pk("table_name")
 ```
 
 * Form/Grid - selected rows
