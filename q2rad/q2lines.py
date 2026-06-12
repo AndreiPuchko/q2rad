@@ -195,37 +195,49 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 self.add_control("/s")
                 self.add_control("/")
             self.add_control("/")  # Linked
-            if self.add_control("/f", _("Linked")):
-                if self.add_control("/h", _("To table")):
-                    self.add_control(
-                        "select_table",
-                        _("?"),
-                        mess=_("Open list of existing tables"),
-                        control="button",
-                        datalen=3,
-                        valid=self.select_linked_table,
-                    )
-                    self.add_control(
-                        "to_table",
-                        gridlabel=_("To table"),
-                        datatype="char",
-                        datalen=100,
-                        valid=self.validate_linked_data,
-                    )
-                    self.add_control("/")
-                if self.add_control("/h", _("To field")):
-                    self.add_control(
-                        "select_pk",
-                        _("?"),
-                        mess=_("Open list of existing tables"),
-                        control="button",
-                        datalen=3,
-                        valid=self.select_linked_table_pk,
-                    )
-                    self.add_control("to_column", gridlabel=_("To field"), datatype="char", datalen=100)
+            if self.add_control("/v", _("Linked")):
+                if self.add_control("/h"):
+                    if self.add_control("/h", _("To table")):
+                        self.add_control(
+                            "select_table",
+                            _("?"),
+                            mess=_("Open list of existing tables"),
+                            control="button",
+                            datalen=3,
+                            valid=self.select_linked_table,
+                        )
+                        self.add_control(
+                            "to_table",
+                            gridlabel=_("To table"),
+                            datatype="char",
+                            datalen=100,
+                            valid=self.validate_linked_data,
+                        )
+                        self.add_control("/")
+                    if self.add_control("/h", _("To field")):
+                        self.add_control(
+                            "select_pk",
+                            _("?"),
+                            mess=_("Open list of existing tables"),
+                            control="button",
+                            datalen=3,
+                            valid=self.select_linked_table_pk,
+                        )
+                        self.add_control("to_column", gridlabel=_("To field"), datatype="char", datalen=100)
+                        self.add_control("/")
+                    if self.add_control("/h", _("Form to open")):
+                        self.add_control(
+                            "select_form",
+                            _("?"),
+                            mess=_("Open list of existing forms"),
+                            control="button",
+                            datalen=3,
+                            valid=self.select_linked_form,
+                        )
+                        self.add_control("to_form", gridlabel=_("Form to open"), datatype="char", datalen=100)
+                        self.add_control("/")
                     self.add_control("/")
                 if self.add_control("/h", _("Data to show")):
-                    self.add_control("/v")
                     self.add_control(
                         "select_column",
                         _("?"),
@@ -234,23 +246,18 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                         datalen=3,
                         valid=self.select_linked_table_column,
                     )
-                    self.add_control("/")
                     self.add_control(
                         "related", control="codesql", gridlabel=_("Data to show"), datatype="text"
                     )
                     self.add_control("/")
-                if self.add_control("/h", _("Form to open")):
-                    self.add_control(
-                        "select_form",
-                        _("?"),
-                        mess=_("Open list of existing forms"),
-                        control="button",
-                        datalen=3,
-                        valid=self.select_linked_form,
-                    )
-                    self.add_control("to_form", gridlabel=_("Form to open"), datatype="char", datalen=100)
-                    self.add_control("/")
+                self.add_control("/")
 
+            if self.add_control("/h", _("Grid layout parameters")):
+                self.add_control("grid_row", _("Row"), datatype="int")
+                self.add_control("grid_column", _("Column"), datatype="int")
+                self.add_control("grid_row_span", _("Row span"), datatype="int")
+                self.add_control("grid_column_span", _("Column span"), datatype="int")
+                self.add_control("/s")
                 self.add_control("/")
 
             self.add_control("/f")
@@ -265,9 +272,6 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                 datatype="char",
                 datalen=100,
             )
-            self.add_control("/")
-
-            self.add_control("/s")
 
         self.add_control("/t", _("Comment"))
         self.add_control("comment", gridlabel=_("Comments"), datatype="longtext")

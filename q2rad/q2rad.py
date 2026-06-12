@@ -1459,6 +1459,10 @@ class Q2RadApp(Q2App):
                 , code_when as _when
                 , code_show as _show
                 , style
+                , grid_row
+                , grid_column
+                , grid_row_span
+                , grid_column_span
             from `lines`
             where name = '{name}'
             order by seq

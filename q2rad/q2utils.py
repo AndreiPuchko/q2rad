@@ -126,6 +126,10 @@ class Q2Form(_Q2Form):
         index=None,
         hotkey="",
         style="",
+        grid_row=0,
+        grid_column=0,
+        grid_row_span=0,
+        grid_column_span=0,
         **args,
     ):
         if isinstance(to_form, str) and to_form != "":
@@ -172,6 +176,10 @@ class Q2Form(_Q2Form):
             index,
             hotkey,
             style,
+            grid_row,
+            grid_column,
+            grid_row_span,
+            grid_column_span,
             **args,
         )
 
