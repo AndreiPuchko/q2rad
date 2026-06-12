@@ -390,6 +390,8 @@ class Q2Form(_Q2Form):
 
     def get_data_error(self):
         data_error = super().get_data_error()
+        if not isinstance(self.db.last_error_data, dict) or "action" not in self.db.last_error_data:
+            return data_error
 
         if self.db.last_error_data["action"] in ["UPDATE", "INSERT"]:
             data_error = (
