@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-26 09:26+0200\n"
+"POT-Creation-Date: 2026-05-30 11:46+0200\n"
 "PO-Revision-Date: 2026-01-21 13:30+0100\n"
 "Last-Translator: Gemini\n"
 "Language-Team: none\n"
@@ -126,7 +126,7 @@ msgstr "Форма"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:131
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:134
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:238
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:242
 msgid "Action Script"
 msgstr "Скрипт действия"
 
@@ -149,27 +149,27 @@ msgstr "Комментарий"
 msgid "Comments"
 msgstr "Комментарии"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:244
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:250
 msgid "Check child where string."
 msgstr "Проверьте условие where дочерней формы"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:252
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:265
 #, python-format
 msgid ""
 "Column <b>%(parent_col)s</b> was not found in the parent form "
 "<b>%(parent_form)s</b>."
-msgstr "Колонка <b>%(parent_col)s</b> не найдена в родительской форме "
+msgstr ""
+"Колонка <b>%(parent_col)s</b> не найдена в родительской форме "
 "<b>%(parent_form)s</b>."
 
-
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:258
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:277
 #, python-format
 msgid ""
 "Column <b>%(child_col)s</b> was not found in the child form "
 "<b>%(child_form)s</b>."
-msgstr "Строка <b>%(child_col)s</b> не найдена в дочерней форме "
-"<b>%(child_form)s</b>."
-
+msgstr ""
+"Строка <b>%(child_col)s</b> не найдена в дочерней форме <b>%(child_form)s</"
+"b>."
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:50
 msgid "Manage q2Application"
@@ -212,12 +212,12 @@ msgid "App version"
 msgstr "Версия приложения"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:124
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:223
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:233
 msgid "Database"
 msgstr "База данных"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:127
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:226
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:236
 msgid "Type"
 msgstr "Тип"
 
@@ -237,7 +237,7 @@ msgid "Name"
 msgstr "Имя"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:143
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:242
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:252
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:103
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:147
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:580
@@ -245,136 +245,158 @@ msgid "Host"
 msgstr "Хост"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:151
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:250
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:260
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:104
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appselector.py:148
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:581
 msgid "Port"
 msgstr "Порт"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:162
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:160
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:700
+msgid "Open"
+msgstr "Открыть"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:163
 msgid "Extensions"
 msgstr "Расширения"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:169
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:259
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:171
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1676
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1711
+msgid "Edit"
+msgstr "Править"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:174
+msgid "as JSON"
+msgstr "как JSON"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:176
+#, fuzzy
+msgid "Edit application as JSON"
+msgstr "Редактировать в виде JSON"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:181
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:269
 msgid "Export"
 msgstr "Экспорт"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:172
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:262
-msgid "As JSON file"
-msgstr "Как файл JSON"
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:184
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:272
+msgid "as JSON file"
+msgstr "как файл JSON"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:180
-msgid "Export to q2Market"
-msgstr "Экспорт в q2Market"
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:192
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:190
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:269
+msgid "to q2Market"
+msgstr "в q2Market"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:200
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:279
 msgid "Import"
 msgstr "Импорт"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:193
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:272
-msgid "From JSON file"
-msgstr "Из файла JSOn"
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:203
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:282
+msgid "from JSON file"
+msgstr "из файла JSOn"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:195
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:205
 msgid "Excluding _ prefixes"
 msgstr "За исключение префиксов _"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:201
-msgid "From JSON file *"
-msgstr "Из файла JSON"
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:211
+msgid "from JSON file *"
+msgstr "из файла JSON"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:202
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:212
 msgid "Import all, including _ prefixes"
 msgstr "Импортировать все, включая префиксы _"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:211
-msgid "From q2Market"
-msgstr "Из q2Market"
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:221
+msgid "from q2Market"
+msgstr "из q2Market"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:222
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:232
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2forms.py:125
 msgid "Data"
 msgstr "Данные"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:233
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:243
 msgid "Name "
 msgstr "Имя"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:284
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:305
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:425
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:520
+msgid "Prepare data..."
+msgstr "Подготовка данных"
+
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:318
 msgid "You are about to reinstall platform packages?"
 msgstr "Вы собираетесь переустановить программные пакеты платформы. Уверены?"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:289
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:323
 msgid ""
 "You are about to reinstall platform packages from github.com! Are you sure?"
 msgstr ""
 "Вы собираетесь переустановить программыне пакеты платформы с GitHub. Уверены?"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:298
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:332
 msgid "No App URL!"
 msgstr "URL приложения не определен"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:302
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:336
 msgid "<p>You are about to export App "
 msgstr "<p>Вы собираетесь экспортировать приложение"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:304
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:338
 msgid "<p>Are you sure?"
 msgstr "<p>Вы уверены?"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:369
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:403
 msgid "FTP credentials"
 msgstr "FTP-реквизиты для входа"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:370
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:404
 msgid "Server"
 msgstr "Сервер"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:371
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:405
 msgid "Login"
 msgstr "Логин"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:372
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:406
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:583
 msgid "Password"
 msgstr "Пароль"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:385
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:419
 msgid "Export Application"
 msgstr "Экспорт приложения"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:391
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:486
-msgid "Prepare data..."
-msgstr "Подготовка данных"
-
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:446
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:480
 msgid "Check all"
 msgstr "Отметить все"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:453
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:487
 msgid "Uncheck all"
 msgstr "Снять все отметки"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:460
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:494
 msgid "Invert"
 msgstr "Инвертировать"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:479
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:513
 msgid "Export Database"
 msgstr "Экспорт базы данных"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:512
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:525
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:546
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:559
 msgid "Import Application"
 msgstr "Импорт приложения"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:596
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:630
 msgid "Import Data"
 msgstr "Импорт данных"
 
@@ -1019,10 +1041,6 @@ msgstr "Константы"
 msgid "-"
 msgstr ""
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:700
-msgid "Open"
-msgstr "Открыть"
-
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:702
 msgid "Close"
 msgstr "Закрыть"
@@ -1210,11 +1228,6 @@ msgstr "Введите ширину колонки"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1481
 msgid "Col width"
 msgstr "Ширина колонки"
-
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1676
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1711
-msgid "Edit"
-msgstr "Править"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2reports.py:1680
 msgid "Add row above"
@@ -1522,3 +1535,6 @@ msgstr "из"
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2utils.py:801
 msgid "to"
 msgstr "в"
+
+#~ msgid "Export to q2Market"
+#~ msgstr "Экспорт в q2Market"
