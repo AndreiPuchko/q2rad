@@ -294,6 +294,8 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         self.add_control("q2_time", "Time", datatype="int", noform=1, alignment=7)
         self._add_save_and_run(save_only=True)
         self._add_save_and_run_visible(save_only=True)
+        self.dev_actions.add_action(_("Run"), self.run_mem_report, hotkey="F4")
+        self.dev_actions_visible.add_action(_("Run"), self.run_mem_report, hotkey="F4")
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="reports")
         model = Q2CursorModel(cursor)
@@ -303,6 +305,9 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         self.add_action(_("Run"), self.run_report, hotkey="F4", eof_disabled=1, tag="orange")
         self.add_action("-")
         self.add_action("JSON", self.edit_json, eof_disabled=1)
+
+    def run_mem_report(self):
+        self.report_edit_form.run_report()
 
     def run_report(self):
         rep = Q2RadReport(self.r.content)
@@ -428,11 +433,16 @@ class Q2ReportEdit(Q2Form):
         self.data = {}
         self.data_sets = {}
 
+    def run_report(self):
+        rep = Q2RadReport(self.get_content())
+        rep.run()
+
     def on_init(self):
         self.query_edit = Q2QueryEdit()
         self.layout_edit = Q2ReportReport(self)
         self.add_control("/t", "Layout")
         self.add_control("rl", "", widget=self.layout_edit, nogrid=1, migrate=0)
+
         if q2app.q2_app.dev_mode:
             self.add_control("/t", "Query")
             self.add_control("ql", "", widget=self.query_edit, nogrid=1, migrate=0)
