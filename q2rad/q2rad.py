@@ -294,6 +294,7 @@ class Q2RadApp(Q2App):
         self.q2market_url = "https://raw.githubusercontent.com/AndreiPuchko/q2market/main/"
 
         self.assets_url = "https://raw.githubusercontent.com/AndreiPuchko/q2gui/main/assets/"
+        self.last_search_text = ""
 
         # if os.path.isfile(qss_file):
         #     self.style_file = qss_file
