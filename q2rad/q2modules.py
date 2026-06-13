@@ -32,6 +32,8 @@ class Q2Modules(Q2Form, Q2_save_and_run):
     def __init__(self, title=""):
         super().__init__("Modules")
         self.no_view_action = True
+        self.code_snippets = ["script"]
+        self.code_snippets_key = 100
 
     def on_init(self):
         self.editor_actions = Q2Actions()
@@ -105,13 +107,15 @@ class Q2Modules(Q2Form, Q2_save_and_run):
             ):
                 return False
         self.s.last_line = self.w.script.current_line() + 1
-        # return super().before_crud_save()
+        self.save_editors_state()
 
     def before_form_show(self):
         self.maximized = True
         self._save_and_run_disable()
         if num(self.s.last_line):
             self.w.script.goto_line(num(self.s.last_line))
+
+        self.restore_editors_state()
 
     def after_form_show(self):
         if self.crud_mode == "EDIT":

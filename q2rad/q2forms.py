@@ -24,7 +24,6 @@ from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
 from q2rad.q2utils import choice_table, choice_form, choice_column, Q2_save_and_run, tr
 from q2rad.q2utils import Q2Form
-from q2rad.q2raddb import get
 
 
 _ = tr
@@ -34,6 +33,24 @@ class Q2Forms(Q2Form, Q2_save_and_run):
     def __init__(self, title=_("Forms")):
         super().__init__(title)
         self.no_view_action = True
+        self.code_snippets = [
+            "after_form_load",
+            "before_form_build",
+            "before_grid_build",
+            "before_grid_show",
+            "after_grid_show",
+            "grid_index_changed",
+            "before_form_show",
+            "after_form_show",
+            "before_crud_save",
+            "after_crud_save",
+            "before_delete",
+            "form_valid",
+            "after_delete",
+            "form_refresh",
+            "after_form_closed",
+        ]
+        self.code_snippets_key = 200
 
     def on_init(self):
         self.create_form()
@@ -289,6 +306,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
 
     def before_form_show(self):
         self._save_and_run_disable()
+        self.restore_editors_state()
 
     def select_data_storage_table(self):
         choice = choice_table()
@@ -314,6 +332,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
             q2mess(_("Give me some NAME!!!"))
             self.w.name.set_focus()
             return False
+        self.save_editors_state()
 
     def after_crud_save(self):
         super().after_crud_save()

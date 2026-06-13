@@ -379,10 +379,12 @@ class Q2Reports(Q2Form, Q2_save_and_run):
             self.report_edit_form.set_content("")
         else:
             self.report_edit_form.set_content(self.r.content)
+        self.report_edit_form.w.module.set_fold_state(Q2CodeStates.get_state(self.r.name, 500))
 
     def before_crud_save(self):
         self.s.content = self.report_edit_form.get_content()
         self.s.comment = self.report_edit_form.s.comment
+        Q2CodeStates.set_state(self.r.name, 500, self.report_edit_form.w.module.get_fold_state())
 
 
 class ReportForm:

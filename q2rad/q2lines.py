@@ -81,6 +81,8 @@ class Q2Lines(Q2Form, Q2_save_and_run):
     def __init__(self, title=""):
         super().__init__("Lines")
         self.no_view_action = True
+        self.code_snippets = ["code_when", "code_show", "code_valid"]
+        self.code_snippets_key = 300
 
     def on_init(self):
         self.create_form()
@@ -502,6 +504,7 @@ return round_(num(price)*num(quantity), 0)""",
                 q2mess(_("The datalen value must be entered!"))
                 self.w.datalen.set_focus()
                 return False
+        self.save_editors_state()
 
     def form_runner(self):
         self.q2_app.run_form(self.r.name)
@@ -513,6 +516,7 @@ return round_(num(price)*num(quantity), 0)""",
         self.datatype_valid()
         self.control_valid()
         self.database_valid()
+        self.restore_editors_state()
 
     def datatype_valid(self):
         self.w.datalen.set_enabled(self.s.datatype in ";".join(HAS_DATALEN))

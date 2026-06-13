@@ -50,7 +50,7 @@ from q2rad.q2raddb import *  # noqa:F403
 
 from q2gui import q2app
 from q2rad.q2utils import q2cursor, round_, num
-from q2rad.q2appmanager import AppManager, Q2AppSnapshots, Q2AppSnapshotsJson
+from q2rad.q2appmanager import AppManager, Q2AppSnapshots, Q2AppSnapshotsJson, Q2CodeStates
 from q2rad.q2stylesettings import AppStyleSettings
 from q2terminal.q2terminal import Q2Terminal
 from q2rad.q2appselector import Q2AppSelect
@@ -547,6 +547,7 @@ class Q2RadApp(Q2App):
             Q2LocalePo(),
             Q2AppSnapshots(),
             Q2AppSnapshotsJson(),
+            Q2CodeStates(),
         ):
             for x in form.get_table_schema():
                 data_schema.add(**x)

@@ -634,6 +634,8 @@ class Q2_save_and_run:
         self.dev_actions = Q2Actions()
         self.dev_actions_visible = Q2Actions()
         self._save_and_run_control = None
+        self.code_snippets = []
+        self.code_snippets_key = 0
 
     def _add_save_and_run(self: Q2Form, save_only=False):
         self.dev_actions.show_main_button = False
@@ -681,6 +683,22 @@ class Q2_save_and_run:
             self.dev_actions.set_disabled(_("Save"))
             self.dev_actions_visible.set_visible(_("Save and run"), False)
             self.dev_actions_visible.set_visible(_("Save"), False)
+
+    def save_editors_state(self):
+        from q2rad.q2appmanager import Q2CodeStates
+
+        for index, value in enumerate(self.code_snippets):
+            Q2CodeStates.set_state(
+                self.r.name, index + self.code_snippets_key, self.w.__getattr__(value).get_fold_state()
+            )
+
+    def restore_editors_state(self):
+        from q2rad.q2appmanager import Q2CodeStates
+
+        for index, value in enumerate(self.code_snippets):
+            self.w.__getattr__(value).set_fold_state(
+                Q2CodeStates.get_state(self.r.name, index + self.code_snippets_key)
+            )
 
 
 class auto_filter:

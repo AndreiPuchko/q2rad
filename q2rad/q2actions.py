@@ -30,6 +30,8 @@ class Q2Actions(Q2Form, Q2_save_and_run):
     def __init__(self, title=""):
         super().__init__("Actions")
         self.no_view_action = True
+        self.code_snippets = ["action_worker"]
+        self.code_snippets_key = 400
 
     def on_init(self):
         self.db = q2app.q2_app.db_logic
@@ -234,6 +236,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         self._save_and_run_disable()
         if self.s.action_worker != "":
             self.w.tab.set_tab(_("Action Script"))
+        self.restore_editors_state()
 
     def before_crud_save(self):
         if not self.s.child_form:
@@ -273,3 +276,6 @@ class Q2Actions(Q2Form, Q2_save_and_run):
             )
             return False
         return True
+
+    def after_crud_save(self):
+        self.save_editors_state()

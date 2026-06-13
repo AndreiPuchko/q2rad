@@ -26,6 +26,7 @@ from q2rad.q2raddb import insert, update, get, last_error, delete
 from datetime import datetime
 from urllib.parse import urlparse
 from q2rad.q2utils import ftp_upload
+from q2rad.q2raddb import upsert
 
 import json
 import os
@@ -345,7 +346,7 @@ class AppManager(Q2Form):
 
         def json_save():
             if form.heap.app_json_text != form.s.json:
-                if (json_data:=check_json_text(form.s.json)) is False:
+                if (json_data := check_json_text(form.s.json)) is False:
                     return False
                 form.heap.app_json_text = form.s.json
                 if q2ask(_("Do you want to create an app snapshot before applying the changes?")):
@@ -805,3 +806,38 @@ class Q2AppSnapshotsJson(Q2Form):
         self.add_control("id", "", datatype="int", pk="*", ai="*", nogrid=1, noform=1)
         self.add_control("snapshot_id", "", datatype="int", to_table="snapshots", to_column="id")
         self.add_control("gzip_json_data", "", datatype="longtext")
+
+
+class Q2CodeStates(Q2Form):
+    def on_init(self):
+        self.create_form()
+        self.db = q2app.q2_app.db_logic
+        cursor: Q2Cursor = self.db.table(table_name="code_states")
+        model = Q2CursorModel(cursor)
+        self.set_model(model)
+
+    def create_form(self):
+        self.add_control("source_key", "", datatype="char", datalen=104, pk="*")
+        self.add_control("gzip_json_data", "", datatype="longtext")
+
+    @staticmethod
+    def set_state(name, source_key, state):
+        upsert(
+            "code_states",
+            f"source_key='{name.rstrip()}:{source_key}'",
+            {"source_key": f"{name.rstrip()}:{source_key}", "gzip_json_data": encode_json(state)},
+            q2_db=q2app.q2_app.db_logic,
+        )
+
+    @staticmethod
+    def get_state(name, source_key):
+        state = get(
+            "code_states",
+            f"source_key='{name.rstrip()}:{source_key}'",
+            "gzip_json_data",
+            q2_db=q2app.q2_app.db_logic,
+        )
+        if state:
+            return decode_json(state)
+        else:
+            return None
