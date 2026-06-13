@@ -28,6 +28,8 @@ from q2gui import q2app
 from q2gui.q2dialogs import Q2WaitShow, q2WaitMax, q2WaitStep, q2working
 from q2rad.q2raddb import *
 from q2rad.q2utils import *
+from q2rad.q2appmanager import Q2CodeStates
+
 import json
 import os
 import logging
@@ -1011,7 +1013,7 @@ class Q2ReportReport(Q2Form):
 
         style_name = prop_name.replace("_", "-")
 
-        if not self.w.__getattr__(prop_name).check.is_checked():
+        if not self.w.__getattr__(prop_name).is_checked():
             if style_name in self.current_properties:
                 del self.current_properties[style_name]
         else:
@@ -1071,6 +1073,7 @@ class Q2ReportReport(Q2Form):
             parent_style.update(selected_style)
         self.lock_status_bar = True
         self.current_properties = selected_style
+        self.current_properties["foo"] = "*"
         for x in parent_style:
             widget_name = x.replace("-", "_")
             w = self.widgets().get(widget_name)
@@ -1145,6 +1148,8 @@ class Q2ReportReport(Q2Form):
                 pages.append(x.q2_form.get_content())
         content["pages"] = pages
         content["style"] = self.report_data.get("style", {})
+        if content["style"].get("foo"):
+            del content["style"]["foo"]
         if str_mode:
             return json.dumps(content, indent=2)
         else:
@@ -2614,6 +2619,9 @@ class Q2ReportRows(Q2Form, ReportForm):
         for x in self.rows_data.cells:
             if self.rows_data.cells[x].get("style") == {}:
                 del self.rows_data.cells[x]["style"]
+            elif self.rows_data.cells[x].get("style", {}).get("foo"):
+                del self.rows_data.cells[x]["style"]["foo"]
+
             if self.rows_data.cells[x].get("data") == "":
                 del self.rows_data.cells[x]["data"]
             if self.rows_data.cells[x].get("format") == "":
