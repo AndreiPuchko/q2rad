@@ -628,3 +628,9 @@ return round_(num(price)*num(quantity), 0)""",
         elif "code" in self.s.column:
             self.s.datatype = "text"
             self.s.control = "code"
+
+    def get_autocompletition_list(self):
+        acl = super().get_autocompletition_list()
+        if self.prev_form:
+            acl += self.prev_form.get_autocompletition_list()
+        return acl

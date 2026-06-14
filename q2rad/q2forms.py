@@ -23,7 +23,7 @@ from q2gui import q2app
 from q2rad.q2lines import Q2Lines
 from q2rad.q2actions import Q2Actions
 from q2rad.q2utils import choice_table, choice_form, choice_column, Q2_save_and_run, tr
-from q2rad.q2utils import Q2Form
+from q2rad.q2utils import Q2Form, q2cursor
 
 
 _ = tr
@@ -365,3 +365,22 @@ class Q2Forms(Q2Form, Q2_save_and_run):
                         },
                     )
                 self.refresh()
+
+    def get_autocompletition_list(self):
+        acl = super().get_autocompletition_list()
+        name = "" if self.crud_mode == "NEW" else self.r.name
+        columns = [f"{x['column']} ({x['label']})" for x in q2cursor(
+                f"""
+                select `column`, 'label'
+                from `lines`
+                where name = '{name}'
+                order by seq
+                """,
+                q2app.q2_app.db_logic,
+            ).records() if not x['column'].startswith("/")]
+        for x in columns:
+            acl.append(f"form.s.{x}")
+            acl.append(f"form.w.{x}")
+            acl.append(f"form.c.{x}")
+            acl.append(f"form.r.{x}")
+        return acl

@@ -568,13 +568,15 @@ class Q2RadApp(Q2App):
         rez = []
         tables = self.db_data.db_schema.get_schema_tables()
         for ta in tables:
+            if ta.startswith("log_"):
+                continue
             rez.append(ta)
             rez.append(f"d.{ta}")
             for co in tables[ta]["columns"]:
-                rez.append(f"d.{ta}.{co}")
+                # rez.append(f"d.{ta}.{co}")
                 rez.append(f"{ta}.{co}")
         for x in q2cursor("select const_name from constants").records():
-            rez.append("c.const.{const_name}".format(**x))
+            # rez.append("c.const.{const_name}".format(**x))
             rez.append("const.{const_name}".format(**x))
         return rez
 

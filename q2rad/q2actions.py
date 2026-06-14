@@ -279,3 +279,9 @@ class Q2Actions(Q2Form, Q2_save_and_run):
 
     def after_crud_save(self):
         self.save_editors_state()
+
+    def get_autocompletition_list(self):
+        acl = super().get_autocompletition_list()
+        if self.prev_form:
+            acl += self.prev_form.get_autocompletition_list()
+        return acl
