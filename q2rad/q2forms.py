@@ -371,7 +371,7 @@ class Q2Forms(Q2Form, Q2_save_and_run):
         name = "" if self.crud_mode == "NEW" else self.r.name
         columns = [f"{x['column']} ({x['label']})" for x in q2cursor(
                 f"""
-                select `column`, 'label'
+                select `column`, label
                 from `lines`
                 where name = '{name}'
                 order by seq
