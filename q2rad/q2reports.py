@@ -2292,7 +2292,7 @@ class Q2ReportRows(Q2Form, ReportForm):
         form.cancel_button = 1
 
         # roles_list = "free;table;tree;header;footer"
-        roles_list = "free;table"
+        roles_list = "free;table;header;footer"
 
         def role_valid():
             if form.w._data_source:
