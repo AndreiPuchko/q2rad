@@ -2163,7 +2163,14 @@ class Q2ReportRows(Q2Form, ReportForm):
                 else:
                     form.w.content.insert(" {" + f"rep.d.{form.s.ds}.row(0).{form.s.ds_fields}" + "} ")
 
-            form.add_control("ds", _("Query name"), control="list", pic=";".join(ds), valid=ds_valid)
+            form.add_control(
+                "ds",
+                _("Query name"),
+                control="list",
+                pic=";".join(ds),
+                valid=ds_valid,
+                data=self.rows_data.data_source,
+            )
             form.add_control("/")
             form.add_control("/v")
             form.add_control("ds_fields", _("Columns"), control="list", dblclick=ds_fields_valid)
