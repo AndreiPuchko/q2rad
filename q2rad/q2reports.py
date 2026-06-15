@@ -296,8 +296,6 @@ class Q2Reports(Q2Form, Q2_save_and_run):
         self.add_control("q2_time", "Time", datatype="int", noform=1, alignment=7)
         self._add_save_and_run(save_only=True)
         self._add_save_and_run_visible(save_only=True)
-        self.dev_actions.add_action(_("Run"), self.run_mem_report, hotkey="F4")
-        self.dev_actions_visible.add_action(_("Run"), self.run_mem_report, hotkey="F4")
 
         cursor: Q2Cursor = self.q2_app.db_logic.table(table_name="reports")
         model = Q2CursorModel(cursor)
@@ -443,7 +441,12 @@ class Q2ReportEdit(Q2Form):
         self.query_edit = Q2QueryEdit()
         self.layout_edit = Q2ReportReport(self)
         self.add_control("/t", "Layout")
-        self.add_control("rl", "", widget=self.layout_edit, nogrid=1, migrate=0)
+
+        run_report_action = Q2Actions()
+        run_report_action.add_action(_("Run"), self.run_report, hotkey="F4")
+        run_report_action.show_actions = 0
+        run_report_action.show_main_button = 0
+        self.add_control("rl", "", widget=self.layout_edit, nogrid=1, migrate=0, actions=run_report_action)
 
         if q2app.q2_app.dev_mode:
             self.add_control("/t", "Query")
@@ -475,6 +478,7 @@ class Q2ReportEdit(Q2Form):
 
     def after_form_show(self):
         # self.form_stack[-1].set_style_sheet("border-radius:0px;border: 0px")
+        self.w.module.add_action(_("Run"), self.run_report, "F4")
         pass
 
 
@@ -664,6 +668,7 @@ class Q2ReportReport(Q2Form):
 
         if 1:  # Actions
             actions = Q2Actions()
+            actions.add_action("Run - F4", lambda: self.report_edit_form.run_report())
             actions.add_action("PDF", lambda: self.run_report("pdf"))
             actions.add_action("XLSX", lambda: self.run_report("xlsx"))
             actions.add_action("DOCX", lambda: self.run_report("docx"))
