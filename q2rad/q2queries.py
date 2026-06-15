@@ -182,16 +182,12 @@ class Q2QueryEdit(Q2Form):
         self.add_control("hot_key_action", actions=self.actions, control="toolbar")
         if self.add_control("/vs", tag="qev"):
             self.add_control("ql", "", widget=self.query_list, nogrid=1, migrate=0)
-            if self.add_control("/h"):
-                self.add_control("/s")
-                self.add_control(
+            self.add_control(
                     "run_query_button",
                     "Run (F4)",
                     valid=self.query_list.sql_runner,
                     control="button",
                 )
-                self.add_control("/s")
-            self.add_control("/")
             self.add_control("pl", "", widget=self.param_list, nogrid=1, migrate=0)
             self.add_control("/")
         self.add_control("code", control="codesql", nogrid=1, valid=self.sql_changed)
