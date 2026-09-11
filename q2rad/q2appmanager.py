@@ -484,13 +484,14 @@ class AppManager(Q2Form):
     def _get_app_json(prefix=""):
         db: Q2Db = q2app.q2_app.db_logic
         rez = {}
-        for table in db.get_tables():
+        app_orders = {"actions": "name, action_text", "lines": "name, column", "locale_po": "lang, msgid"}
+        for table in sorted(db.get_tables()):
             if table not in app_tables:
                 continue
             if table.startswith("log_") or table == "sqlite_sequence":
                 continue
             rez[table] = []
-            for row in db.table(table).records():
+            for row in db.table(table, order=app_orders.get(table, "name")).records():
                 if prefix:
                     if table != "packages" and not row.get("name").startswith(prefix):
                         continue
