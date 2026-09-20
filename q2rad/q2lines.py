@@ -194,6 +194,14 @@ class Q2Lines(Q2Form, Q2_save_and_run):
                     datalen=1,
                     valid=self.database_valid,
                 )
+                self.add_control(
+                    "uk",
+                    _("Unique"),
+                    control="check",
+                    datatype="char",
+                    datalen=1,
+                    valid=self.database_valid,
+                )
                 self.add_control("/s")
                 self.add_control("/")
             self.add_control("/")  # Linked
@@ -452,6 +460,7 @@ return round_(num(price)*num(quantity), 0)""",
                         "datalen": cols[x]["datalen"],
                         "pk": cols[x]["pk"],
                         "ai": cols[x]["ai"],
+                        "uk": cols[x]["uk"],
                         "migrate": "*",
                         "seq": seq,
                     },
@@ -499,6 +508,7 @@ return round_(num(price)*num(quantity), 0)""",
         if not self.s.migrate:
             self.s.pk = ""
             self.s.ai = ""
+            self.s.uk = ""
         else:
             if self.s.datatype in HAS_DATALEN and int_(self.s.datalen) <= 0:
                 q2mess(_("The datalen value must be entered!"))
@@ -545,6 +555,7 @@ return round_(num(price)*num(quantity), 0)""",
         self.w.pk.set_enabled(self.s.migrate)
         self.w.ai.set_enabled(self.s.migrate)
         self.w.index.set_enabled(self.s.migrate)
+        self.w.uk.set_enabled(self.s.migrate)
         try:
             name = self.prev_form.r.name
             id = self.r.id
