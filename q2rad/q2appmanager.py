@@ -484,7 +484,12 @@ class AppManager(Q2Form):
     def _get_app_json(prefix=""):
         db: Q2Db = q2app.q2_app.db_logic
         rez = {}
-        app_orders = {"actions": "name, action_text", "lines": "name, column", "locale_po": "lang, msgid"}
+        app_orders = {
+            "actions": "name, action_text",
+            "lines": "name, `column`",
+            "locale_po": "lang, msgid",
+            "packages": "package_name",
+        }
         for table in sorted(db.get_tables()):
             if table not in app_tables:
                 continue
