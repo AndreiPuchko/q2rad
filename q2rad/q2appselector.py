@@ -36,6 +36,8 @@ from q2rad.q2utils import tr
 _ = tr
 
 SQL_ENGINES = ["MySQL", "SQLite", "PostgreSQL"]
+DEFAULT_DB_LOGIC_NAME = "databases/_logic"
+DEFAULT_DB_DATA_NAME = "databases/_data"
 
 
 class Q2AppSelect(Q2Form):
@@ -345,6 +347,10 @@ class Q2AppSelect(Q2Form):
         self.w.host_logic.set_enabled(not is_sqlite)
         self.w.port_logic.set_enabled(not is_sqlite)
         self.w.select_app_storage_file.set_enabled(is_sqlite)
+        if is_sqlite and self.s.database_logic == DEFAULT_DB_LOGIC_NAME.split("/")[1]:
+            self.s.database_logic = DEFAULT_DB_LOGIC_NAME
+        elif not is_sqlite and self.s.database_logic == DEFAULT_DB_LOGIC_NAME:
+            self.s.database_logic = DEFAULT_DB_LOGIC_NAME.split("/")[1]
         self.credentials_fields_enable()
 
     def driver_data_valid(self):
@@ -352,6 +358,10 @@ class Q2AppSelect(Q2Form):
         self.w.host_data.set_enabled(not is_sqlite)
         self.w.port_data.set_enabled(not is_sqlite)
         self.w.select_data_storage_file.set_enabled(is_sqlite)
+        if is_sqlite and self.s.database_data == DEFAULT_DB_DATA_NAME.split("/")[1]:
+            self.s.database_data = DEFAULT_DB_DATA_NAME
+        elif not is_sqlite and self.s.database_data == DEFAULT_DB_DATA_NAME:
+            self.s.database_data = DEFAULT_DB_DATA_NAME.split("/")[1]
         self.credentials_fields_enable()
 
     def credentials_fields_enable(self):
@@ -440,8 +450,8 @@ class Q2AppSelect(Q2Form):
             self.s.driver_logic = "SQLite"
             self.s.driver_data = "SQLite"
             self.s.dev_mode = ""
-            self.s.database_logic = "databases/_logic"
-            self.s.database_data = "databases/_data"
+            self.s.database_logic = DEFAULT_DB_LOGIC_NAME
+            self.s.database_data = DEFAULT_DB_DATA_NAME
         else:
             self.s.driver_logic = SQL_ENGINES[
                 ["mysql", "sqlite", "postgresql"].index(self.r.driver_logic.lower())
