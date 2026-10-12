@@ -244,7 +244,7 @@ class Q2Actions(Q2Form, Q2_save_and_run):
         if not (
             match := re.search(r"\s*(?P<child_col>\w+)\s*=\s*\{(?P<parent_col>\w+)\}.*", self.s.child_where)
         ):
-            q2mess(_("Check child where string."))
+            q2mess(_("Check the WHERE clause"))
             return False
         child_col = match.group("child_col")
         child_form = self.s.child_form
