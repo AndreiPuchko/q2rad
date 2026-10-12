@@ -237,9 +237,9 @@ class Q2Locale(Q2Form):
         self.locales = [
             x["lang"] for x in q2cursor("select lang from locale", q2app.q2_app.db_logic).records()
         ]
-        for rec in q2cursor(collect_strings_sql, q2app.q2_app.db_logic).browse().records():
+        for rec in q2cursor(collect_strings_sql, q2app.q2_app.db_logic).records():
             self.add_msg(dict(rec))
-        for rec in q2cursor("select menu_path as msgid from forms", q2app.q2_app.db_logic).browse().records():
+        for rec in q2cursor("select menu_path as msgid from forms", q2app.q2_app.db_logic).records():
             for mpath in rec["msgid"].split("|"):
                 _rec = dict(rec)
                 _rec["msgid"] = mpath
