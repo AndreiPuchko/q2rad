@@ -71,7 +71,8 @@ from q2rad.q2i18n import (
     forms_translate,
     get_tranlations,
 )
-from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging, open_folder, open_document  # noqa F401
+from q2rad.q2utils import Q2Tasker, Q2Form, auto_filter, set_logging  # noqa F401
+from q2rad.q2utils import open_browser, open_folder, open_document  # noqa F401
 from q2rad.q2utils import tr, clear_i18n_cache
 from q2rad.q2make import make_binary
 

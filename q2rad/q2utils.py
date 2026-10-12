@@ -21,6 +21,7 @@ import subprocess
 import html
 import re
 import json
+import webbrowser
 
 from q2rad import Q2Form as _Q2Form
 from q2db.cursor import Q2Cursor
@@ -600,6 +601,10 @@ def open_folder(folder):
 
 
 open_document = open_folder
+
+
+def open_browser(url):
+    webbrowser.open_new_tab(url)
 
 
 class Q2Tasker:
