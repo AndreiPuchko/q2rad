@@ -79,7 +79,7 @@ class AppStyleSettings(Q2Form):
 
         self.add_control("/")
         self.add_control("/f")
-        self.langs = get_tranlations()
+        self.langs = sorted(get_tranlations(), key=lambda x: x["lang"])
         if len(self.langs) > 1:
             combo_content = ";".join(["{lang}: {name} {native_name}".format(**x) for x in self.langs])
             lang = self.q2_app.lang
