@@ -434,7 +434,7 @@ msgstr "Копировать"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:746
 msgid "Show"
-msgstr "Ппоказать"
+msgstr "Показать"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:747
 msgid "Restore"
