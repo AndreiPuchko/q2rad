@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 19:22+0200\n"
+"POT-Creation-Date: 2026-10-12 19:26+0200\n"
 "PO-Revision-Date: 2026-01-21 13:30+0100\n"
 "Last-Translator: Gemini\n"
 "Language-Team: none\n"
@@ -156,8 +156,8 @@ msgid "Comments"
 msgstr "Комментарии"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:247
-msgid "Check child where string."
-msgstr "Проверьте условие where дочерней формы"
+msgid "Check the WHERE clause"
+msgstr "Проверьте предложение WHERE"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:262
 #, python-format
@@ -434,7 +434,7 @@ msgstr "Копировать"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:746
 msgid "Show"
-msgstr "Ппоказать"
+msgstr "Показать"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2appmanager.py:747
 msgid "Restore"
@@ -946,7 +946,7 @@ msgstr "Индекс"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:199
 msgid "Unique"
-msgstr ""
+msgstr "Уникальный"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:208
 msgid "Linked"
@@ -1194,11 +1194,11 @@ msgstr ""
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:730
 msgid "Help"
-msgstr ""
+msgstr "Помощь"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:730
 msgid "Application program interface"
-msgstr ""
+msgstr "Пользовательский интерфейс приложения"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:770
 msgid " (Can't load package info)"
@@ -1664,6 +1664,9 @@ msgstr "в"
 msgid ""
 "The edited text is not valid JSON. Please correct the syntax and try again."
 msgstr ""
+
+#~ msgid "Check child where string."
+#~ msgstr "Проверьте условие where дочерней формы"
 
 #~ msgid "Print when"
 #~ msgstr "Печатать, когда"

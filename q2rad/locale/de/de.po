@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 19:26+0200\n"
+"POT-Creation-Date: 2026-10-15 13:53+0200\n"
 "PO-Revision-Date: 2026-01-28 12:40+0100\n"
 "Last-Translator: Gemini AI\n"
 "Language-Team: German\n"
@@ -1195,24 +1195,25 @@ msgstr "Dokumentation"
 msgid "Make binary"
 msgstr "Binärdatei erstellen"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:730
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:729
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:731
 msgid "Help"
 msgstr "Hilfe"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:730
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:731
 msgid "Application program interface"
 msgstr "Benutzeroberfläche der Anwendung"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:770
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:771
 msgid " (Can't load package info)"
 msgstr " (Paketinfo kann nicht geladen werden)"
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:1081
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:1082
 #, python-format
 msgid "Installing package %s..."
 msgstr "Paket %s wird installiert..."
 
-#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:1092
+#: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:1093
 #, python-format
 msgid "Uninstalling package %s..."
 msgstr "Paket %s wird deinstalliert..."

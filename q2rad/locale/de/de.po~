@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 19:22+0200\n"
+"POT-Creation-Date: 2026-10-12 19:26+0200\n"
 "PO-Revision-Date: 2026-01-28 12:40+0100\n"
 "Last-Translator: Gemini AI\n"
 "Language-Team: German\n"
@@ -155,8 +155,8 @@ msgid "Comments"
 msgstr "Kommentare"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:247
-msgid "Check child where string."
-msgstr ""
+msgid "Check the WHERE clause"
+msgstr "Überprüfen Sie die WHERE-Klausel"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2actions.py:262
 #, python-format
@@ -947,7 +947,7 @@ msgstr "Index"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:199
 msgid "Unique"
-msgstr ""
+msgstr "Einzigartig"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2lines.py:208
 msgid "Linked"
@@ -1197,11 +1197,11 @@ msgstr "Binärdatei erstellen"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:730
 msgid "Help"
-msgstr ""
+msgstr "Hilfe"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:730
 msgid "Application program interface"
-msgstr ""
+msgstr "Benutzeroberfläche der Anwendung"
 
 #: C:\Users\andre\Desktop\dev\q2\q2rad\q2rad\q2rad.py:770
 msgid " (Can't load package info)"
