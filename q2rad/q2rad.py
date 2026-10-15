@@ -726,6 +726,7 @@ class Q2RadApp(Q2App):
             if not self.frozen:
                 self.add_menu(_("Dev") + "|" + _("-"))
                 self.add_menu(_("Dev") + "|" + _("Make binary"), self.make_binary)
+        self.add_menu(_("Help") + "|-")
         self.add_menu(
             _("Help") + "|" + _("Application program interface"),
             lambda: open_browser(f"https://q2rad-interface-{self.lang}.readgdocs.com"),
