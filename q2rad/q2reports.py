@@ -687,6 +687,35 @@ class Q2ReportReport(Q2Form):
                 form.run()
 
             actions.add_action(_("Show as JSON"), show_json)
+
+            def show_code():
+                form = Q2Form("Show report code")
+                form.add_control("/v")
+                form.add_control(
+                    "json",
+                    control="code",
+                    data=f"""
+from q2report import Q2Report
+import json
+
+report_content = {self.get_content()}
+
+report_data = {self.report_edit_form.query_edit.query_list.prepare_dataset_json()}
+
+def demo(type="pdf", open_output_file=True):
+    report = Q2Report()
+    report.load(report_content)
+    report.run(f"temp/repo.{{type}}", data=report_data, open_output_file=open_output_file)
+
+if __name__ == "__main__":  # pragma: no cover
+    demo()
+""",
+
+                )
+                form.cancel_button = 1
+                form.run()
+
+            actions.add_action(_("Show as code"), show_code)
             actions.show_main_button = 0
 
         if self.add_control("/h"):
