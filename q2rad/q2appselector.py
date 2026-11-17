@@ -424,12 +424,8 @@ class Q2AppSelect(Q2Form):
             q2mess(_("Give me some database!!!"))
             self.w.database_data.set_focus()
             return False
-        if self.s.database_logic == "":
-            q2mess(_("Give me some database!!!"))
-            self.w.database_logic.set_focus()
-            return False
 
-        if self.s.driver_logic.lower() == "sqlite":
+        if self.s.driver_logic.lower() == "sqlite" and self.s.database_logic:
             self.s.host_logic = ""
             self.s.port_logic = ""
             if not os.path.isdir(os.path.dirname(self.s.database_logic)):

@@ -672,14 +672,18 @@ class Q2RadApp(Q2App):
         )
         self.db = self.db_data
         if self.db_data:
-            self.db_logic = self._open_database(
-                database_name=self.selected_application.get("database_logic", ""),
-                db_engine_name=self.selected_application.get("driver_logic", "").lower(),
-                host=self.selected_application.get("host_logic", ""),
-                port=self.selected_application.get("port_logic", ""),
-                user=self.selected_application.get("username", ""),
-                password=self.selected_application.get("password", ""),
-            )
+            if self.selected_application.get("database_logic", ""):
+                self.db_logic = self._open_database(
+                    database_name=self.selected_application.get("database_logic", ""),
+                    db_engine_name=self.selected_application.get("driver_logic", "").lower(),
+                    host=self.selected_application.get("host_logic", ""),
+                    port=self.selected_application.get("port_logic", ""),
+                    user=self.selected_application.get("username", ""),
+                    password=self.selected_application.get("password", ""),
+                )
+            else:
+                self.db_logic = self.db_data
+
         self.last_root_password = ""
         if self.db_data is None or self.db_logic is None:
             self.selected_application = {}
