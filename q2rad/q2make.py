@@ -189,7 +189,7 @@ app.app_title = "{q2app.q2_app.app_title}"
 app.dev_mode = False
 app.run()
     """
-    open(f"{make_folder}/{binary_name}.py", "w").write(main)
+    open(f"{make_folder}/main_{binary_name}.py", "w").write(main)
 
     dist_folder = os.path.abspath(f"{make_folder}/dist/{binary_name}")
 
@@ -217,7 +217,7 @@ app.run()
     # run pyinstaller
     terminal.run(
         f"{pynstaller_executable} -y --noconsole --clean {onefile} "
-        f" {packages} -i q2rad.ico '{binary_name}.py'"
+        f" {packages} -i q2rad.ico 'main_{binary_name}.py' -n {binary_name}"
     )
     terminal.close()
 
