@@ -99,7 +99,7 @@ class AppStyleSettings(Q2Form):
         self.s.font_size = 12
         self.s.font_name = "Arial"
         if self.s.apply:
-            self.style_valid()
+            self.font_size_valid()
 
     def change_font(self):
         font, ok = QFontDialog.getFont(QFont(self.s.font_name, int_(self.s.font_size)))
@@ -107,7 +107,7 @@ class AppStyleSettings(Q2Form):
             self.s.font_name = font.family()
             self.s.font_size = font.pointSize()
             if self.s.apply:
-                self.style_valid()
+                self.font_size_valid()
 
     def _font_plus(self):
         self.s.font_size = int_(self.s.font_size) + 1
